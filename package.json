@@ -3,11 +3,13 @@
 	"module": "index.ts",
 	"type": "module",
 	"scripts": {
-		"check": "bunx biome check --write"
+		"check": "bunx biome check --write",
+		"precommit:install": "bunx lefthook install"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"lefthook": "^1.8.2"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
