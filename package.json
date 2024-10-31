@@ -2,6 +2,7 @@
 	"name": "openaurae-mono",
 	"module": "index.ts",
 	"type": "module",
+	"workspaces": ["packages/*"],
 	"scripts": {
 		"check": "bunx biome check --write",
 		"precommit:install": "bunx lefthook install"

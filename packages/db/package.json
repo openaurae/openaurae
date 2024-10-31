@@ -1,0 +1,15 @@
+{
+	"name": "@openaurae/db",
+	"module": "index.ts",
+	"type": "module",
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@openaurae/types": "workspace:*"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"cassandra-driver": "^4.7.2"
+	}
+}
