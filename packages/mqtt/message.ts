@@ -31,7 +31,10 @@ type Message = z.infer<typeof MessageSchema>;
  * 4. parse sensor type
  * 5. set missing fields (`processed`, `date`, `time` if is `null`)
  */
-export function parseMessage(topic: string, payload: object): Reading {
+export function parseMessage(
+	topic: string,
+	payload: Record<string, unknown>,
+): Reading {
 	const message = MessageSchema.parse({
 		...lowercaseFieldNames(payload),
 		...parseTopic(topic),
@@ -54,7 +57,11 @@ export function parseMessage(topic: string, payload: object): Reading {
 	});
 }
 
-function lowercaseFieldNames(payload: object): object {
+function lowercaseFieldNames<T extends Record<string, unknown>>(
+	payload: T,
+): {
+	[K in keyof T as K extends string ? Lowercase<K> : K]: T[K];
+} {
 	const entries = Object.entries(payload).map(([name, value]) => [
 		name.toLowerCase(),
 		value,
