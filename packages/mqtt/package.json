@@ -4,8 +4,9 @@
 	"type": "module",
 	"dependencies": {
 		"@openaurae/db": "workspace:*",
-		"@openaurae/types": "workspace:*",
 		"@openaurae/lib": "workspace:*",
+		"@openaurae/types": "workspace:*",
+		"mathjs": "^13.2.0",
 		"mqtt": "^5.10.1",
 		"zod": "^3.23.8"
 	},

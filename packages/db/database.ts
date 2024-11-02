@@ -5,21 +5,9 @@ import type {
 	Device,
 	Reading,
 	Sensor,
+	SensorType,
 	User,
 } from "@openaurae/types";
-
-declare module "bun" {
-	/**
-	 * Declaration of related environment variables.
-	 *
-	 * @see [Bun environment variables](https://bun.sh/docs/runtime/env)
-	 * @see [Interface merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces)
-	 */
-	interface Env {
-		CASSANDRA_HOST: string;
-		CASSANDRA_KEYSPACE: string;
-	}
-}
 
 type ModelMapper<T> = cassandra.mapping.ModelMapper<T>;
 type _Reading = Reading & {
@@ -96,6 +84,18 @@ export class Database {
 			reading.sensor_id,
 			reading.time,
 		);
+	}
+
+	public async getSensorCorrections(
+		deviceId: string,
+		sensorType: SensorType,
+	): Promise<Correction[]> {
+		const result = await this.corrections.find({
+			device: deviceId,
+			reading_type: sensorType,
+		});
+
+		return result.toArray();
 	}
 
 	/**
