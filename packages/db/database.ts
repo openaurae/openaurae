@@ -73,4 +73,74 @@ export class Database {
 	public async shutdown(): Promise<void> {
 		await this.client.shutdown();
 	}
+
+	public async getDeviceById(id: string): Promise<Device | null> {
+		return await this.devices.get({ id });
+	}
+
+	public async getSensorById(
+		deviceId: string,
+		sensorId: string,
+	): Promise<Sensor | null> {
+		return await this.sensors.get({
+			device: deviceId,
+			id: sensorId,
+		});
+	}
+
+	public async upsertSensorReading(reading: Reading): Promise<void> {
+		await this.readings.insert(reading);
+		await this.updateDeviceLastRecord(reading.device, reading.time);
+		await this.updateSensorLastRecord(
+			reading.device,
+			reading.sensor_id,
+			reading.time,
+		);
+	}
+
+	/**
+	 * Update device's latest record if the given time is later.
+	 *
+	 * Not using conditional update because:
+	 * 1. We need a CQL like `UPDATE device SET last_record = ? WHERE last_record = null OR last_record < ?`,
+	 * but `OR` is not supported in CQL. so we have to write 2 update statements to cover both conditions.
+	 * 2. Conditional updates are lightweight transactions, which may affect
+	 * performance during mass updating.
+	 *
+	 * @see [CQL conditionally updating columns](https://docs.datastax.com/en/cql-oss/3.3/cql/cql_reference/cqlUpdate.html#cqlUpdate__conditionally-updating-columns)
+	 */
+	private async updateDeviceLastRecord(
+		deviceId: string,
+		time: Date,
+	): Promise<void> {
+		const device = await this.getDeviceById(deviceId);
+
+		if (device && (!device.last_record || device.last_record < time)) {
+			await this.devices.update({
+				id: deviceId,
+				last_record: time,
+			});
+		}
+	}
+
+	/**
+	 * Update sensor's latest record if the given time is later.
+	 *
+	 * Implementation is same as {@link updateDeviceLastRecord}.
+	 */
+	private async updateSensorLastRecord(
+		deviceId: string,
+		sensorId: string,
+		time: Date,
+	): Promise<void> {
+		const sensor = await this.getSensorById(deviceId, sensorId);
+
+		if (sensor && (!sensor.last_record || sensor.last_record < time)) {
+			await this.sensors.update({
+				device: deviceId,
+				id: sensorId,
+				last_record: time,
+			});
+		}
+	}
 }
