@@ -34,6 +34,7 @@ export const DeviceSchema = z.object({
 	id: nonEmptyStringSchema,
 	name: nonEmptyStringSchema.max(50),
 	type: DeviceTypeSchema,
+	user_id: nonEmptyStringSchema.nullable(),
 	last_record: z.coerce
 		.date()
 		.nullish()

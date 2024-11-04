@@ -20,25 +20,17 @@ export async function createKeyspaceAndTables(host: string, keyspace: string) {
 
 	client.keyspace = keyspace;
 
-	await client.execute(userSchema);
 	await client.execute(deviceSchema);
 	await client.execute(sensorSchema);
 	await client.execute(correctionSchema);
 	await client.execute(readingSchema);
 }
 
-const userSchema = `
-CREATE TABLE IF NOT EXISTS user
-(
-    id       text primary key,
-    devices  set<text>,
-);
-`;
-
 const deviceSchema = `
 CREATE TABLE IF NOT EXISTS device
 (
     id           text primary key,
+    user_id	     text,
     name         text,
     type         text,
     last_record  timestamp,
@@ -47,6 +39,9 @@ CREATE TABLE IF NOT EXISTS device
     building     text,
     room         text
 );
+
+CREATE INDEX IF NOT EXISTS device_by_user_id
+    ON device (user_id);
 `;
 
 const sensorSchema = `

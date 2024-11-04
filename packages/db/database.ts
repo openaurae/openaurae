@@ -6,7 +6,6 @@ import type {
 	Reading,
 	Sensor,
 	SensorType,
-	User,
 } from "@openaurae/types";
 
 type ModelMapper<T> = cassandra.mapping.ModelMapper<T>;
@@ -20,7 +19,6 @@ export class Database {
 	public readonly client: cassandra.Client;
 	private readonly mapper: cassandra.mapping.Mapper;
 
-	public readonly users: ModelMapper<User>;
 	public readonly devices: ModelMapper<Device>;
 	public readonly sensors: ModelMapper<Sensor>;
 	public readonly corrections: ModelMapper<Correction>;
@@ -35,7 +33,6 @@ export class Database {
 
 		this.mapper = new cassandra.mapping.Mapper(this.client, {
 			models: {
-				User: { tables: ["user"] },
 				Device: { tables: ["device"] },
 				Sensor: { tables: ["sensor"] },
 				Reading: { tables: ["reading"] },
@@ -43,7 +40,6 @@ export class Database {
 			},
 		});
 
-		this.users = this.mapper.forModel("User");
 		this.devices = this.mapper.forModel("Device");
 		this.sensors = this.mapper.forModel("Sensor");
 		this.corrections = this.mapper.forModel("Correction");
@@ -62,8 +58,22 @@ export class Database {
 		await this.client.shutdown();
 	}
 
+	public async getDevices(): Promise<Device[]> {
+		const result = await this.devices.findAll();
+
+		return result.toArray();
+	}
+
 	public async getDeviceById(id: string): Promise<Device | null> {
 		return await this.devices.get({ id });
+	}
+
+	public async getDevicesByUserId(userId: string): Promise<Device[]> {
+		const result = await this.devices.find({
+			user_id: userId,
+		});
+
+		return result.toArray();
 	}
 
 	public async getSensorById(
