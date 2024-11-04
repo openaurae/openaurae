@@ -1,15 +1,37 @@
+import {
+	ClerkProvider,
+	RedirectToSignIn,
+	SignedIn,
+	SignedOut,
+} from "@clerk/clerk-react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
-import App from "./App.tsx";
+import App from "./App";
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+	throw new Error("Add your Clerk publishable key to the .env file");
+}
 
 const root = document.getElementById("root");
 
 if (root) {
 	createRoot(root).render(
 		<StrictMode>
-			<App />
+			<BrowserRouter>
+				<ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+					<SignedIn>
+						<App />
+					</SignedIn>
+					<SignedOut>
+						<RedirectToSignIn />
+					</SignedOut>
+				</ClerkProvider>
+			</BrowserRouter>
 		</StrictMode>,
 	);
 }

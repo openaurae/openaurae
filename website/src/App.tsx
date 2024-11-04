@@ -1,11 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { Route, Routes } from "react-router-dom";
+
+import { DashboardPage } from "@/pages/dashboard";
 
 function App() {
 	return (
-		<>
-			<h1>Vite + React</h1>
-			<Button>Click me</Button>
-		</>
+		<Routes>
+			<Route index path="/" element={<DashboardPage />} />
+		</Routes>
 	);
 }
 
