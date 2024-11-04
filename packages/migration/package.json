@@ -1,0 +1,19 @@
+{
+	"name": "@openaurae/migration",
+	"type": "module",
+	"module": "index.ts",
+	"dependencies": {
+		"@openaurae/types": "workspace:*",
+		"@openaurae/db": "workspace:*",
+		"@openaurae/lib": "workspace:*",
+		"axios": "^1.7.7",
+		"date-fns": "^4.1.0",
+		"zod": "^3.23.8"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}

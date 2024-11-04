@@ -58,6 +58,10 @@ export class Database {
 		await this.client.shutdown();
 	}
 
+	public async upsertDevice(device: Device): Promise<void> {
+		await this.devices.insert(device);
+	}
+
 	public async getDevices(): Promise<Device[]> {
 		const result = await this.devices.findAll();
 
@@ -74,6 +78,10 @@ export class Database {
 		});
 
 		return result.toArray();
+	}
+
+	public async upsertSensor(sensor: Sensor): Promise<void> {
+		await this.sensors.insert(sensor);
 	}
 
 	public async getSensorById(

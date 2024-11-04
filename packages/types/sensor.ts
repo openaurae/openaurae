@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { DeviceType } from "./device";
 import { nonEmptyStringSchema } from "./helper";
 
 /**
@@ -47,3 +48,18 @@ export const SensorSchema = z.object({
 });
 
 export type Sensor = z.infer<typeof SensorSchema>;
+
+/**
+ * Possible sensor types of each device type.
+ */
+export const deviceSensorTypes: Record<DeviceType, SensorType[]> = {
+	air_quality: ["ptqs1005", "pms5003st"],
+	zigbee: [
+		"zigbee_temp",
+		"zigbee_occupancy",
+		"zigbee_contact",
+		"zigbee_vibration",
+		"zigbee_power",
+	],
+	nemo_cloud: ["nemo_cloud"],
+};
