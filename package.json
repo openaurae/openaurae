@@ -1,10 +1,9 @@
 {
 	"name": "openaurae-mono",
-	"module": "index.ts",
-	"type": "module",
 	"workspaces": ["packages/*", "website"],
 	"scripts": {
 		"website:dev": "cd website && bun run dev",
+		"api:dev": "cd packages/api && bun run dev",
 		"check": "bunx biome check --write",
 		"precommit:install": "bunx lefthook install"
 	},

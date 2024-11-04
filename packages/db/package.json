@@ -2,14 +2,14 @@
 	"name": "@openaurae/db",
 	"module": "index.ts",
 	"type": "module",
-	"devDependencies": {
-		"@types/bun": "latest",
+	"dependencies": {
+		"cassandra-driver": "^4.7.2",
 		"@openaurae/types": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
-	},
-	"dependencies": {
-		"cassandra-driver": "^4.7.2"
 	}
 }

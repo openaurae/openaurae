@@ -1,3 +1,5 @@
+import { Database } from "./database";
+
 declare module "bun" {
 	/**
 	 * Declaration of related environment variables.
@@ -13,3 +15,5 @@ declare module "bun" {
 
 export { createKeyspaceAndTables, dropKeyspace } from "./migration";
 export * from "./database";
+
+export const db = Database.fromEnv();
