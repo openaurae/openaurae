@@ -1,7 +1,8 @@
 import { parse } from "mathjs";
 import mqtt from "mqtt";
 
-import { Database } from "@openaurae/db";
+import { db } from "@openaurae/db";
+import { log } from "@openaurae/lib";
 import type { Reading } from "@openaurae/types";
 import { parseMessage } from "./message";
 
@@ -11,23 +12,13 @@ export type SubscribeOptions = { zigbee?: boolean; airQuality?: boolean };
 
 export class MqttClient {
 	private readonly client: mqtt.MqttClient;
-	private readonly db: Database;
 
-	private constructor(client: mqtt.MqttClient, db: Database) {
+	private constructor(client: mqtt.MqttClient) {
 		this.client = client;
-		this.db = db;
 
 		client.on("message", (topic: string, messageBuffer: Buffer) =>
 			this.onMessage(topic, messageBuffer),
 		);
-	}
-
-	public static async build(
-		options: MqttClientOptions,
-		db: Database,
-	): Promise<MqttClient> {
-		const client = await mqtt.connectAsync(options);
-		return new MqttClient(client, db);
 	}
 
 	public static async fromEnv(): Promise<MqttClient> {
@@ -38,8 +29,7 @@ export class MqttClient {
 			username: Bun.env.MQTT_USERNAME,
 			password: Bun.env.MQTT_PASSWORD,
 		});
-		const db = Database.fromEnv();
-		return new MqttClient(client, db);
+		return new MqttClient(client);
 	}
 
 	public subscribe({ zigbee, airQuality }: SubscribeOptions = {}): void {
@@ -58,19 +48,21 @@ export class MqttClient {
 		}
 
 		const message = JSON.parse(messageBuffer.toString());
-		console.log(
-			`[mqtt] new message from topic ${topic} ${JSON.stringify(message)}]`,
-		);
+		log({
+			level: "info",
+			label: "mqtt",
+			message: `${topic} - new message ${JSON.stringify(message)}`,
+		});
 
 		const reading = parseMessage(topic, message);
-		await this.db.upsertSensorReading(reading);
+		await db.upsertSensorReading(reading);
 
 		const processed = await this.applyCorrections(reading);
-		await this.db.upsertSensorReading(processed);
+		await db.upsertSensorReading(processed);
 	}
 
 	private async applyCorrections(reading: Reading): Promise<Reading> {
-		const corrections = await this.db.getSensorCorrections(
+		const corrections = await db.getSensorCorrections(
 			reading.device,
 			reading.reading_type,
 		);
