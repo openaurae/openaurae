@@ -1,24 +1,35 @@
-import { subDays } from "date-fns";
+import { startOfDay, subWeeks } from "date-fns";
 
 import { api } from "@openaurae/api";
-import { migrateAwsOpenAurae } from "@openaurae/migration";
+import {
+	migrateAwsOpenAurae,
+	migrateNemoCloud,
+	migrateS5NemoCloud,
+	periodicallyMigrate,
+} from "@openaurae/migration";
 import { MqttClient } from "@openaurae/mqtt";
 
-/**
- * Periodically migrate data from the AWS EKS cluster.
- *
- * @see [recursive setTimeout](https://nodejs.org/en/learn/asynchronous-work/discover-javascript-timers#recursive-settimeout)
- */
-function migrateAws(): void {
-	migrateAwsOpenAurae({
-		start: subDays(new Date(), 7),
-		taskNum: 5,
-	}).then(() => {
-		setTimeout(migrateAws, 2 * 60 * 60 * 1000); // every 2 hours
-	});
+function oneWeekAgo(): Date {
+	return startOfDay(subWeeks(new Date(), 1));
 }
 
-migrateAws();
+periodicallyMigrate(migrateAwsOpenAurae, {
+	getStartDate: oneWeekAgo,
+	taskNum: 5,
+	intervalInHours: 2,
+});
+
+periodicallyMigrate(migrateNemoCloud, {
+	getStartDate: oneWeekAgo,
+	taskNum: 10,
+	intervalInHours: 2,
+});
+
+periodicallyMigrate(migrateS5NemoCloud, {
+	getStartDate: oneWeekAgo,
+	taskNum: 10,
+	intervalInHours: 2,
+});
 
 const mqttClient = await MqttClient.fromEnv();
 mqttClient.subscribe({ zigbee: true, airQuality: true });

@@ -1,7 +1,7 @@
-import { format, getTime } from "date-fns";
+import { format, getTime, startOfDay } from "date-fns";
 
 export function extractDate(date: Date): Date {
-	return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+	return startOfDay(date);
 }
 
 export function toTimestamp(value?: string | Date | null): number | null {

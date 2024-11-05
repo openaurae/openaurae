@@ -1,12 +1,7 @@
 import { chunks } from "@openaurae/lib";
 import type { Device } from "@openaurae/types";
+import type { MigrationOptions } from "../config";
 import { AwsOpenAuraeMigration } from "./migration";
-
-export type MigrationOptions = {
-	start?: Date;
-	end?: Date;
-	taskNum?: number;
-};
 
 export async function migrateAwsOpenAurae(
 	options: MigrationOptions = {},
