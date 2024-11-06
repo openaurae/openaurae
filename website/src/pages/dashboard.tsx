@@ -1,16 +1,16 @@
-import { DefaultLayout } from "@/components/layout";
 import { Breadcrumb, BreadcrumbPage } from "@/components/ui/breadcrumb";
+import { Header } from "@/layouts/sidebar";
 
 export function DashboardPage() {
-	const breadcrumb = (
-		<Breadcrumb>
-			<BreadcrumbPage>Overview</BreadcrumbPage>
-		</Breadcrumb>
-	);
-
 	return (
-		<DefaultLayout breadcrumb={breadcrumb}>
-			<div>Dashboard Page</div>
-		</DefaultLayout>
+		<>
+			<Header>
+				<Breadcrumb>
+					<BreadcrumbPage>Dashboard</BreadcrumbPage>
+				</Breadcrumb>
+			</Header>
+
+			<div className="flex flex-1 flex-col gap-4 p-4 pt-0">Dashboard page</div>
+		</>
 	);
 }
