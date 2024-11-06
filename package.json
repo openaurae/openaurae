@@ -2,9 +2,9 @@
 	"name": "openaurae-mono",
 	"workspaces": ["packages/*", "website", "server"],
 	"scripts": {
-		"website:dev": "NODE_ENV=development cd website && bun run dev",
-		"server:dev": "NODE_ENV=development cd server && bun run dev",
-		"api:dev": "NODE_ENV=development cd packages/api && bun run dev",
+		"website:dev": "cd website && bun run dev",
+		"server:dev": "cd server && bun run dev",
+		"api:dev": "cd packages/api && bun run dev",
 		"check": "bunx biome check --write",
 		"precommit:install": "bunx lefthook install"
 	},

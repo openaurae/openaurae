@@ -14,9 +14,7 @@ import App from "./App";
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
-	throw new Error(
-		"Add your Clerk publishable key to the .env.development file",
-	);
+	throw new Error("Add your Clerk publishable key to environment variables");
 }
 
 const root = document.getElementById("root");

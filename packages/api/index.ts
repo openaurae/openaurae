@@ -4,15 +4,21 @@ import { cors } from "hono/cors";
 import { csrf } from "hono/csrf";
 import { showRoutes } from "hono/dev";
 import { HTTPException } from "hono/http-exception";
+import { logger } from "hono/logger";
 import { ZodError } from "zod";
 
-import { setUerInfo } from "./auth";
+import { devicesApi } from "./device";
+import { userInfo } from "./middleware";
 
 const api = new Hono();
 
-api.use(csrf(), cors());
+// Note: cors must be the first one to handle requests
+api.use(cors(), csrf());
+api.use("/api/*", clerkMiddleware(), userInfo);
 
-api.use("/api/*", clerkMiddleware(), setUerInfo);
+if (Bun.env.NODE_ENV === "development") {
+	api.use(logger());
+}
 
 api.onError((err, c) => {
 	if (err instanceof HTTPException) {
@@ -31,6 +37,8 @@ api.get("/health", (c) => {
 		status: "up",
 	});
 });
+
+api.basePath("/api/v1").route("/devices", devicesApi);
 
 if (Bun.env.NODE_ENV === "development") {
 	showRoutes(api, { verbose: true });
