@@ -4,8 +4,8 @@ import { useApiClient } from "@/hooks/use-api-client";
 import type { Device, DeviceType } from "@openaurae/types";
 
 export type UseDevicesOptions = {
-	type?: DeviceType;
-	building?: string;
+	type?: DeviceType | null;
+	building?: string | null;
 };
 
 export function useDevices(options: UseDevicesOptions = {}) {

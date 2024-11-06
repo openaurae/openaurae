@@ -34,9 +34,17 @@ export function DeviceCard({ device }: DeviceCardProps) {
 						<div className="text-sm">
 							<span className="font-medium">Location</span>
 							<div className="text-gray-600">
-								Lat: {device.latitude ?? "N/A"}
-								<br />
-								Long: {device.longitude ?? "N/A"}
+								{device.type === "nemo_cloud" ? (
+									<>
+										<p>Building: {device.building ?? "N/A"}</p>
+										<p>Room: {device.room ?? "N/A"}</p>
+									</>
+								) : (
+									<>
+										<p>Lat: {device.latitude ?? "N/A"}</p>
+										<p>Long: {device.longitude ?? "N/A"}</p>
+									</>
+								)}
 							</div>
 						</div>
 					</div>
@@ -46,7 +54,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
 						<div className="text-sm">
 							<span className="font-medium">Last Record</span>
 							<div className="text-gray-600">
-								{formatDateTime(device.last_record) ?? "N/A"}
+								{formatDateTime(device.last_record) || "N/A"}
 							</div>
 						</div>
 					</div>

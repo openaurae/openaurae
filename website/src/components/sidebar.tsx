@@ -16,8 +16,12 @@ import {
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { UserProfile } from "@/components/user-profile";
+import { useBuildings } from "@/hooks/use-buildings";
+import { formatBuilding } from "@/lib/utils";
 
 export function AppSidebar() {
+	const { buildings } = useBuildings();
+
 	return (
 		<Sidebar variant="inset">
 			<SidebarHeader>
@@ -54,34 +58,33 @@ export function AppSidebar() {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<a href="/devices/air_quality">Air Quality</a>
+								<a href="/devices?type=air_quality">Air Quality</a>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<a href="/devices/zigbee">Zigbee</a>
+								<a href="/devices?type=zigbee">Zigbee</a>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<a href="/devices/nemo_cloud">Nemo Cloud</a>
+								<a href="/devices?type=nemo_cloud">Nemo Cloud</a>
 							</SidebarMenuButton>
 							<SidebarMenuAction className="data-[state=open]:rotate-90">
 								<span className="sr-only">Toggle</span>
 							</SidebarMenuAction>
 							<SidebarMenuSub>
-								<SidebarMenuSubItem>
-									<SidebarMenuSubButton asChild>
-										<a href="/devices?building=60">Building 60</a>
-									</SidebarMenuSubButton>
-								</SidebarMenuSubItem>
-								<SidebarMenuSubItem>
-									<SidebarMenuSubButton asChild>
-										<span>Building 66</span>
-									</SidebarMenuSubButton>
-								</SidebarMenuSubItem>
+								{buildings?.map((building) => (
+									<SidebarMenuSubItem key={building}>
+										<SidebarMenuSubButton asChild>
+											<a href={`/devices?type=nemo_cloud&building=${building}`}>
+												{formatBuilding(building)}
+											</a>
+										</SidebarMenuSubButton>
+									</SidebarMenuSubItem>
+								))}
 							</SidebarMenuSub>
 						</SidebarMenuItem>
 					</SidebarMenu>

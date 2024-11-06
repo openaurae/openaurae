@@ -9,7 +9,7 @@ function App() {
 		<Routes>
 			<Route path="/" element={<SidebarLayout />}>
 				<Route index path="/" element={<DashboardPage />} />
-				<Route path="/devices/:deviceType" element={<DevicesPage />} />
+				<Route path="/devices" element={<DevicesPage />} />
 			</Route>
 		</Routes>
 	);

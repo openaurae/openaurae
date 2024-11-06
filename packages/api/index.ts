@@ -7,6 +7,7 @@ import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
 import { ZodError } from "zod";
 
+import { buildingApi } from "./building";
 import { devicesApi } from "./device";
 import { userInfo } from "./middleware";
 
@@ -14,7 +15,6 @@ const api = new Hono();
 
 // Note: cors must be the first one to handle requests
 api.use(cors(), csrf());
-api.use("/api/*", clerkMiddleware(), userInfo);
 
 if (Bun.env.NODE_ENV === "development") {
 	api.use(logger());
@@ -38,7 +38,11 @@ api.get("/health", (c) => {
 	});
 });
 
-api.basePath("/api/v1").route("/devices", devicesApi);
+api.use("/api/*", clerkMiddleware(), userInfo);
+api
+	.basePath("/api/v1")
+	.route("/devices", devicesApi)
+	.route("/buildings", buildingApi);
 
 if (Bun.env.NODE_ENV === "development") {
 	showRoutes(api, { verbose: true });
