@@ -12,9 +12,9 @@ import {
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
-import { iconsVariants } from "@/components/icons";
 import {
 	IoTCard,
+	IoTCardAction,
 	IoTCardActions,
 	IoTCardContent,
 	IoTCardHeader,
@@ -74,9 +74,13 @@ export function DeviceInformation({
 			<IoTCardHeader title="Device Information">
 				<IoTCardActions>
 					{device.type !== "nemo_cloud" && (
-						<Edit className={iconsVariants({ variant: "action" })} />
+						<IoTCardAction tooltip="Edit Device">
+							<Edit />
+						</IoTCardAction>
 					)}
-					<Download className={iconsVariants({ variant: "action" })} />
+					<IoTCardAction tooltip="Export Device Readings">
+						<Download />
+					</IoTCardAction>
 				</IoTCardActions>
 			</IoTCardHeader>
 			<IoTCardContent size="md">

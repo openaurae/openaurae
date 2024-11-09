@@ -8,6 +8,12 @@ import type {
 
 import { iconsVariants } from "@/components/icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const iotCardVariants = cva("min-w-sm shadow-md", {
@@ -67,6 +73,32 @@ export function IoTCardHeader({
 export function IoTCardActions({ className, children }: ComponentProps<"div">) {
 	return (
 		<div className={cn("flex items-center gap-4", className)}>{children}</div>
+	);
+}
+
+export type IoTCardActionProps<P extends object> = {
+	Icon: ComponentType<P>;
+	tooltip: string;
+};
+
+export function IoTCardAction({
+	tooltip,
+	children,
+}: { tooltip: string; children: ReactNode }) {
+	return (
+		<TooltipProvider>
+			<Tooltip>
+				<TooltipTrigger
+					asChild
+					className={iconsVariants({ variant: "action" })}
+				>
+					{children}
+				</TooltipTrigger>
+				<TooltipContent>
+					<p>{tooltip}</p>
+				</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
 	);
 }
 

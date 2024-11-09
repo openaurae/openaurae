@@ -1,9 +1,9 @@
-import type { Sensor } from "@openaurae/types";
-import { Clock, Cpu, Edit, Hash, Tag, X } from "lucide-react";
+import { type Sensor, deviceSensorTypes } from "@openaurae/types";
+import { Clock, Cpu, Edit, Hash, Tag, Unlink, X } from "lucide-react";
 
-import { iconsVariants } from "@/components/icons";
 import {
 	IoTCard,
+	IoTCardAction,
 	IoTCardActions,
 	IoTCardContent,
 	IoTCardHeader,
@@ -45,15 +45,23 @@ export type SensorInformationProps = SensorCardProps & {
 };
 
 export function SensorInformation({ sensor, onClose }: SensorInformationProps) {
+	const isZigbeeSensor = deviceSensorTypes.zigbee.includes(sensor.type);
+
 	return (
 		<IoTCard>
-			<IoTCardHeader title={sensor.name || "N/A"}>
+			<IoTCardHeader title="Sensor Information">
 				<IoTCardActions>
-					<Edit className={iconsVariants({ variant: "action" })} />
-					<X
-						className={iconsVariants({ variant: "action" })}
-						onClick={onClose}
-					/>
+					<IoTCardAction tooltip="Edit Sensor">
+						<Edit />
+					</IoTCardAction>
+					{isZigbeeSensor && (
+						<IoTCardAction tooltip="Unlink Sensor">
+							<Unlink />
+						</IoTCardAction>
+					)}
+					<IoTCardAction tooltip="Close">
+						<X onClick={onClose} />
+					</IoTCardAction>
 				</IoTCardActions>
 			</IoTCardHeader>
 

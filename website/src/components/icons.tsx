@@ -1,10 +1,10 @@
 import { cva } from "class-variance-authority";
 
-export const iconsVariants = cva("cursor-pointer", {
+export const iconsVariants = cva("text-gray-500", {
 	variants: {
 		variant: {
-			action: "h-5 w-5 text-gray-500",
-			label: "h-4 w-4 text-gray-500",
+			action: "cursor-pointer h-5 w-5 hover:text-gray-400",
+			label: "h-4 w-4",
 		},
 	},
 });
