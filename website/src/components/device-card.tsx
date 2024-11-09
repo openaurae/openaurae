@@ -16,7 +16,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
 					<CardTitle className="text-xl font-bold">
 						{device.name || "UNKNOWN"}
 					</CardTitle>
-					<Eye className="h-5 w-5 text-gray-500" />
+					<a href={`/devices/${device.id}`}>
+						<Eye className="h-5 w-5 text-gray-500" />
+					</a>
 				</div>
 			</CardHeader>
 			<CardContent className="space-y-4">

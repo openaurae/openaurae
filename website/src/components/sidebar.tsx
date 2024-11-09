@@ -1,4 +1,5 @@
 import { Cloud } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import {
 	Sidebar,
@@ -58,19 +59,19 @@ export function AppSidebar() {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<a href="/devices?type=air_quality">Air Quality</a>
+								<Link to="/devices?type=air_quality">Air Quality</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<a href="/devices?type=zigbee">Zigbee</a>
+								<Link to="/devices?type=zigbee">Zigbee</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<a href="/devices?type=nemo_cloud">Nemo Cloud</a>
+								<Link to="/devices?type=nemo_cloud">Nemo Cloud</Link>
 							</SidebarMenuButton>
 							<SidebarMenuAction className="data-[state=open]:rotate-90">
 								<span className="sr-only">Toggle</span>
@@ -79,9 +80,11 @@ export function AppSidebar() {
 								{buildings?.map((building) => (
 									<SidebarMenuSubItem key={building}>
 										<SidebarMenuSubButton asChild>
-											<a href={`/devices?type=nemo_cloud&building=${building}`}>
+											<Link
+												to={`/devices?type=nemo_cloud&building=${building}`}
+											>
 												{formatBuilding(building)}
-											</a>
+											</Link>
 										</SidebarMenuSubButton>
 									</SidebarMenuSubItem>
 								))}

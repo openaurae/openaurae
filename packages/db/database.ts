@@ -94,6 +94,12 @@ export class Database {
 		});
 	}
 
+	public async getSensorsByDeviceId(deviceId: string): Promise<Sensor[]> {
+		const result = await this.sensors.find({ device: deviceId });
+
+		return result.toArray();
+	}
+
 	public async upsertSensorReading(reading: Reading): Promise<void> {
 		await this.readings.insert(reading);
 		await this.updateDeviceLastRecord(reading.device, reading.time);

@@ -1,7 +1,7 @@
 import useSWR from "swr";
 
 import { useApiClient } from "@/hooks/use-api-client";
-import type { Device, DeviceType } from "@openaurae/types";
+import type { Device, DeviceType, DeviceWithSensors } from "@openaurae/types";
 
 export type UseDevicesOptions = {
 	type?: DeviceType | null;
@@ -29,6 +29,31 @@ export function useDevices(options: UseDevicesOptions = {}) {
 
 	return {
 		devices,
+		isLoading,
+		error,
+	};
+}
+
+export function useDevice(deviceId: string) {
+	const { accessToken, apiClient } = useApiClient();
+
+	const {
+		data: device,
+		isLoading,
+		error,
+	} = useSWR(
+		accessToken ? [`/api/v1/devices/${deviceId}`, accessToken] : null,
+		async ([url, accessToken]) => {
+			const resp = await apiClient.get<DeviceWithSensors>(url, {
+				headers: { Authorization: `Bearer ${accessToken}` },
+			});
+
+			return resp.data;
+		},
+	);
+
+	return {
+		device,
 		isLoading,
 		error,
 	};

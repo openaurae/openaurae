@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
-import { DeviceCard } from "@/components/device-card";
+import { DeviceOverview } from "@/components/device/card";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -51,7 +51,7 @@ export function DevicesPage() {
 		<>
 			<PageHeader type={type} building={building} />
 
-			<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+			<div className="flex flex-1 flex-col gap-4 p-6 pt-0">
 				<DeviceCards devices={devices} />
 			</div>
 		</>
@@ -105,7 +105,7 @@ function DeviceCards({ devices }: { devices: Device[] | undefined }) {
 	return (
 		<div className="grid gap-6 justify-center md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">
 			{devices.map((device) => (
-				<DeviceCard key={device.id} device={device} />
+				<DeviceOverview key={device.id} device={device} />
 			))}
 		</div>
 	);
