@@ -3,7 +3,8 @@
 	"module": "index.ts",
 	"type": "module",
 	"dependencies": {
-		"date-fns": "^4.1.0"
+		"date-fns": "^4.1.0",
+		"@openaurae/types": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"

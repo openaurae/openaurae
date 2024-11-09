@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 
 import { db } from "@openaurae/db";
+import { sortDevicesByTimeDesc, sortSensorsByTimeDesc } from "@openaurae/lib";
 import { GetDevicesSchema } from "@openaurae/types";
 import { type AuthVariables, validateDeviceId } from "./middleware";
 
@@ -24,7 +25,7 @@ devicesApi.get("/", zValidator("query", GetDevicesSchema), async (c) => {
 		devices = devices.filter((device) => device.building === building);
 	}
 
-	return c.json(devices);
+	return c.json(sortDevicesByTimeDesc(devices));
 });
 
 // Get user device by id.
@@ -34,7 +35,7 @@ devicesApi.get("/:deviceId", validateDeviceId, async (c) => {
 
 	return c.json({
 		...device,
-		sensors,
+		sensors: sortSensorsByTimeDesc(sensors),
 	});
 });
 
