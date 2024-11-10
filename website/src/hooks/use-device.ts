@@ -93,12 +93,26 @@ export function useDevice(deviceId: string) {
 		[apiClient, deviceId, getAccessToken, mutate],
 	);
 
+	const deleteSensor = useCallback(
+		async (sensorId: string) => {
+			await apiClient.delete(
+				`/api/v1/devices/${deviceId}/sensors/${sensorId}`,
+				{
+					headers: { Authorization: await getAccessToken() },
+				},
+			);
+			await mutate();
+		},
+		[apiClient, deviceId, getAccessToken, mutate],
+	);
+
 	return {
 		device,
 		isLoading,
 		error,
 		preSignReadings,
 		updateDevice,
+		deleteSensor,
 	};
 }
 

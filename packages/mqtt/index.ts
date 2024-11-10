@@ -1,5 +1,7 @@
 import type mqtt from "mqtt";
 
+import { MqttClient } from "./client";
+
 declare module "bun" {
 	/**
 	 * Declaration of related environment variables.
@@ -17,3 +19,5 @@ declare module "bun" {
 }
 
 export * from "./client";
+
+export const mqttClient = await MqttClient.fromEnv();

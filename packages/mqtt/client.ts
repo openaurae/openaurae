@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 
 import { db } from "@openaurae/db";
 import { log } from "@openaurae/lib";
-import type { Reading } from "@openaurae/types";
+import type { Reading, Sensor } from "@openaurae/types";
 import { parseMessage } from "./message";
 
 export type MqttClientOptions = mqtt.IClientOptions;
@@ -40,6 +40,15 @@ export class MqttClient {
 		if (airQuality) {
 			this.client.subscribe("air-quality/#");
 		}
+	}
+
+	public async deleteZigbeeSensor(sensor: Sensor): Promise<void> {
+		if (!sensor.type.startsWith("zigbee")) {
+			throw Error(`Cannot delete non-zigbee sensor: ${sensor.type}`);
+		}
+
+		const topic = `zigbee/${sensor.device}/bridge/config/remove`;
+		await this.client.publishAsync(topic, JSON.stringify(topic));
 	}
 
 	private async onMessage(topic: string, messageBuffer: Buffer): Promise<void> {

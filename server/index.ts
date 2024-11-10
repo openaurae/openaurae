@@ -7,7 +7,7 @@ import {
 	migrateS5NemoCloud,
 	periodicallyMigrate,
 } from "@openaurae/migration";
-import { MqttClient } from "@openaurae/mqtt";
+import { mqttClient } from "@openaurae/mqtt";
 
 function oneWeekAgo(): Date {
 	return startOfDay(subWeeks(new Date(), 1));
@@ -31,7 +31,6 @@ periodicallyMigrate(migrateS5NemoCloud, {
 	intervalInHours: 2,
 });
 
-const mqttClient = await MqttClient.fromEnv();
 mqttClient.subscribe({ zigbee: true, airQuality: true });
 
 export default api;

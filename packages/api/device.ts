@@ -12,11 +12,14 @@ import {
 	sortReadingsByTimeAsc,
 	sortSensorsByTimeDesc,
 } from "@openaurae/lib";
+import { mqttClient } from "@openaurae/mqtt";
 import {
 	GetDevicesSchema,
 	type Reading,
+	type Sensor,
 	UpdateDeviceSchema,
 } from "@openaurae/types";
+import { HTTPException } from "hono/http-exception";
 import { preSignedReadings } from "./export.ts";
 import {
 	type AuthVariables,
@@ -102,6 +105,28 @@ devicesApi.get(
 				});
 
 		return c.json(sortReadingsByTimeAsc(readings));
+	},
+);
+
+// Unpair Zigbee sensor.
+devicesApi.delete(
+	"/:deviceId/sensors/:sensorId",
+	validateDeviceId({ from: "param" }),
+	validateSensorId({ from: "param", required: true }),
+	async (c) => {
+		const sensor = c.var.sensor as Sensor;
+		const { device } = c.var;
+
+		if (device.type !== "zigbee") {
+			throw new HTTPException(400, {
+				message: "Only Zigbee sensors can be deleted.",
+			});
+		}
+
+		await mqttClient.deleteZigbeeSensor(sensor);
+		await db.deleteSensorById(sensor.device, sensor.id);
+
+		return c.text("Sensor deleted", 200);
 	},
 );
 

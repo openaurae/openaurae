@@ -109,6 +109,16 @@ export class Database {
 		return result.toArray();
 	}
 
+	public async deleteSensorById(
+		deviceId: string,
+		sensorId: string,
+	): Promise<void> {
+		await this.sensors.remove({
+			device: deviceId,
+			id: sensorId,
+		});
+	}
+
 	public async upsertSensorReading(reading: Reading): Promise<void> {
 		await this.readings.insert(reading);
 		await this.updateDeviceLastRecord(reading.device, reading.time);

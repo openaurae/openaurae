@@ -1,7 +1,6 @@
 import { clerkMiddleware } from "@hono/clerk-auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { csrf } from "hono/csrf";
 import { showRoutes } from "hono/dev";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
@@ -9,13 +8,13 @@ import { ZodError } from "zod";
 
 import { buildingApi } from "./building";
 import { devicesApi } from "./device";
-import { exportApi } from "./export.ts";
+import { exportApi } from "./export";
 import { userInfo } from "./middleware";
 
 const api = new Hono();
 
 // Note: cors must be the first one to handle requests
-api.use(cors(), csrf());
+api.use(cors());
 
 if (Bun.env.NODE_ENV === "development") {
 	api.use(logger());

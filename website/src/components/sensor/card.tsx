@@ -9,6 +9,7 @@ import {
 	IoTCardHeader,
 	IoTCardItem,
 } from "@/components/iot-card";
+import { UnpairSensor } from "@/components/sensor/delete";
 import { formatSensorType } from "@/lib/utils";
 import { formatDateTime } from "@openaurae/lib";
 
@@ -33,7 +34,9 @@ export function SensorOverview({
 				</IoTCardItem>
 
 				<IoTCardItem label="Last Record" Icon={Clock}>
-					<span className="text-xs">{formatDateTime(sensor.last_record)}</span>
+					<span className="text-xs">
+						{formatDateTime(sensor.last_record) || "N/A"}
+					</span>
 				</IoTCardItem>
 			</IoTCardContent>
 		</IoTCard>
@@ -55,9 +58,11 @@ export function SensorInformation({ sensor, onClose }: SensorInformationProps) {
 						<Edit />
 					</IoTCardAction>
 					{isZigbeeSensor && (
-						<IoTCardAction tooltip="Unlink Sensor">
-							<Unlink />
-						</IoTCardAction>
+						<UnpairSensor sensor={sensor} closeInfoCard={onClose}>
+							<IoTCardAction tooltip="Unlink Sensor">
+								<Unlink />
+							</IoTCardAction>
+						</UnpairSensor>
 					)}
 					<IoTCardAction tooltip="Close">
 						<X onClick={onClose} />
@@ -79,7 +84,7 @@ export function SensorInformation({ sensor, onClose }: SensorInformationProps) {
 				</IoTCardItem>
 
 				<IoTCardItem label="Last Record" Icon={Clock}>
-					{formatDateTime(sensor.last_record)}
+					{formatDateTime(sensor.last_record) || "N/A"}
 				</IoTCardItem>
 			</IoTCardContent>
 		</IoTCard>
