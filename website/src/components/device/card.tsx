@@ -12,6 +12,7 @@ import {
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
+import { EditDevice } from "@/components/device/edit.tsx";
 import { ExportReadings } from "@/components/device/export.tsx";
 import {
 	IoTCard,
@@ -75,9 +76,11 @@ export function DeviceInformation({
 			<IoTCardHeader title="Device Information">
 				<IoTCardActions>
 					{device.type !== "nemo_cloud" && (
-						<IoTCardAction tooltip="Edit Device">
-							<Edit />
-						</IoTCardAction>
+						<EditDevice device={device}>
+							<IoTCardAction tooltip="Edit Device">
+								<Edit />
+							</IoTCardAction>
+						</EditDevice>
 					)}
 					<ExportReadings device={device}>
 						<IoTCardAction tooltip="Export Device Readings">

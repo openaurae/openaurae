@@ -12,7 +12,11 @@ import {
 	sortReadingsByTimeAsc,
 	sortSensorsByTimeDesc,
 } from "@openaurae/lib";
-import { GetDevicesSchema, type Reading } from "@openaurae/types";
+import {
+	GetDevicesSchema,
+	type Reading,
+	UpdateDeviceSchema,
+} from "@openaurae/types";
 import { preSignedReadings } from "./export.ts";
 import {
 	type AuthVariables,
@@ -52,6 +56,23 @@ devicesApi.get("/:deviceId", validateDeviceId({ from: "param" }), async (c) => {
 		sensors: sortSensorsByTimeDesc(sensors),
 	});
 });
+
+// Update device by id.
+devicesApi.put(
+	"/:deviceId",
+	validateDeviceId({ from: "param" }),
+	zValidator("json", UpdateDeviceSchema),
+	async (c) => {
+		const device = {
+			...c.var.device,
+			...c.req.valid("json"),
+		};
+
+		await db.upsertDevice(device);
+
+		return c.json(device);
+	},
+);
 
 // Get device or sensor readings within a time range.
 devicesApi.get(

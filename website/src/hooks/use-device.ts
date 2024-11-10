@@ -9,6 +9,7 @@ import {
 	type Reading,
 	type Sensor,
 	SensorSchema,
+	type UpdateDevice,
 } from "@openaurae/types";
 import { useCallback } from "react";
 import type { DateRange } from "react-day-picker";
@@ -49,6 +50,7 @@ export function useDevice(deviceId: string) {
 		data: device,
 		isLoading,
 		error,
+		mutate,
 	} = useSWR(
 		userId ? [`/api/v1/devices/${deviceId}`, userId] : null,
 		async ([url, _]) => {
@@ -81,11 +83,22 @@ export function useDevice(deviceId: string) {
 		[baseURL, deviceId, apiClient, getAccessToken],
 	);
 
+	const updateDevice = useCallback(
+		async (data: UpdateDevice) => {
+			await apiClient.put(`/api/v1/devices/${deviceId}`, data, {
+				headers: { Authorization: await getAccessToken() },
+			});
+			await mutate();
+		},
+		[apiClient, deviceId, getAccessToken, mutate],
+	);
+
 	return {
 		device,
 		isLoading,
 		error,
 		preSignReadings,
+		updateDevice,
 	};
 }
 
