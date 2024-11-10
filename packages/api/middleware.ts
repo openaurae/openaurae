@@ -42,32 +42,34 @@ export type DeviceVariables = AuthVariables & {
 // Validate device id from path variable "deviceId" by rules below:
 // 1. The device must exist
 // 2. Either user owns the device or user can access all resources
-export const validateDeviceId = createMiddleware<{
-	Variables: DeviceVariables;
-}>(async (c, next) => {
-	const deviceId = c.req.param("deviceId");
-	const { userId, permissions } = c.var;
+export const validateDeviceId = ({ from }: { from: "query" | "param" }) =>
+	createMiddleware<{
+		Variables: DeviceVariables;
+	}>(async (c, next) => {
+		const deviceId =
+			from === "param" ? c.req.param("deviceId") : c.req.query("deviceId");
+		const { userId, permissions } = c.var;
 
-	if (deviceId === undefined) {
-		throw new HTTPException(400, { message: "Device id required." });
-	}
+		if (deviceId === undefined) {
+			throw new HTTPException(400, { message: "Device id required." });
+		}
 
-	const device = await db.getDeviceById(deviceId);
+		const device = await db.getDeviceById(deviceId);
 
-	if (!device) {
-		throw new HTTPException(404, { message: "Device not found." });
-	}
+		if (!device) {
+			throw new HTTPException(404, { message: "Device not found." });
+		}
 
-	if (device.user_id !== userId && !permissions.readAll) {
-		throw new HTTPException(401, {
-			message: "Only admin or device owner can access this device.",
-		});
-	}
+		if (device.user_id !== userId && !permissions.readAll) {
+			throw new HTTPException(401, {
+				message: "Only admin or device owner can access this device.",
+			});
+		}
 
-	c.set("device", device);
+		c.set("device", device);
 
-	await next();
-});
+		await next();
+	});
 
 export type SensorVariables<Required extends boolean> = DeviceVariables & {
 	sensor: Required extends true ? Sensor : null;

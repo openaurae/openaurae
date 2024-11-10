@@ -10,6 +10,8 @@ import {
 	type Sensor,
 	SensorSchema,
 } from "@openaurae/types";
+import { useCallback } from "react";
+import type { DateRange } from "react-day-picker";
 import useSWRImmutable from "swr/immutable";
 
 export type UseDevicesOptions = {
@@ -41,7 +43,7 @@ export function useDevices(options: UseDevicesOptions = {}) {
 }
 
 export function useDevice(deviceId: string) {
-	const { apiClient, getAccessToken, userId } = useApiClient();
+	const { apiClient, getAccessToken, userId, baseURL } = useApiClient();
 
 	const {
 		data: device,
@@ -61,10 +63,29 @@ export function useDevice(deviceId: string) {
 		},
 	);
 
+	const preSignReadings = useCallback(
+		async ({ from, to }: DateRange) => {
+			const resp = await apiClient.get<{ key: string }>("pre-sign/readings", {
+				headers: { Authorization: await getAccessToken() },
+				params: {
+					deviceId,
+					start: from,
+					end: to,
+				},
+			});
+
+			const { key } = resp.data;
+
+			return `${baseURL}/export/readings/${key}`;
+		},
+		[baseURL, deviceId, apiClient, getAccessToken],
+	);
+
 	return {
 		device,
 		isLoading,
 		error,
+		preSignReadings,
 	};
 }
 

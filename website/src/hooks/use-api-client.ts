@@ -25,6 +25,7 @@ export function useApiClient() {
 
 	return {
 		apiClient,
+		baseURL: API_BASE_URL,
 		getAccessToken,
 		userId,
 	};

@@ -12,6 +12,7 @@ import {
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
+import { ExportReadings } from "@/components/device/export.tsx";
 import {
 	IoTCard,
 	IoTCardAction,
@@ -78,9 +79,11 @@ export function DeviceInformation({
 							<Edit />
 						</IoTCardAction>
 					)}
-					<IoTCardAction tooltip="Export Device Readings">
-						<Download />
-					</IoTCardAction>
+					<ExportReadings device={device}>
+						<IoTCardAction tooltip="Export Device Readings">
+							<Download />
+						</IoTCardAction>
+					</ExportReadings>
 				</IoTCardActions>
 			</IoTCardHeader>
 			<IoTCardContent size="md">

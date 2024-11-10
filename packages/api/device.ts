@@ -1,6 +1,9 @@
+import { Readable } from "node:stream";
 import { zValidator } from "@hono/zod-validator";
-import { startOfDay } from "date-fns";
+import { stringify } from "csv";
+import { eachDayOfInterval, format, startOfDay } from "date-fns";
 import { Hono } from "hono";
+import { stream } from "hono/streaming";
 import { z } from "zod";
 
 import { db } from "@openaurae/db";
@@ -9,7 +12,8 @@ import {
 	sortReadingsByTimeAsc,
 	sortSensorsByTimeDesc,
 } from "@openaurae/lib";
-import { GetDevicesSchema } from "@openaurae/types";
+import { GetDevicesSchema, type Reading } from "@openaurae/types";
+import { preSignedReadings } from "./export.ts";
 import {
 	type AuthVariables,
 	validateDeviceId,
@@ -39,7 +43,7 @@ devicesApi.get("/", zValidator("query", GetDevicesSchema), async (c) => {
 });
 
 // Get user device by id.
-devicesApi.get("/:deviceId", validateDeviceId, async (c) => {
+devicesApi.get("/:deviceId", validateDeviceId({ from: "param" }), async (c) => {
 	const device = c.var.device;
 	const sensors = await db.getSensorsByDeviceId(device.id);
 
@@ -52,7 +56,7 @@ devicesApi.get("/:deviceId", validateDeviceId, async (c) => {
 // Get device or sensor readings within a time range.
 devicesApi.get(
 	"/:deviceId/readings",
-	validateDeviceId,
+	validateDeviceId({ from: "param" }),
 	validateSensorId({ from: "query", required: false }),
 	zValidator(
 		"query",
