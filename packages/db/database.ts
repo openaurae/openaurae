@@ -1,6 +1,7 @@
 import * as cassandra from "cassandra-driver";
 import { eachDayOfInterval } from "date-fns";
 
+import { sortReadingsByTimeAsc } from "@openaurae/lib";
 import type {
 	Correction,
 	Device,
@@ -151,10 +152,12 @@ export class Database {
 			...clusterKeyCriteria,
 		});
 
-		return result.toArray().map((reading) => ({
+		const readings = result.toArray().map((reading) => ({
 			...reading,
 			date: new Date(reading.date.toString()),
 		}));
+
+		return sortReadingsByTimeAsc(readings);
 	}
 
 	/**

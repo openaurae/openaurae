@@ -1,6 +1,6 @@
-import { compareDesc } from "date-fns";
+import { compareAsc, compareDesc } from "date-fns";
 
-import type { Device, Sensor } from "@openaurae/types";
+import type { Device, Reading, Sensor } from "@openaurae/types";
 
 export function chunks<T>(array: T[], chunkSize = 10): T[][] {
 	if (array.length === 0) {
@@ -40,4 +40,8 @@ export function sortSensorsByTimeDesc(sensors: Sensor[]): Sensor[] {
 
 		return s1.id < s2.id ? -1 : 1;
 	});
+}
+
+export function sortReadingsByTimeAsc(readings: Reading[]): Reading[] {
+	return readings.sort((r1, r2) => compareAsc(r1.time, r2.time));
 }

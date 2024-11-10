@@ -4,7 +4,11 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 import { db } from "@openaurae/db";
-import { sortDevicesByTimeDesc, sortSensorsByTimeDesc } from "@openaurae/lib";
+import {
+	sortDevicesByTimeDesc,
+	sortReadingsByTimeAsc,
+	sortSensorsByTimeDesc,
+} from "@openaurae/lib";
 import { GetDevicesSchema } from "@openaurae/types";
 import {
 	type AuthVariables,
@@ -72,7 +76,7 @@ devicesApi.get(
 					processed,
 				});
 
-		return c.json(readings);
+		return c.json(sortReadingsByTimeAsc(readings));
 	},
 );
 
