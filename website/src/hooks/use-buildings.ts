@@ -3,17 +3,17 @@ import useSWR from "swr";
 import { useApiClient } from "@/hooks/use-api-client";
 
 export function useBuildings() {
-	const { accessToken, apiClient } = useApiClient();
+	const { getAccessToken, userId, apiClient } = useApiClient();
 
 	const {
 		data: buildings,
 		isLoading,
 		error,
 	} = useSWR(
-		accessToken ? ["/api/v1/buildings", accessToken] : null,
-		async ([url, accessToken]) => {
+		userId ? ["/api/v1/buildings", userId] : null,
+		async ([url, _]) => {
 			const resp = await apiClient.get<string[]>(url, {
-				headers: { Authorization: `Bearer ${accessToken}` },
+				headers: { Authorization: await getAccessToken() },
 			});
 
 			return resp.data;

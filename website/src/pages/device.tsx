@@ -1,4 +1,6 @@
-import { useCallback, useState } from "react";
+import { subDays } from "date-fns";
+import { RotateCw } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { DefaultSection } from "@/components/default";
@@ -6,7 +8,10 @@ import {
 	DeviceInformation,
 	DeviceSensorsOverview,
 } from "@/components/device/card";
+import { DateTimeInput } from "@/components/input";
 import { SensorInformation, SensorOverview } from "@/components/sensor/card";
+import { SensorMetricChart } from "@/components/sensor/chart";
+import { sensorMetricGroups } from "@/components/sensor/metrics";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -15,9 +20,11 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useDevice } from "@/hooks/use-device";
+import { useDevice, useSensorReadings } from "@/hooks/use-device";
+import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/layouts/sidebar";
 import { formatDeviceType, formatSensorType } from "@/lib/utils";
 import {
@@ -40,12 +47,10 @@ export function DevicePage() {
 		return <Skeleton className="w-full h-full" />;
 	}
 
-	const sensorTypes = deviceSensorTypes[device.type];
-
 	return (
 		<>
 			<PageHeader device={device} />
-			<main className="flex flex-1 flex-col gap-4 p-8 pt-0">
+			<main className="h-full flex flex-col gap-8 p-8 pt-0">
 				<div className="w-full grid lg:grid-cols-2 gap-6">
 					<DeviceInformation device={device} />
 					{selectedSensor ? (
@@ -58,37 +63,115 @@ export function DevicePage() {
 					)}
 				</div>
 
-				<Tabs
-					className="w-full h-full flex flex-col gap-4 flex-1 mt-2"
-					defaultValue={sensorTypes[0]}
-				>
-					<div className="flex justify-between">
-						<h2 className="text-xl font-semibold">Sensors</h2>
-						<TabsList>
-							{sensorTypes.map((sensorType) => (
-								<TabsTrigger key={sensorType} value={sensorType}>
-									{formatSensorType(sensorType)}
-								</TabsTrigger>
-							))}
-						</TabsList>
-					</div>
-
-					{sensorTypes.map((sensorType) => (
-						<TabsContent
-							className="w-full h-full"
-							key={sensorType}
-							value={sensorType}
-						>
-							<SensorOverviews
-								device={device}
-								sensorType={sensorType}
-								onSensorSelected={onSensorSelected}
-							/>
-						</TabsContent>
-					))}
-				</Tabs>
+				{selectedSensor ? (
+					<SensorMetricTabs sensor={selectedSensor} />
+				) : (
+					<SensorTabs device={device} onSensorSelected={onSensorSelected} />
+				)}
 			</main>
 		</>
+	);
+}
+
+function SensorMetricTabs({ sensor }: { sensor: Sensor }) {
+	const metricGroups = useMemo(() => sensorMetricGroups(sensor.type), [sensor]);
+	const groupNames = useMemo(() => Object.keys(metricGroups), [metricGroups]);
+	const [group, setGroup] = useState(groupNames[0]);
+	const [end, setEnd] = useState(sensor.last_record ?? new Date());
+	const [start, setStart] = useState(subDays(end, 1));
+	const { refresh } = useSensorReadings({ sensor, start, end });
+	const { toast } = useToast();
+
+	return (
+		<Tabs
+			className="w-full h-full flex flex-col gap-4"
+			value={group}
+			onValueChange={setGroup}
+		>
+			<div className="flex justify-between items-center">
+				<TabsList>
+					{groupNames.map((name) => (
+						<TabsTrigger key={name} value={name}>
+							{name}
+						</TabsTrigger>
+					))}
+				</TabsList>
+				<div className="flex gap-4 items-center">
+					<Button
+						className="flex-none"
+						size="icon"
+						variant="outline"
+						onClick={() =>
+							refresh().then(() => {
+								toast({
+									title: "Refreshed Successful",
+									description: "Sensor readings are updated.",
+								});
+							})
+						}
+					>
+						<RotateCw />
+					</Button>
+					<DateTimeInput dateTime={start} onDateTimeUpdated={setStart} />
+					<span>To</span>
+					<DateTimeInput dateTime={end} onDateTimeUpdated={setEnd} />
+				</div>
+			</div>
+
+			{groupNames.map((name) => (
+				<TabsContent className="w-full h-full mt-2" key={name} value={name}>
+					<SensorMetricChart
+						className="w-full h-full"
+						sensor={sensor}
+						start={start}
+						end={end}
+						metricNames={metricGroups[name]}
+					/>
+				</TabsContent>
+			))}
+		</Tabs>
+	);
+}
+
+function SensorTabs({
+	device,
+	onSensorSelected,
+}: {
+	device: DeviceWithSensors;
+	onSensorSelected: (sensor: Sensor) => void;
+}) {
+	const sensorTypes = useMemo(() => deviceSensorTypes[device.type], [device]);
+
+	return (
+		<Tabs
+			className="w-full h-full flex flex-col gap-4 flex-1"
+			defaultValue={sensorTypes[0]}
+		>
+			<div className="flex justify-between">
+				<h2 className="text-xl font-semibold">Sensors</h2>
+				<TabsList>
+					{sensorTypes.map((sensorType) => (
+						<TabsTrigger key={sensorType} value={sensorType}>
+							{formatSensorType(sensorType)}
+						</TabsTrigger>
+					))}
+				</TabsList>
+			</div>
+
+			{sensorTypes.map((sensorType) => (
+				<TabsContent
+					className="w-full h-full mt-2"
+					key={sensorType}
+					value={sensorType}
+				>
+					<SensorOverviews
+						device={device}
+						sensorType={sensorType}
+						onSensorSelected={onSensorSelected}
+					/>
+				</TabsContent>
+			))}
+		</Tabs>
 	);
 }
 

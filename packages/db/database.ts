@@ -1,4 +1,5 @@
 import * as cassandra from "cassandra-driver";
+import { eachDayOfInterval } from "date-fns";
 
 import type {
 	Correction,
@@ -14,6 +15,13 @@ type _Reading = Reading & {
 };
 
 export const q = cassandra.mapping.q;
+
+export type GetReadingsOptions = {
+	sensor: Sensor;
+	processed: boolean;
+	start: Date;
+	end: Date;
+};
 
 export class Database {
 	public readonly client: cassandra.Client;
@@ -120,6 +128,94 @@ export class Database {
 		});
 
 		return result.toArray();
+	}
+
+	/**
+	 * Query readings by either using PK or PK + CK.
+	 */
+	public async getDeviceReadingsOnDate(
+		deviceId: string,
+		date: Date,
+		options?: GetReadingsOptions,
+	): Promise<Reading[]> {
+		const clusterKeyCriteria = options && {
+			reading_type: options.sensor.type,
+			sensor_id: options.sensor.id,
+			processed: options.processed,
+			time: q.and(q.gte(options.start), q.lte(options.end)),
+		};
+
+		const result = await this.readings.find({
+			device: deviceId,
+			date,
+			...clusterKeyCriteria,
+		});
+
+		return result.toArray().map((reading) => ({
+			...reading,
+			date: new Date(reading.date.toString()),
+		}));
+	}
+
+	/**
+	 * Get device readings on multiple dates.
+	 *
+	 * Since `reading_type` and `sensor_id` is missing,
+	 * we have to manually filter the query result.
+	 */
+	public async getDeviceReadings({
+		deviceId,
+		start,
+		end,
+		processed,
+	}: {
+		deviceId: string;
+		start: Date;
+		end: Date;
+		processed?: boolean;
+	}): Promise<Reading[]> {
+		const result = [];
+
+		for (const date of eachDayOfInterval({ start, end })) {
+			const readings = await this.getDeviceReadingsOnDate(deviceId, date);
+
+			const filtered = readings.filter((reading) => {
+				if (reading.time < start || reading.time > end) {
+					return false;
+				}
+
+				return processed === undefined || processed === reading.processed;
+			});
+
+			result.push(...filtered);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get sensor readings on multiple dates.
+	 */
+	public async getSensorReadings({
+		sensor,
+		processed,
+		start,
+		end,
+	}: GetReadingsOptions): Promise<Reading[]> {
+		const result = [];
+
+		for (const date of eachDayOfInterval({ start, end })) {
+			const readings = await this.getDeviceReadingsOnDate(sensor.device, date, {
+				sensor,
+				processed,
+				start,
+				end,
+			});
+
+			result.push(...readings);
+		}
+
+		return result;
 	}
 
 	/**

@@ -1,7 +1,6 @@
 import { useAuth } from "@clerk/clerk-react";
 import axios from "axios";
-import { useMemo } from "react";
-import useSWR from "swr";
+import { useCallback, useMemo } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -10,9 +9,13 @@ if (!API_BASE_URL) {
 }
 
 export function useApiClient() {
-	const { getToken } = useAuth();
+	const { getToken, userId } = useAuth();
 
-	const { data: accessToken } = useSWR("accessToken", () => getToken());
+	const getAccessToken = useCallback(async () => {
+		const token = await getToken();
+
+		return token ? `Bearer ${token}` : null;
+	}, [getToken]);
 
 	const apiClient = useMemo(() => {
 		return axios.create({
@@ -21,7 +24,8 @@ export function useApiClient() {
 	}, []);
 
 	return {
-		accessToken,
 		apiClient,
+		getAccessToken,
+		userId,
 	};
 }

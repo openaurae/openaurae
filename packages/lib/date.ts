@@ -29,3 +29,7 @@ export function formatDate(value?: string | Date | null): string {
 export function formatTime(value?: string | Date | null): string {
 	return value ? format(value, "HH:mm:ss") : "";
 }
+
+export function formatHourMinutes(value?: string | Date | null): string {
+	return value ? format(value, "HH:mm") : "";
+}
