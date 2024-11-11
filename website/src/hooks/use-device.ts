@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from "react";
+import type { DateRange } from "react-day-picker";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 
@@ -15,8 +17,6 @@ import {
 	type UpdateDevice,
 	type UpdateSensor,
 } from "@openaurae/types";
-import { useCallback, useMemo } from "react";
-import type { DateRange } from "react-day-picker";
 
 export type UseDevicesOptions = {
 	type?: DeviceType | null;

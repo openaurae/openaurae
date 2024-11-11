@@ -23,7 +23,7 @@ import { emptyStringToNull, nonEmptyStringSchema } from "./helper";
  *
  * @see [Zod enums](https://zod.dev/?id=zod-enums)
  */
-export const DeviceTypeSchema = z.enum(["nemo_cloud", "air_quality", "zigbee"]);
+export const DeviceTypeSchema = z.enum(["air_quality", "zigbee", "nemo_cloud"]);
 
 export type DeviceType = z.infer<typeof DeviceTypeSchema>;
 

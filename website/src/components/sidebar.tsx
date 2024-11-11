@@ -1,12 +1,7 @@
-import {
-	Cloud,
-	CloudDownload,
-	LayoutDashboard,
-	Radio,
-	Wind,
-} from "lucide-react";
+import { Cloud, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { DeviceTypeIcons } from "@/components/icons";
 import {
 	Sidebar,
 	SidebarContent,
@@ -68,7 +63,7 @@ export function AppSidebar() {
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
 								<Link to="/devices?type=air_quality">
-									<Wind /> Air Quality
+									<DeviceTypeIcons.air_quality /> Air Quality
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -76,7 +71,7 @@ export function AppSidebar() {
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
 								<Link to="/devices?type=zigbee">
-									<Radio /> Zigbee
+									<DeviceTypeIcons.zigbee /> Zigbee
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -84,7 +79,7 @@ export function AppSidebar() {
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
 								<Link to="/devices?type=nemo_cloud">
-									<CloudDownload /> Nemo Cloud
+									<DeviceTypeIcons.nemo_cloud /> Nemo Cloud
 								</Link>
 							</SidebarMenuButton>
 							<SidebarMenuAction className="data-[state=open]:rotate-90">

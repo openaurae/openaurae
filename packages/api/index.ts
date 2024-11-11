@@ -9,6 +9,7 @@ import { ZodError } from "zod";
 import { buildingApi } from "./building";
 import { devicesApi } from "./device";
 import { exportApi } from "./export";
+import { internalApi } from "./internal";
 import { userInfo } from "./middleware";
 
 const api = new Hono();
@@ -45,6 +46,7 @@ api
 	.route("/buildings", buildingApi);
 
 api.route("/", exportApi);
+api.route("/", internalApi);
 
 if (Bun.env.NODE_ENV === "development") {
 	showRoutes(api, { verbose: true });

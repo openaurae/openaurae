@@ -1,16 +1,18 @@
 import { cva } from "class-variance-authority";
 import {
+	CloudDownload,
 	HardDriveUpload,
 	Link,
+	Radio,
 	Thermometer,
 	Users,
 	Vibrate,
 	Wind,
 	Zap,
 } from "lucide-react";
-import type { ComponentType } from "react";
+import type { ComponentType, SVGAttributes } from "react";
 
-import type { SensorType } from "@openaurae/types";
+import type { DeviceType, SensorType } from "@openaurae/types";
 
 export const iconsVariants = cva("text-gray-500", {
 	variants: {
@@ -21,7 +23,19 @@ export const iconsVariants = cva("text-gray-500", {
 	},
 });
 
-export const SensorTypeIcons: Record<SensorType, ComponentType> = {
+export const DeviceTypeIcons: Record<
+	DeviceType,
+	ComponentType<SVGAttributes<object>>
+> = {
+	zigbee: Radio,
+	air_quality: Wind,
+	nemo_cloud: CloudDownload,
+};
+
+export const SensorTypeIcons: Record<
+	SensorType,
+	ComponentType<SVGAttributes<object>>
+> = {
 	zigbee_temp: Thermometer,
 	zigbee_power: Zap,
 	zigbee_vibration: Vibrate,
