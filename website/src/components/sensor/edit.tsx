@@ -82,7 +82,7 @@ export function EditSensor({
 								<FormItem>
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input {...field} value={field.value || undefined} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

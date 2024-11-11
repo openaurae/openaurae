@@ -114,7 +114,7 @@ export function AddNewDevice({
 								<FormItem>
 									<FormLabel>Latitude</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input {...field} value={field.value ?? undefined} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -128,7 +128,7 @@ export function AddNewDevice({
 								<FormItem>
 									<FormLabel>Longitude</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input {...field} value={field.value ?? undefined} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

@@ -87,7 +87,7 @@ export function EditDevice({
 								<FormItem>
 									<FormLabel>Latitude</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input {...field} value={field.value || undefined} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -101,7 +101,7 @@ export function EditDevice({
 								<FormItem>
 									<FormLabel>Longitude</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input {...field} value={field.value ?? undefined} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
