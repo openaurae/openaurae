@@ -12,7 +12,7 @@ describe("test parsing room name", () => {
 		});
 	});
 
-	it("should parse room including '.'", () => {
+	it("should parse value including '.'", () => {
 		const actual = parseBuildingAndRoom("60_G.25_MSM_Central_Env");
 
 		expect(actual).toEqual({
@@ -21,12 +21,21 @@ describe("test parsing room name", () => {
 		});
 	});
 
-	it("should parse room without _Env suffix", () => {
+	it("should parse value without _Env suffix", () => {
 		const actual = parseBuildingAndRoom("Staging Lab_Corner B");
 
 		expect(actual).toEqual({
 			building: "Staging Lab",
 			room: "Corner B",
+		});
+	});
+
+	it("should parse value including space and underscores", () => {
+		const actual = parseBuildingAndRoom("69_G.61_Collaboration Area_Env");
+
+		expect(actual).toEqual({
+			building: "69",
+			room: "G.61 Collaboration Area",
 		});
 	});
 
