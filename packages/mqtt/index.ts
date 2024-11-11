@@ -1,3 +1,5 @@
+import type { MqttProtocol } from "mqtt";
+
 import { MqttClient } from "./client";
 
 declare module "bun" {
@@ -9,6 +11,7 @@ declare module "bun" {
 	 */
 	interface Env {
 		MQTT_URL: string;
+		MQTT_PROTOCOL?: MqttProtocol;
 		MQTT_USERNAME?: string;
 		MQTT_PASSWORD?: string;
 	}
