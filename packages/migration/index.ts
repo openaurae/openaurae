@@ -1,4 +1,5 @@
 import { endOfToday, startOfYesterday } from "date-fns";
+
 import type { MigrationOptions } from "./config";
 
 declare module "bun" {
@@ -50,10 +51,17 @@ export function periodicallyMigrate(
 			start: getStartDate(),
 			end: getEndDate(),
 			taskNum,
-		}).then(() => {
-			// schedule the next migration after the current one is finished
-			setTimeout(migrate, intervalInHours * 60 * 60 * 1000);
-		});
+		})
+			.then(() => {
+				// schedule the next migration after the current one is finished
+				setTimeout(migrate, intervalInHours * 60 * 60 * 1000);
+			})
+			.catch((e) => {
+				console.log(`[migration] periodical task failed: ${e}`);
+
+				// retry after 5 minutes
+				setTimeout(migrate, 5 * 60 * 1000);
+			});
 	};
 
 	migrateOnce();
