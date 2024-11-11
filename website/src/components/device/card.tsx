@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 
 import { EditDevice } from "@/components/device/edit";
 import { ExportReadings } from "@/components/device/export";
+import { SensorTypeIcons } from "@/components/icons";
 import {
 	IoTCard,
 	IoTCardAction,
@@ -165,7 +166,11 @@ export function DeviceSensorsOverview({
 
 			<IoTCardContent size="md">
 				{deviceSensorTypes[device.type].map((type) => (
-					<IoTCardItem key={type} label={formatSensorType(type)} Icon={Cpu}>
+					<IoTCardItem
+						key={type}
+						label={formatSensorType(type)}
+						Icon={SensorTypeIcons[type]}
+					>
 						{countsByType.get(type) ?? 0}
 					</IoTCardItem>
 				))}

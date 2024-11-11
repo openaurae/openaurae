@@ -1,4 +1,10 @@
-import { Cloud } from "lucide-react";
+import {
+	Cloud,
+	CloudDownload,
+	LayoutDashboard,
+	Radio,
+	Wind,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -48,7 +54,9 @@ export function AppSidebar() {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<a href="/">Overview</a>
+								<Link to="/">
+									<LayoutDashboard /> Overview
+								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
@@ -59,19 +67,25 @@ export function AppSidebar() {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<Link to="/devices?type=air_quality">Air Quality</Link>
+								<Link to="/devices?type=air_quality">
+									<Wind /> Air Quality
+								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<Link to="/devices?type=zigbee">Zigbee</Link>
+								<Link to="/devices?type=zigbee">
+									<Radio /> Zigbee
+								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild>
-								<Link to="/devices?type=nemo_cloud">Nemo Cloud</Link>
+								<Link to="/devices?type=nemo_cloud">
+									<CloudDownload /> Nemo Cloud
+								</Link>
 							</SidebarMenuButton>
 							<SidebarMenuAction className="data-[state=open]:rotate-90">
 								<span className="sr-only">Toggle</span>
