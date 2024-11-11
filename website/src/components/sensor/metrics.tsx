@@ -29,6 +29,19 @@ export function sensorMetricGroups(
 		};
 	}
 
+	if (sensorType === "nemo_cloud") {
+		return {
+			Temperature: ["temperature"],
+			Humidity: ["humidity"],
+			CH2O: ["ch2o"],
+			CO2: ["co2"],
+			LVOC: ["lvocs"],
+			PM: ["pm1", "pm4", "pm25", "pm10"],
+			Pressure: ["pressure"],
+			Battery: ["battery"],
+		};
+	}
+
 	const result: Record<string, MetricName[]> = {};
 
 	for (const name of sensorMetricNames[sensorType]) {
