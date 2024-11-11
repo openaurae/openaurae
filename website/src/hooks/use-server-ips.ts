@@ -11,7 +11,7 @@ export function useServerIps() {
 		data: ips,
 		isLoading,
 		error,
-	} = useSWR(isAdmin ? ["/ips", userId] : null, async ([url, _]) => {
+	} = useSWR(isAdmin ? ["/api/ips", userId] : null, async ([url, _]) => {
 		const resp = await apiClient.get<string[]>(url, {
 			headers: { Authorization: await getAccessToken() },
 		});

@@ -46,7 +46,7 @@ api
 	.route("/buildings", buildingApi);
 
 api.route("/", exportApi);
-api.route("/", internalApi);
+api.route("/api", internalApi);
 
 if (Bun.env.NODE_ENV === "development") {
 	showRoutes(api, { verbose: true });
