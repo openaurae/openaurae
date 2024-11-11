@@ -1,14 +1,15 @@
 import {
 	Building,
 	Clock,
-	Cpu,
 	Download,
 	Edit,
+	Eye,
 	Hash,
 	House,
 	MapPin,
 	Plus,
 	Tag,
+	X,
 } from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -23,6 +24,7 @@ import {
 	IoTCardContent,
 	IoTCardHeader,
 	IoTCardItem,
+	type IoTCardProps,
 } from "@/components/iot-card";
 import { AddSensor } from "@/components/sensor/add";
 import { formatDeviceType, formatSensorType } from "@/lib/utils";
@@ -34,48 +36,68 @@ import {
 	deviceSensorTypes,
 } from "@openaurae/types";
 
-export type DeviceCardProps<Dev extends Device> = {
+export type DeviceCardProps<Dev extends Device> = IoTCardProps & {
 	device: Dev;
-	className?: string;
+	closeable?: boolean;
+	onClose?: () => void;
 };
 
-export function DeviceOverview({ device, className }: DeviceCardProps<Device>) {
+export function DeviceOverview({
+	clickable,
+	device,
+	className,
+	closeable = false,
+	onClose,
+}: DeviceCardProps<Device>) {
 	return (
-		<Link to={`/devices/${device.id}`}>
-			<IoTCard clickable className={className}>
-				<IoTCardHeader title={device.name || "N/A"} />
-				<IoTCardContent size="sm">
-					<IoTCardItem label="ID" Icon={Hash}>
-						{device.id}
-					</IoTCardItem>
-
-					{device.type === "nemo_cloud" ? (
-						<IoTCardItem label="Location" Icon={MapPin}>
-							<p>Building: {device.building ?? "N/A"}</p>
-							<p>Room: {device.room ?? "N/A"}</p>
-						</IoTCardItem>
-					) : (
-						<IoTCardItem label="Location" Icon={MapPin}>
-							<p>Lat: {device.latitude ?? "N/A"}</p>
-							<p>Long: {device.longitude ?? "N/A"}</p>
-						</IoTCardItem>
+		<IoTCard clickable={clickable} className={className}>
+			<IoTCardHeader title={device.name || "N/A"}>
+				<IoTCardActions>
+					{!clickable && (
+						<Link key={device.id} to={`/devices/${device.id}`}>
+							<IoTCardAction tooltip="View Details">
+								<Eye />
+							</IoTCardAction>
+						</Link>
 					)}
+					{closeable && onClose && (
+						<IoTCardAction tooltip="Close">
+							<X onClick={onClose} />
+						</IoTCardAction>
+					)}
+				</IoTCardActions>
+			</IoTCardHeader>
+			<IoTCardContent size="sm">
+				<IoTCardItem label="ID" Icon={Hash}>
+					{device.id}
+				</IoTCardItem>
 
-					<IoTCardItem label="Last Record" Icon={Clock}>
-						{formatDateTime(device.last_record) || "N/A"}
+				{device.type === "nemo_cloud" ? (
+					<IoTCardItem label="Location" Icon={MapPin}>
+						<p>Building: {device.building ?? "N/A"}</p>
+						<p>Room: {device.room ?? "N/A"}</p>
 					</IoTCardItem>
-				</IoTCardContent>
-			</IoTCard>
-		</Link>
+				) : (
+					<IoTCardItem label="Location" Icon={MapPin}>
+						<p>Lat: {device.latitude ?? "N/A"}</p>
+						<p>Long: {device.longitude ?? "N/A"}</p>
+					</IoTCardItem>
+				)}
+
+				<IoTCardItem label="Last Record" Icon={Clock}>
+					{formatDateTime(device.last_record) || "N/A"}
+				</IoTCardItem>
+			</IoTCardContent>
+		</IoTCard>
 	);
 }
 
 export function DeviceInformation({
 	device,
-	className,
+	...props
 }: DeviceCardProps<Device>) {
 	return (
-		<IoTCard className={className}>
+		<IoTCard {...props}>
 			<IoTCardHeader title="Device Information">
 				<IoTCardActions>
 					{device.type !== "nemo_cloud" && (

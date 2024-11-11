@@ -28,16 +28,18 @@ const iotCardVariants = cva("min-w-sm shadow-md", {
 	},
 });
 
+export type IoTCardProps = VariantProps<typeof iotCardVariants> &
+	ComponentProps<"div"> & {
+		clickable?: boolean;
+	};
+
 export function IoTCard({
 	className,
 	children,
 	status,
 	clickable = false,
 	...props
-}: VariantProps<typeof iotCardVariants> &
-	ComponentProps<"div"> & {
-		clickable?: boolean;
-	}) {
+}: IoTCardProps) {
 	return (
 		<Card
 			className={cn(

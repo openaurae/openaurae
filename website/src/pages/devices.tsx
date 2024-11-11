@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
 import { DefaultSection } from "@/components/default";
@@ -136,7 +136,9 @@ function DeviceCards({ devices }: { devices: Device[] }) {
 	return (
 		<div className="grid gap-6 justify-center md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">
 			{devices.map((device) => (
-				<DeviceOverview key={device.id} device={device} />
+				<Link key={device.id} to={`/devices/${device.id}`}>
+					<DeviceOverview clickable device={device} />
+				</Link>
 			))}
 		</div>
 	);
