@@ -22,10 +22,7 @@ export class MqttClient {
 	}
 
 	public static async fromEnv(): Promise<MqttClient> {
-		const client = await mqtt.connectAsync({
-			protocol: Bun.env.MQTT_PROTOCOL,
-			host: Bun.env.MQTT_HOST,
-			port: Number(Bun.env.MQTT_PORT),
+		const client = await mqtt.connectAsync(Bun.env.MQTT_URL, {
 			username: Bun.env.MQTT_USERNAME,
 			password: Bun.env.MQTT_PASSWORD,
 		});

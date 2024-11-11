@@ -1,5 +1,3 @@
-import type mqtt from "mqtt";
-
 import { MqttClient } from "./client";
 
 declare module "bun" {
@@ -10,9 +8,7 @@ declare module "bun" {
 	 * @see [Interface merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces)
 	 */
 	interface Env {
-		MQTT_PROTOCOL: mqtt.MqttProtocol;
-		MQTT_HOST: string;
-		MQTT_PORT: string;
+		MQTT_URL: string;
 		MQTT_USERNAME?: string;
 		MQTT_PASSWORD?: string;
 	}
