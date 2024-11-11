@@ -7,6 +7,7 @@ import {
 	Hash,
 	House,
 	MapPin,
+	Plus,
 	Tag,
 } from "lucide-react";
 import { useMemo } from "react";
@@ -22,6 +23,7 @@ import {
 	IoTCardHeader,
 	IoTCardItem,
 } from "@/components/iot-card";
+import { AddSensor } from "@/components/sensor/add.tsx";
 import { formatDeviceType, formatSensorType } from "@/lib/utils";
 import { formatDateTime } from "@openaurae/lib";
 import {
@@ -149,7 +151,17 @@ export function DeviceSensorsOverview({
 
 	return (
 		<IoTCard className={className}>
-			<IoTCardHeader title="Sensor Counts by Type" />
+			<IoTCardHeader title="Sensor Counts by Type">
+				<IoTCardActions>
+					{device.type === "zigbee" && (
+						<AddSensor deviceId={device.id}>
+							<IoTCardAction tooltip="Add Sensor">
+								<Plus />
+							</IoTCardAction>
+						</AddSensor>
+					)}
+				</IoTCardActions>
+			</IoTCardHeader>
 
 			<IoTCardContent size="md">
 				{deviceSensorTypes[device.type].map((type) => (

@@ -69,7 +69,9 @@ export function EditDevice({
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Name</FormLabel>
+									<FormLabel>
+										Name <span className="text-red-500">*</span>
+									</FormLabel>
 									<FormControl>
 										<Input {...field} />
 									</FormControl>

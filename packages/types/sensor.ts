@@ -3,24 +3,43 @@ import { z } from "zod";
 import type { DeviceType } from "./device";
 import { nonEmptyStringSchema } from "./helper";
 
+export const AirQualitySensorTypeSchema = z.enum(["ptqs1005", "pms5003st"]);
+
 /**
- * All sensor types
- *
- * - Each AQ box has only one `ptqs1005` sensor and one `pms5003st` sensor.
- * - Zigbee devices have `zigbee_*` sensors and may contain multiple sensors of same type.
- * - Nemo Cloud devices have only `nemo_cloud` sensors.
+ * Each AQ box has only one `ptqs1005` sensor and one `pms5003st` sensor.
  */
-export const SensorTypeSchema = z.enum([
-	"ptqs1005",
-	"pms5003st",
+export type AirQualitySensorType = z.infer<typeof AirQualitySensorTypeSchema>;
+
+export const ZigbeeSensorTypeSchema = z.enum([
 	"zigbee_temp",
-	"zigbee_contact",
-	"zigbee_power",
 	"zigbee_occupancy",
+	"zigbee_contact",
 	"zigbee_vibration",
-	"nemo_cloud",
+	"zigbee_power",
 ]);
 
+/**
+ * Zigbee devices have `zigbee_*` sensors and may contain multiple sensors of same type.
+ */
+export type ZigbeeSensorType = z.infer<typeof ZigbeeSensorTypeSchema>;
+
+export const NemoCloudSensorTypeSchema = z.enum(["nemo_cloud"]);
+
+/**
+ * Information of Nemo Cloud devices are fetched from the API.
+ * Since the API doesn't include sensor type, we use `nemo_cloud` for all devices.
+ */
+export type NemoCloudSensorType = z.infer<typeof NemoCloudSensorTypeSchema>;
+
+export const SensorTypeSchema = z.union([
+	AirQualitySensorTypeSchema,
+	ZigbeeSensorTypeSchema,
+	NemoCloudSensorTypeSchema,
+]);
+
+/**
+ * All sensor types
+ */
 export type SensorType = z.infer<typeof SensorTypeSchema>;
 
 /**
@@ -49,17 +68,13 @@ export const SensorSchema = z.object({
 
 export type Sensor = z.infer<typeof SensorSchema>;
 
+export const SensorTypesSchema = SensorTypeSchema.array();
+
 /**
  * Possible sensor types of each device type.
  */
 export const deviceSensorTypes: Record<DeviceType, SensorType[]> = {
-	air_quality: ["ptqs1005", "pms5003st"],
-	zigbee: [
-		"zigbee_temp",
-		"zigbee_occupancy",
-		"zigbee_contact",
-		"zigbee_vibration",
-		"zigbee_power",
-	],
-	nemo_cloud: ["nemo_cloud"],
+	air_quality: AirQualitySensorTypeSchema.options,
+	zigbee: ZigbeeSensorTypeSchema.options,
+	nemo_cloud: NemoCloudSensorTypeSchema.options,
 };

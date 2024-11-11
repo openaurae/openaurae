@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { type Device, DeviceSchema, DeviceTypeSchema } from "./device";
 import { nonEmptyStringSchema } from "./helper";
-import type { Sensor } from "./sensor";
+import { type Sensor, SensorSchema, ZigbeeSensorTypeSchema } from "./sensor";
 
 export const GetDevicesSchema = z.object({
 	type: DeviceTypeSchema.nullish().describe("filter by device type"),
@@ -18,6 +18,15 @@ export const UpdateDeviceSchema = DeviceSchema.pick({
 });
 
 export type UpdateDevice = z.infer<typeof UpdateDeviceSchema>;
+
+export const AddZigbeeSensorSchema = SensorSchema.pick({
+	id: true,
+	name: true,
+}).extend({
+	type: ZigbeeSensorTypeSchema,
+});
+
+export type AddZigbeeSensor = z.infer<typeof AddZigbeeSensorSchema>;
 
 export type DeviceWithSensors = Device & {
 	sensors: Sensor[];

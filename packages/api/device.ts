@@ -14,6 +14,7 @@ import {
 } from "@openaurae/lib";
 import { mqttClient } from "@openaurae/mqtt";
 import {
+	AddZigbeeSensorSchema,
 	GetDevicesSchema,
 	type Reading,
 	type Sensor,
@@ -105,6 +106,31 @@ devicesApi.get(
 				});
 
 		return c.json(sortReadingsByTimeAsc(readings));
+	},
+);
+
+devicesApi.post(
+	"/:deviceId/sensors",
+	validateDeviceId({ from: "param" }),
+	zValidator("json", AddZigbeeSensorSchema),
+	async (c) => {
+		const { device } = c.var;
+		const { id: sensorId, type, name } = c.req.valid("json");
+
+		const existed = await db.getSensorById(device.id, sensorId);
+
+		if (existed) {
+			throw new HTTPException(400, { message: "Sensor id already exists" });
+		}
+
+		await db.upsertSensor({
+			device: device.id,
+			id: sensorId,
+			name,
+			type,
+		});
+
+		return c.text("Sensor added.", 201);
 	},
 );
 

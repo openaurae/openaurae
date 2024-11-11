@@ -2,6 +2,7 @@ import useSWR from "swr";
 
 import { useApiClient } from "@/hooks/use-api-client";
 import {
+	type AddZigbeeSensor,
 	type Device,
 	type DeviceType,
 	type DeviceWithSensors,
@@ -93,6 +94,16 @@ export function useDevice(deviceId: string) {
 		[apiClient, deviceId, getAccessToken, mutate],
 	);
 
+	const addZigbeeSensor = useCallback(
+		async (sensor: AddZigbeeSensor) => {
+			await apiClient.post(`/api/v1/devices/${deviceId}/sensors`, sensor, {
+				headers: { Authorization: await getAccessToken() },
+			});
+			await mutate();
+		},
+		[apiClient, deviceId, getAccessToken, mutate],
+	);
+
 	const deleteSensor = useCallback(
 		async (sensorId: string) => {
 			await apiClient.delete(
@@ -112,6 +123,7 @@ export function useDevice(deviceId: string) {
 		error,
 		preSignReadings,
 		updateDevice,
+		addZigbeeSensor,
 		deleteSensor,
 	};
 }

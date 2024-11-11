@@ -3,6 +3,7 @@ import { eachDayOfInterval } from "date-fns";
 import { db } from "@openaurae/db";
 import { formatDate, log } from "@openaurae/lib";
 import {
+	AirQualitySensorTypeSchema,
 	type Device,
 	type DeviceType,
 	deviceSensorTypes,
@@ -39,7 +40,7 @@ export class AwsOpenAuraeMigration {
 
 		if (sensors.length === 0 && deviceType === "air_quality") {
 			// the AWS server doesn't persist sensors of AQ boxes
-			for (const sensorType of deviceSensorTypes.air_quality) {
+			for (const sensorType of AirQualitySensorTypeSchema.options) {
 				await db.upsertSensor({
 					device: dev.id,
 					id: sensorType,
