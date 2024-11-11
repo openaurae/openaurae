@@ -3,7 +3,9 @@
 	"workspaces": ["packages/*", "website", "server"],
 	"scripts": {
 		"website:dev": "cd website && bun run dev",
+		"website:build": "cd website && bun run build",
 		"server:dev": "cd server && bun run dev",
+		"server:build": "cd server && bun run build",
 		"api:dev": "cd packages/api && bun run dev",
 		"check": "bunx biome check --write",
 		"precommit:install": "bunx lefthook install"
