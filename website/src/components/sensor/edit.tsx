@@ -22,42 +22,34 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { useDevice } from "@/hooks/use-device";
 import { toast } from "@/hooks/use-toast";
-import { formatSensorType } from "@/lib/utils";
 import {
-	type AddZigbeeSensor,
-	AddZigbeeSensorSchema,
-	ZigbeeSensorTypeSchema,
+	type Sensor,
+	type UpdateSensor,
+	UpdateSensorSchema,
 } from "@openaurae/types";
 
-export function AddSensor({
-	deviceId,
+export function EditSensor({
+	sensor,
 	children,
-}: { deviceId: string; children: ReactNode }) {
-	const { addZigbeeSensor } = useDevice(deviceId);
+}: { sensor: Sensor; children: ReactNode }) {
+	const { updateSensor } = useDevice(sensor.device);
 	const [open, setOpen] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const form = useForm<AddZigbeeSensor>({
-		resolver: zodResolver(AddZigbeeSensorSchema),
+	const form = useForm<UpdateSensor>({
+		resolver: zodResolver(UpdateSensorSchema),
 		defaultValues: {
-			type: "zigbee_temp",
+			...sensor,
 		},
 	});
 
-	async function onSubmit(values: AddZigbeeSensor) {
+	async function onSubmit(values: UpdateSensor) {
 		setLoading(true);
 
 		try {
-			await addZigbeeSensor(values);
+			await updateSensor(sensor.id, values);
 			form.reset();
 			setOpen(false);
 		} catch (e: unknown) {
@@ -75,7 +67,7 @@ export function AddSensor({
 
 			<DialogContent className="w-[400px]">
 				<DialogHeader>
-					<DialogTitle>Add Sensor</DialogTitle>
+					<DialogTitle>Edit Sensor Information</DialogTitle>
 				</DialogHeader>
 
 				<Form {...form}>
@@ -83,22 +75,6 @@ export function AddSensor({
 						onSubmit={form.handleSubmit(onSubmit)}
 						className="px-6 py-4 grid gap-6"
 					>
-						<FormField
-							control={form.control}
-							name="id"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Id <span className="text-red-500">*</span>
-									</FormLabel>
-									<FormControl>
-										<Input {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
 						<FormField
 							control={form.control}
 							name="name"
@@ -113,35 +89,6 @@ export function AddSensor({
 							)}
 						/>
 
-						<FormField
-							control={form.control}
-							name="type"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Type <span className="text-red-500">*</span>
-									</FormLabel>
-									<Select
-										onValueChange={field.onChange}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger>
-												<SelectValue placeholder="Select sensor type" />
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{ZigbeeSensorTypeSchema.options.map((type) => (
-												<SelectItem key={type} value={type}>
-													{formatSensorType(type)}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
 						<DialogFooter className="mt-8">
 							<Button disabled={loading}>
 								{loading && <Loader2 className="animate-spin" />} Submit

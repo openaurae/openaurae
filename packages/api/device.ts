@@ -19,6 +19,7 @@ import {
 	type Reading,
 	type Sensor,
 	UpdateDeviceSchema,
+	UpdateSensorSchema,
 } from "@openaurae/types";
 import { HTTPException } from "hono/http-exception";
 import { preSignedReadings } from "./export.ts";
@@ -74,7 +75,7 @@ devicesApi.put(
 
 		await db.upsertDevice(device);
 
-		return c.json(device);
+		return c.text("Device updated.");
 	},
 );
 
@@ -131,6 +132,46 @@ devicesApi.post(
 		});
 
 		return c.text("Sensor added.", 201);
+	},
+);
+
+// Get device sensor by id.
+devicesApi.get(
+	"/:deviceId/sensors/:sensorId",
+	validateDeviceId({ from: "param" }),
+	validateSensorId({ from: "param", required: true }),
+	async (c) => {
+		const sensor = c.var.sensor as Sensor;
+
+		return c.json(sensor);
+	},
+);
+
+// Update device sensor by id.
+// Note: Nemo Cloud sensors are not allowed to update
+// because sensor info is fetched from the cloud server
+devicesApi.put(
+	"/:deviceId/sensors/:sensorId",
+	validateDeviceId({ from: "param" }),
+	validateSensorId({ from: "param", required: true }),
+	zValidator("json", UpdateSensorSchema),
+	async (c) => {
+		const sensor = c.var.sensor as Sensor;
+		const { device } = c.var;
+		const body = c.req.valid("json");
+
+		if (device.type === "nemo_cloud") {
+			throw new HTTPException(400, {
+				message: "Nemo Cloud sensors are not allowed to update.",
+			});
+		}
+
+		await db.upsertSensor({
+			...sensor,
+			...body,
+		});
+
+		return c.text("Sensor updated.");
 	},
 );
 

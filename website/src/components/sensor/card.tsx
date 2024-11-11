@@ -10,6 +10,7 @@ import {
 	IoTCardItem,
 } from "@/components/iot-card";
 import { UnpairSensor } from "@/components/sensor/delete";
+import { EditSensor } from "@/components/sensor/edit";
 import { formatSensorType } from "@/lib/utils";
 import { formatDateTime } from "@openaurae/lib";
 
@@ -44,19 +45,26 @@ export function SensorOverview({
 }
 
 export type SensorInformationProps = SensorCardProps & {
+	className?: string;
 	onClose: () => void;
 };
 
-export function SensorInformation({ sensor, onClose }: SensorInformationProps) {
+export function SensorInformation({
+	className,
+	sensor,
+	onClose,
+}: SensorInformationProps) {
 	const isZigbeeSensor = deviceSensorTypes.zigbee.includes(sensor.type);
 
 	return (
-		<IoTCard>
+		<IoTCard className={className}>
 			<IoTCardHeader title="Sensor Information">
 				<IoTCardActions>
-					<IoTCardAction tooltip="Edit Sensor">
-						<Edit />
-					</IoTCardAction>
+					<EditSensor sensor={sensor}>
+						<IoTCardAction tooltip="Edit Sensor">
+							<Edit />
+						</IoTCardAction>
+					</EditSensor>
 					{isZigbeeSensor && (
 						<UnpairSensor sensor={sensor} closeInfoCard={onClose}>
 							<IoTCardAction tooltip="Unlink Sensor">

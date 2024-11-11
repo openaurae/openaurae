@@ -11,6 +11,7 @@ import {
 	type Sensor,
 	SensorSchema,
 	type UpdateDevice,
+	type UpdateSensor,
 } from "@openaurae/types";
 import { useCallback } from "react";
 import type { DateRange } from "react-day-picker";
@@ -104,6 +105,20 @@ export function useDevice(deviceId: string) {
 		[apiClient, deviceId, getAccessToken, mutate],
 	);
 
+	const updateSensor = useCallback(
+		async (sensorId: string, sensor: UpdateSensor) => {
+			await apiClient.put(
+				`/api/v1/devices/${deviceId}/sensors/${sensorId}`,
+				sensor,
+				{
+					headers: { Authorization: await getAccessToken() },
+				},
+			);
+			await mutate();
+		},
+		[apiClient, deviceId, getAccessToken, mutate],
+	);
+
 	const deleteSensor = useCallback(
 		async (sensorId: string) => {
 			await apiClient.delete(
@@ -124,6 +139,7 @@ export function useDevice(deviceId: string) {
 		preSignReadings,
 		updateDevice,
 		addZigbeeSensor,
+		updateSensor,
 		deleteSensor,
 	};
 }

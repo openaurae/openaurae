@@ -28,6 +28,12 @@ export const AddZigbeeSensorSchema = SensorSchema.pick({
 
 export type AddZigbeeSensor = z.infer<typeof AddZigbeeSensorSchema>;
 
+export const UpdateSensorSchema = SensorSchema.pick({
+	name: true,
+});
+
+export type UpdateSensor = z.infer<typeof UpdateSensorSchema>;
+
 export type DeviceWithSensors = Device & {
 	sensors: Sensor[];
 };

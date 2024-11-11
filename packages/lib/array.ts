@@ -2,6 +2,15 @@ import { compareAsc, compareDesc } from "date-fns";
 
 import type { Device, Reading, Sensor } from "@openaurae/types";
 
+export function getOne<T>(
+	array: T[],
+	predicate: (item: T) => boolean,
+): T | null {
+	const filtered = array.filter((e) => predicate(e));
+
+	return filtered.length === 1 ? filtered[0] : null;
+}
+
 export function chunks<T>(array: T[], chunkSize = 10): T[][] {
 	if (array.length === 0) {
 		return [];

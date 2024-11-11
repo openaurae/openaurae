@@ -1,6 +1,6 @@
 import { subDays } from "date-fns";
 import { RotateCw } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { DefaultSection } from "@/components/default";
@@ -27,6 +27,7 @@ import { useDevice, useSensorReadings } from "@/hooks/use-device";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/layouts/sidebar";
 import { formatDeviceType, formatSensorType } from "@/lib/utils";
+import { getOne } from "@openaurae/lib";
 import {
 	type Device,
 	type DeviceWithSensors,
@@ -38,10 +39,16 @@ import {
 export function DevicePage() {
 	const { deviceId } = useParams();
 	const { device } = useDevice(deviceId as string);
-	const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
-	const onSensorSelected = useCallback((sensor: Sensor) => {
-		setSelectedSensor(sensor);
-	}, []);
+
+	const [sensorId, setSensorId] = useState<string | null>(null);
+
+	const sensor = useMemo(() => {
+		if (!device || !sensorId) {
+			return null;
+		}
+
+		return getOne(device.sensors, (sensor) => sensor.id === sensorId);
+	}, [sensorId, device]);
 
 	if (!device) {
 		return <Skeleton className="w-full h-full" />;
@@ -53,20 +60,23 @@ export function DevicePage() {
 			<main className="h-full flex flex-col gap-8 p-8 pt-0">
 				<div className="w-full grid lg:grid-cols-2 gap-6">
 					<DeviceInformation device={device} />
-					{selectedSensor ? (
+					{sensor ? (
 						<SensorInformation
-							sensor={selectedSensor}
-							onClose={() => setSelectedSensor(null)}
+							sensor={sensor}
+							onClose={() => setSensorId(null)}
 						/>
 					) : (
 						<DeviceSensorsOverview device={device} />
 					)}
 				</div>
 
-				{selectedSensor ? (
-					<SensorMetricTabs sensor={selectedSensor} />
+				{sensor ? (
+					<SensorMetricTabs sensor={sensor} />
 				) : (
-					<SensorTabs device={device} onSensorSelected={onSensorSelected} />
+					<SensorTabs
+						device={device}
+						onSensorSelected={(sensor) => setSensorId(sensor.id)}
+					/>
 				)}
 			</main>
 		</>
