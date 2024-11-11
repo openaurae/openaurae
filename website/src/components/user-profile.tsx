@@ -12,12 +12,11 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 export function UserProfile() {
 	const { getToken, signOut } = useAuth();
 	const { user, isSignedIn } = useUser();
-	const { toast } = useToast();
 
 	if (!isSignedIn || !user) {
 		return null;
@@ -75,13 +74,19 @@ export function UserProfile() {
 						</div>
 					</div>
 				</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<DropdownMenuItem onClick={copyAccessToken}>
-						<Copy />
-						Copy Access Token
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
+
+				{import.meta.env.DEV && (
+					<>
+						<DropdownMenuSeparator />
+						<DropdownMenuGroup>
+							<DropdownMenuItem onClick={copyAccessToken}>
+								<Copy />
+								Copy Access Token
+							</DropdownMenuItem>
+						</DropdownMenuGroup>
+					</>
+				)}
+
 				<DropdownMenuSeparator />
 				<DropdownMenuItem className="text-red-500" onClick={() => signOut()}>
 					<LogOut />
