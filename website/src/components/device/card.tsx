@@ -13,8 +13,8 @@ import {
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
-import { EditDevice } from "@/components/device/edit.tsx";
-import { ExportReadings } from "@/components/device/export.tsx";
+import { EditDevice } from "@/components/device/edit";
+import { ExportReadings } from "@/components/device/export";
 import {
 	IoTCard,
 	IoTCardAction,
@@ -23,7 +23,7 @@ import {
 	IoTCardHeader,
 	IoTCardItem,
 } from "@/components/iot-card";
-import { AddSensor } from "@/components/sensor/add.tsx";
+import { AddSensor } from "@/components/sensor/add";
 import { formatDeviceType, formatSensorType } from "@/lib/utils";
 import { formatDateTime } from "@openaurae/lib";
 import {

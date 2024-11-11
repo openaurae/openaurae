@@ -1,8 +1,10 @@
+import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
-import { DefaultSection } from "@/components/default.tsx";
+import { DefaultSection } from "@/components/default";
+import { AddNewDevice } from "@/components/device/add";
 import { DeviceOverview } from "@/components/device/card";
 import {
 	Breadcrumb,
@@ -12,8 +14,8 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDevices } from "@/hooks/use-device";
 import { toast } from "@/hooks/use-toast";
@@ -24,7 +26,6 @@ import {
 	type DeviceType,
 	DeviceTypeSchema,
 } from "@openaurae/types";
-import { Plus } from "lucide-react";
 
 const searchParamsSchema = z.object({
 	type: DeviceTypeSchema,
@@ -50,7 +51,7 @@ export function DevicesPage() {
 	const [searchParams, _] = useSearchParams();
 	const { type, building } = useMemo(() => {
 		return searchParamsSchema.parse({
-			type: searchParams.get("type"),
+			type: DeviceTypeSchema.parse(searchParams.get("type")),
 			building: searchParams.get("building"),
 		});
 	}, [searchParams]);
@@ -82,9 +83,13 @@ export function DevicesPage() {
 						className="max-w-md"
 						placeholder="Search id or name"
 					/>
-					{/*<Button>*/}
-					{/*	<Plus /> Add Device*/}
-					{/*</Button>*/}
+					{type !== "nemo_cloud" && (
+						<AddNewDevice type={type}>
+							<Button>
+								<Plus /> Add Device
+							</Button>
+						</AddNewDevice>
+					)}
 				</div>
 				<DeviceCards devices={searchDevices(devices, searchInput)} />
 			</div>
@@ -125,11 +130,7 @@ function PageHeader({
 
 function DeviceCards({ devices }: { devices: Device[] }) {
 	if (devices.length === 0) {
-		return (
-			<div className="w-full h-full flex justify-center items-center">
-				<p className="text-lg">No device.</p>
-			</div>
-		);
+		return <DefaultSection message="No devices found." />;
 	}
 
 	return (

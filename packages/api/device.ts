@@ -14,6 +14,7 @@ import {
 } from "@openaurae/lib";
 import { mqttClient } from "@openaurae/mqtt";
 import {
+	AddDeviceSchema,
 	AddZigbeeSensorSchema,
 	GetDevicesSchema,
 	type Reading,
@@ -49,6 +50,31 @@ devicesApi.get("/", zValidator("query", GetDevicesSchema), async (c) => {
 	}
 
 	return c.json(sortDevicesByTimeDesc(devices));
+});
+
+// Add device.
+devicesApi.post("/", zValidator("json", AddDeviceSchema), async (c) => {
+	const { userId } = c.var;
+	const device = c.req.valid("json");
+
+	if (device.type === "nemo_cloud") {
+		throw new HTTPException(400, {
+			message: "Cannot add Nemo Cloud devices.",
+		});
+	}
+
+	const existed = await db.getDeviceById(device.id);
+
+	if (existed) {
+		throw new HTTPException(400, { message: "Device id already exists" });
+	}
+
+	await db.upsertDevice({
+		...device,
+		user_id: userId,
+	});
+
+	return c.text("Device added.", 201);
 });
 
 // Get user device by id.

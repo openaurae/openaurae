@@ -9,6 +9,16 @@ export const GetDevicesSchema = z.object({
 	building: nonEmptyStringSchema.nullish().describe("filter by building"),
 });
 
+export const AddDeviceSchema = DeviceSchema.pick({
+	id: true,
+	name: true,
+	type: true,
+	latitude: true,
+	longitude: true,
+});
+
+export type AddDevice = z.infer<typeof AddDeviceSchema>;
+
 export const UpdateDeviceSchema = DeviceSchema.pick({
 	name: true,
 	building: true,

@@ -1,7 +1,9 @@
 import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 
 import { useApiClient } from "@/hooks/use-api-client";
 import {
+	type AddDevice,
 	type AddZigbeeSensor,
 	type Device,
 	type DeviceType,
@@ -13,9 +15,8 @@ import {
 	type UpdateDevice,
 	type UpdateSensor,
 } from "@openaurae/types";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { DateRange } from "react-day-picker";
-import useSWRImmutable from "swr/immutable";
 
 export type UseDevicesOptions = {
 	type?: DeviceType | null;
@@ -26,22 +27,52 @@ export function useDevices(options: UseDevicesOptions = {}) {
 	const { apiClient, getAccessToken, userId } = useApiClient();
 
 	const {
-		data: devices,
+		data: allDevices,
 		isLoading,
 		error,
-	} = useSWR(["/api/v1/devices", userId, options], async ([url, _, params]) => {
+		mutate,
+	} = useSWR(["/api/v1/devices", userId], async ([url, _]) => {
 		const resp = await apiClient.get<Device[]>(url, {
 			headers: { Authorization: await getAccessToken() },
-			params,
 		});
 
 		return resp.data;
 	});
 
+	const devices = useMemo(() => {
+		if (!allDevices) {
+			return undefined;
+		}
+
+		let result = allDevices;
+
+		if (options.type) {
+			result = result.filter((device) => device.type === options.type);
+		}
+
+		if (options.building) {
+			result = result.filter((device) => device.building === options.building);
+		}
+
+		return result;
+	}, [allDevices, options]);
+
+	const addDevice = useCallback(
+		async (device: AddDevice) => {
+			await apiClient.post("/api/v1/devices", device, {
+				headers: { Authorization: await getAccessToken() },
+			});
+			await mutate();
+		},
+		[apiClient, getAccessToken, mutate],
+	);
+
 	return {
 		devices,
 		isLoading,
 		error,
+		addDevice,
+		mutate,
 	};
 }
 
