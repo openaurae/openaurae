@@ -81,7 +81,7 @@ export function ExportReadings({
 					</div>
 				</div>
 				<DialogFooter>
-					<Link download to={preSignedUrl}>
+					<Link download to={preSignedUrl} target="_blank">
 						<Button disabled={loading || !preSignedUrl}>
 							{loading && <Loader2 className="animate-spin" />}Export
 						</Button>
