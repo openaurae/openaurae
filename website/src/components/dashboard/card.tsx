@@ -1,4 +1,4 @@
-import { differenceInHours } from "date-fns";
+import { differenceInDays } from "date-fns";
 import { Server } from "lucide-react";
 
 import { DeviceTypeIcons, iconsVariants } from "@/components/icons";
@@ -75,7 +75,7 @@ function activeDeviceNumber(devices: Device[]): number {
 	const now = new Date();
 
 	const activeDevices = devices.filter(
-		({ last_record }) => last_record && differenceInHours(now, last_record) < 1,
+		({ last_record }) => last_record && differenceInDays(now, last_record) <= 1,
 	);
 
 	return activeDevices.length;
