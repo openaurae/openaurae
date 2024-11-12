@@ -59,7 +59,8 @@ export function ExportReadings({
 	);
 
 	useEffect(() => {
-		updateUrl(date);
+		setLoading(true);
+		updateUrl(date).then(() => setLoading(false));
 	}, [date, updateUrl]);
 
 	return (
@@ -80,7 +81,7 @@ export function ExportReadings({
 					</div>
 				</div>
 				<DialogFooter>
-					<Link to={preSignedUrl}>
+					<Link download to={preSignedUrl}>
 						<Button disabled={loading || !preSignedUrl}>
 							{loading && <Loader2 className="animate-spin" />}Export
 						</Button>

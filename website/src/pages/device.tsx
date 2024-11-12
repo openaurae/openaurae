@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDevice, useSensorReadings } from "@/hooks/use-device";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { Header } from "@/layouts/sidebar";
 import { formatDeviceType, formatSensorType } from "@/lib/utils";
 import { getOne } from "@openaurae/lib";
@@ -89,8 +89,11 @@ function SensorMetricTabs({ sensor }: { sensor: Sensor }) {
 	const [group, setGroup] = useState(groupNames[0]);
 	const [end, setEnd] = useState(sensor.last_record ?? new Date());
 	const [start, setStart] = useState(subDays(end, 1));
-	const { refresh } = useSensorReadings({ sensor, start, end });
-	const { toast } = useToast();
+	const [timeRange, setTimeRange] = useState<{ start: Date; end: Date }>({
+		start,
+		end,
+	});
+	const { refresh } = useSensorReadings({ sensor, ...timeRange });
 
 	return (
 		<Tabs
@@ -111,14 +114,15 @@ function SensorMetricTabs({ sensor }: { sensor: Sensor }) {
 						className="flex-none"
 						size="icon"
 						variant="outline"
-						onClick={() =>
+						onClick={() => {
+							setTimeRange({ start, end });
 							refresh().then(() => {
 								toast({
 									title: "Refreshed Successful",
 									description: "Sensor readings are updated.",
 								});
-							})
-						}
+							});
+						}}
 					>
 						<RotateCw />
 					</Button>
@@ -133,8 +137,8 @@ function SensorMetricTabs({ sensor }: { sensor: Sensor }) {
 					<SensorMetricChart
 						className="w-full h-full"
 						sensor={sensor}
-						start={start}
-						end={end}
+						start={timeRange.start}
+						end={timeRange.end}
 						metricNames={metricGroups[name]}
 					/>
 				</TabsContent>
