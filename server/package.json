@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "NODE_ENV=development bun run --hot index.ts",
-		"build": "NODE_ENV=production bun build index.ts --compile --env-file .env.production --outfile ./openaurae-server"
+		"build": "NODE_ENV=production bun build index.ts --compile --outfile ./openaurae-server"
 	},
 	"dependencies": {
 		"@openaurae/api": "workspace:*",

@@ -2,6 +2,8 @@
 	"name": "openaurae-mono",
 	"workspaces": ["packages/*", "website", "server"],
 	"scripts": {
+		"office:website": "bun run website:build && sudo cp -r website/dist/* /var/www/html/openaurae/",
+		"office:server": "bun run server:build && sudo cp server/openaurae-server /var/openaurae/",
 		"website:dev": "cd website && bun run dev",
 		"website:build": "cd website && bun run build",
 		"server:dev": "cd server && bun run dev",
