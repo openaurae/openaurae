@@ -21,6 +21,7 @@ import {
 	type Sensor,
 	UpdateDeviceSchema,
 	UpdateSensorSchema,
+	deviceSensorTypes,
 } from "@openaurae/types";
 import { HTTPException } from "hono/http-exception";
 import { preSignedReadings } from "./export.ts";
@@ -73,6 +74,17 @@ devicesApi.post("/", zValidator("json", AddDeviceSchema), async (c) => {
 		...device,
 		user_id: userId,
 	});
+
+	if (device.type === "air_quality") {
+		for (const sensorType of deviceSensorTypes.air_quality) {
+			await db.upsertSensor({
+				device: device.id,
+				id: sensorType,
+				type: sensorType,
+				name: sensorType,
+			});
+		}
+	}
 
 	return c.text("Device added.", 201);
 });
