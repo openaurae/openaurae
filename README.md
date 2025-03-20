@@ -79,7 +79,7 @@ Metrics collected by NEMo sensors:
 - O3
 - PM 1/2.5/10
 
-### Readings
+## Readings
 
 A reading is a record of sensor measurements at a specific moment.
 Readings are retrieved in 2 ways:
