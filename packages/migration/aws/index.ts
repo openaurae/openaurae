@@ -3,6 +3,12 @@ import type { Device } from "@openaurae/types";
 import type { MigrationOptions } from "../config";
 import { AwsOpenAuraeMigration } from "./migration";
 
+/**
+ * Migrate data from the previous version of the server on AWS.
+ *
+ * @deprecated server has already retired
+ * @param options
+ */
 export async function migrateAwsOpenAurae(
 	options: MigrationOptions = {},
 ): Promise<void> {
