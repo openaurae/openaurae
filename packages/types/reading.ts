@@ -45,7 +45,7 @@ export const MetricsSchema = z.object({
 	pmv_total: z.number().nullish(),
 	pmvtotal: z.number().nullish(),
 	power: z.number().nullish(),
-	pressure: z.number().nullish().describe("Pressure (mb)"),
+	pressure: z.number().nullish().describe("Air Pressure (mb)"),
 	state: z.string().nullish(),
 	temperature: z.number().nullish().describe("Temperature (°C)"),
 	tvoc: z.number().nullish().describe("Total Volatile Organic Compounds (ppm)"),
