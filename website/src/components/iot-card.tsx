@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const iotCardVariants = cva("min-w-sm shadow-md", {
+const iotCardVariants = cva("shadow-md", {
 	variants: {
 		status: {
-			active: "bg-gradient-to-br from-blue-50 via-blue-50/40 to-blue-100",
-			inactive: "bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100",
+			active: "bg-linear-to-br from-blue-50 via-blue-50/40 to-blue-100",
+			inactive: "bg-linear-to-br from-slate-100 via-slate-50 to-slate-100",
 		},
 	},
 	defaultVariants: {

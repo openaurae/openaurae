@@ -25,7 +25,7 @@ export function TotalDevices({ type }: TotalDevicesProps) {
 	const Icon = DeviceTypeIcons[type];
 
 	return (
-		<Card className="bg-gradient-to-br from-gray-100 via-white to-gray-100">
+		<Card className="bg-linear-to-br from-gray-100 via-white to-gray-100">
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
 				<CardTitle className="text-sm font-medium">
 					{formatDeviceType(type)} Devices
@@ -61,7 +61,7 @@ export function ServerIp() {
 	const ip = ips.length > 0 ? ips[0] : "N/A";
 
 	return (
-		<Card className="bg-gradient-to-br from-gray-100 via-white to-gray-100">
+		<Card className="bg-linear-to-br from-gray-100 via-white to-gray-100">
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
 				<CardTitle className="text-sm font-medium">Server IP</CardTitle>
 				<Server className={iconsVariants({ variant: "action" })} />

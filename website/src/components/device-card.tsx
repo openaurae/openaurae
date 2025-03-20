@@ -10,7 +10,7 @@ export type DeviceCardProps = {
 
 export function DeviceCard({ device }: DeviceCardProps) {
 	return (
-		<Card className="w-full min-w-sm shadow-md hover:shadow-xl transition-shadow bg-gradient-to-br from-blue-50 via-blue-50/40 to-blue-100">
+		<Card className="w-full min-w-sm shadow-md hover:shadow-xl transition-shadow bg-linear-to-br from-blue-50 via-blue-50/40 to-blue-100">
 			<CardHeader className="space-y-1">
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-xl font-bold">
