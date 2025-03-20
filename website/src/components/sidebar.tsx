@@ -1,7 +1,12 @@
-import { Cloud, LayoutDashboard } from "lucide-react";
+import { ChevronRight, Cloud, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { DeviceTypeIcons } from "@/components/icons";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
 	Sidebar,
 	SidebarContent,
@@ -10,7 +15,6 @@ import {
 	SidebarGroupLabel,
 	SidebarHeader,
 	SidebarMenu,
-	SidebarMenuAction,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarMenuSub,
@@ -61,44 +65,45 @@ export function AppSidebar() {
 					<SidebarGroupLabel>Devices</SidebarGroupLabel>
 					<SidebarMenu>
 						<SidebarMenuItem>
-							<SidebarMenuButton asChild>
-								<Link to="/devices?type=air_quality">
-									<DeviceTypeIcons.air_quality /> Air Quality
-								</Link>
+							<SidebarMenuButton>
+								<DeviceTypeIcons.air_quality />
+								<Link to="/devices?type=air_quality">Air Quality</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
-							<SidebarMenuButton asChild>
-								<Link to="/devices?type=zigbee">
-									<DeviceTypeIcons.zigbee /> Zigbee
-								</Link>
+							<SidebarMenuButton>
+								<DeviceTypeIcons.zigbee />
+								<Link to="/devices?type=zigbee">Zigbee</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
-						<SidebarMenuItem>
-							<SidebarMenuButton asChild>
-								<Link to="/devices?type=nemo_cloud">
-									<DeviceTypeIcons.nemo_cloud /> Nemo Cloud
-								</Link>
-							</SidebarMenuButton>
-							<SidebarMenuAction className="data-[state=open]:rotate-90">
-								<span className="sr-only">Toggle</span>
-							</SidebarMenuAction>
-							<SidebarMenuSub>
-								{buildings?.map((building) => (
-									<SidebarMenuSubItem key={building}>
-										<SidebarMenuSubButton asChild>
-											<Link
-												to={`/devices?type=nemo_cloud&building=${building}`}
-											>
-												{formatBuilding(building)}
-											</Link>
-										</SidebarMenuSubButton>
-									</SidebarMenuSubItem>
-								))}
-							</SidebarMenuSub>
-						</SidebarMenuItem>
+						<Collapsible asChild defaultOpen className="group/collapsible">
+							<SidebarMenuItem>
+								<CollapsibleTrigger asChild>
+									<SidebarMenuButton>
+										<DeviceTypeIcons.nemo_cloud />
+										<Link to="/devices?type=nemo_cloud">Nemo Cloud</Link>
+										<ChevronRight className="cursor-pointer ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+									</SidebarMenuButton>
+								</CollapsibleTrigger>
+								<CollapsibleContent>
+									<SidebarMenuSub>
+										{buildings?.map((building) => (
+											<SidebarMenuSubItem key={building}>
+												<SidebarMenuSubButton asChild>
+													<Link
+														to={`/devices?type=nemo_cloud&building=${building}`}
+													>
+														{formatBuilding(building)}
+													</Link>
+												</SidebarMenuSubButton>
+											</SidebarMenuSubItem>
+										))}
+									</SidebarMenuSub>
+								</CollapsibleContent>
+							</SidebarMenuItem>
+						</Collapsible>
 					</SidebarMenu>
 				</SidebarGroup>
 				<SidebarGroup />
