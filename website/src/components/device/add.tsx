@@ -23,12 +23,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useDevices } from "@/hooks/use-device";
-import { toast } from "@/hooks/use-toast";
 import {
 	type AddDevice,
 	AddDeviceSchema,
 	type DeviceType,
 } from "@openaurae/types";
+import { toast } from "sonner";
 
 export function AddNewDevice({
 	type,
@@ -55,7 +55,9 @@ export function AddNewDevice({
 		} catch (e: unknown) {
 			const message =
 				e instanceof AxiosError ? e.response?.data : "Unexpected error";
-			toast({ title: "Error Adding Device", description: message });
+			toast("Error Adding Device", {
+				description: message,
+			});
 		} finally {
 			setLoading(false);
 		}

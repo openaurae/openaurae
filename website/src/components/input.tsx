@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import { z } from "zod";
 
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export type DateTimeInputProps = ComponentProps<"input"> & {
 	dateTime: Date;
@@ -25,7 +25,7 @@ export function DateTimeInput({
 				const { data: date, success } = schema.safeParse(e.target.value);
 
 				if (!success || !date) {
-					toast({ title: "Invalid Date format" });
+					toast("Invalid Date format");
 					return;
 				}
 				onDateTimeUpdated(date);

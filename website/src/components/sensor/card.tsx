@@ -67,7 +67,7 @@ export function SensorInformation({
 					</EditSensor>
 					{isZigbeeSensor && (
 						<UnpairSensor sensor={sensor} closeInfoCard={onClose}>
-							<IoTCardAction tooltip="Unlink Sensor">
+							<IoTCardAction tooltip="Unpair Sensor">
 								<Unlink />
 							</IoTCardAction>
 						</UnpairSensor>

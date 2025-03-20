@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDevice, useSensorReadings } from "@/hooks/use-device";
-import { toast } from "@/hooks/use-toast";
 import { Header } from "@/layouts/sidebar";
 import { formatDeviceType, formatSensorType } from "@/lib/utils";
 import { getOne } from "@openaurae/lib";
@@ -35,6 +34,7 @@ import {
 	type SensorType,
 	deviceSensorTypes,
 } from "@openaurae/types";
+import { toast } from "sonner";
 
 export function DevicePage() {
 	const { deviceId } = useParams();

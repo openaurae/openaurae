@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSensorReadings } from "@/hooks/use-device";
-import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { formatHourMinutes, formatTime, isNotNil } from "@openaurae/lib";
 import {
@@ -30,6 +29,7 @@ import {
 	type Sensor,
 	metricsMetadata,
 } from "@openaurae/types";
+import { toast } from "sonner";
 
 export type SensorMetricChartProps = {
 	sensor: Sensor;
@@ -46,7 +46,6 @@ export function SensorMetricChart({
 	end,
 	metricNames,
 }: SensorMetricChartProps) {
-	const { toast } = useToast();
 	const { readings, isLoading, error } = useSensorReadings({
 		sensor,
 		start,
@@ -54,7 +53,7 @@ export function SensorMetricChart({
 	});
 
 	if (error || metricNames.length === 0) {
-		toast({ title: "Error", description: "Error getting sensor metrics" });
+		toast("Error getting sensor metrics");
 
 		return <DefaultSection message="Error getting emtrics." />;
 	}
@@ -258,12 +257,11 @@ function chartConfig(metricNames: MetricName[]): ChartConfig {
 		{};
 
 	metricNames.forEach((metricName, index) => {
-		const color = `hsl(var(--chart-${index + 1}))`;
 		const { displayName } = metricsMetadata[metricName];
 
 		config[metricName] = {
 			label: displayName,
-			color,
+			color: `var(--chart-${index + 1})`,
 		};
 	});
 

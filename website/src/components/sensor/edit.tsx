@@ -23,12 +23,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useDevice } from "@/hooks/use-device";
-import { toast } from "@/hooks/use-toast";
 import {
 	type Sensor,
 	type UpdateSensor,
 	UpdateSensorSchema,
 } from "@openaurae/types";
+import { toast } from "sonner";
 
 export function EditSensor({
 	sensor,
@@ -53,9 +53,10 @@ export function EditSensor({
 			form.reset();
 			setOpen(false);
 		} catch (e: unknown) {
-			const message =
-				e instanceof AxiosError ? e.response?.data : "Unexpected error";
-			toast({ title: "Error Adding Sensor", description: message });
+			toast("Error Adding Sensor", {
+				description:
+					e instanceof AxiosError ? e.response?.data : "Unexpected error",
+			});
 		} finally {
 			setLoading(false);
 		}

@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDevices } from "@/hooks/use-device";
-import { toast } from "@/hooks/use-toast";
 import { Header } from "@/layouts/sidebar";
 import { formatBuilding, formatDeviceType } from "@/lib/utils";
 import {
@@ -26,6 +25,7 @@ import {
 	type DeviceType,
 	DeviceTypeSchema,
 } from "@openaurae/types";
+import { toast } from "sonner";
 
 const searchParamsSchema = z.object({
 	type: DeviceTypeSchema,
@@ -60,10 +60,7 @@ export function DevicesPage() {
 	const [searchInput, setSearchInput] = useState<string | null>(null);
 
 	if (error) {
-		toast({
-			title: "Error",
-			description: `Failed to get devices: ${error.message}`,
-		});
+		toast(`Failed to get devices: ${error.message}`);
 		return <DefaultSection message="Failed to load devices" />;
 	}
 

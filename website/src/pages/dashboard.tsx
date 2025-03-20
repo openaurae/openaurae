@@ -29,7 +29,7 @@ export function DashboardPage() {
 					</p>
 				</div>
 
-				<Card className="w-full h-full min-h-[300px] overflow-hidden">
+				<Card className="w-full h-full min-h-[300px] py-0 overflow-hidden">
 					<DevicesMap
 						mapStyle="mapbox://styles/mapbox/light-v9"
 						viewPort={{

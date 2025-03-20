@@ -66,7 +66,7 @@ export const DevicesMap = ({ viewPort, mapStyle, height }: DevicesMapProps) => {
 						<Pin type={device.type} />
 					</Marker>
 				))}
-			<Card className="absolute w-[120px] h-[80px] left-5 top-5 grid px-4 py-2">
+			<Card className="absolute w-[120px] h-[120px] right-5 top-5 grid justify-center items-center gap-4 py-4">
 				{DeviceTypeSchema.options.map((type) => (
 					<div className="w-full flex gap-2 items-center mx-auto" key={type}>
 						<div
