@@ -60,7 +60,9 @@ export function DevicesPage() {
 	const [searchInput, setSearchInput] = useState<string | null>(null);
 
 	if (error) {
-		toast(`Failed to get devices: ${error.message}`);
+		toast("Failed to get devices", {
+			description: error?.message,
+		});
 		return <DefaultSection message="Failed to load devices" />;
 	}
 

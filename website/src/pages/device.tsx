@@ -117,10 +117,7 @@ function SensorMetricTabs({ sensor }: { sensor: Sensor }) {
 						onClick={() => {
 							setTimeRange({ start, end });
 							refresh().then(() => {
-								toast({
-									title: "Refreshed Successful",
-									description: "Sensor readings are updated.",
-								});
+								toast("Sensor Readings Updated");
 							});
 						}}
 					>
