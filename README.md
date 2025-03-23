@@ -12,6 +12,10 @@ The current version (v2) moves most components from the cloud to local lab serve
 - Much faster sensor reading queries across wide time ranges
 - Added support for [NEMo devices](#nemo)
 
+## System Architecture
+
+![System architecture](./docs/images/architecture.png)
+
 ## Get Started
 
 - Learn about different [devices](#devices) and how [sensor readings](#readings) work
@@ -37,7 +41,7 @@ Note:
 
 ### Zigbee Device
 
-![Xiaomi IoT Sensors](./docs/xiaomi-sensors.png)
+![Xiaomi IoT Sensors](docs/images/xiaomi-sensors.png)
 
 Xiaomi IoT sensors work in a [Zigbee](https://en.wikipedia.org/wiki/Zigbee) network,
 which uses a protocol designed for devices with low power and bandwidth needs.
