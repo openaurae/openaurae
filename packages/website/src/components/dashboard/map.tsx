@@ -44,7 +44,7 @@ export const DevicesMap = ({ viewPort, mapStyle, height }: DevicesMapProps) => {
 		<ReactMap
 			{...viewState}
 			minZoom={11}
-			maxZoom={14}
+			maxZoom={19}
 			mapboxAccessToken="pk.eyJ1IjoibW9uYXNoYXVyYWUiLCJhIjoiY2pyMGJqbzV2MDk3dTQ0bndqaHA4d3hzeSJ9.TDvqYvsmY1DHhE8N8_UbFg"
 			style={{ width: "100%", height: height ?? "100%" }}
 			mapStyle={mapStyle}
