@@ -67,7 +67,7 @@ devicesApi.post("/", zValidator("json", AddDeviceSchema), async (c) => {
 	const existed = await db.getDeviceById(device.id);
 
 	if (existed) {
-		throw new HTTPException(400, { message: "Device id already exists" });
+		throw new HTTPException(400, { message: `Device id was already used by a ${existed.type} device` });
 	}
 
 	await db.upsertDevice({
@@ -159,7 +159,7 @@ devicesApi.post(
 		const existed = await db.getSensorById(device.id, sensorId);
 
 		if (existed) {
-			throw new HTTPException(400, { message: "Sensor id already exists" });
+			throw new HTTPException(400, { message: `Sensor id is already used by a ${existed.type} sensor` });
 		}
 
 		await db.upsertSensor({
