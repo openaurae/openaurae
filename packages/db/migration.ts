@@ -24,6 +24,7 @@ export async function createKeyspaceAndTables(host: string, keyspace: string) {
 	await client.execute(sensorSchema);
 	await client.execute(correctionSchema);
 	await client.execute(readingSchema);
+	await client.execute(measureSetSchema);
 }
 
 const deviceSchema = `

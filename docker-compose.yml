@@ -1,0 +1,41 @@
+services:
+  server:
+    container_name: server
+    image: openaurae/server:latest
+    restart: unless-stopped
+    build:
+      context: ./
+      dockerfile: packages/server/Dockerfile
+    environment:
+      PORT: 8000
+      CASSANDRA_HOST: host.docker.internal
+      CASSANDRA_KEYSPACE: aurae
+      CLERK_SECRET_KEY: sk_test_???
+      CLERK_PUBLISHABLE_KEY: pk_test_???
+      VITE_CLERK_PUBLISHABLE_KEY: pk_test_???
+      VITE_API_BASE_URL: host.docker.internal:8000
+      MQTT_PROTOCOL: mqtt
+      MQTT_URL: mqtt://host.docker.internal:1883
+      MQTT_USERNAME: openaurae
+      MQTT_PASSWORD: development
+    ports:
+      - "8000:8000"
+  nemo-worker:
+    container_name: nemo-worker
+    image: openaurae/nemo-worker:latest
+    restart: unless-stopped
+    build:
+      context: ./
+      dockerfile: packages/nemo-worker/Dockerfile
+    environment:
+      CASSANDRA_HOST: host.docker.internal
+      CASSANDRA_KEYSPACE: aurae
+      NEMO_URL: https://www.nemocloud.com
+      NEMO_OPERATOR: admin
+      NEMO_PASSWORD: ???
+      NEMO_COMPANY: ???
+      NEMO_S5_URL: https://s5.nemocloud.com
+      NEMO_S5_OPERATOR: Admin
+      NEMO_S5_PASSWORD: ???
+      NEMO_S5_COMPANY: ???
+
