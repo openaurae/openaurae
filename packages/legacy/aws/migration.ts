@@ -85,7 +85,7 @@ export class AwsOpenAuraeMigration {
 
 			log({
 				level: "info",
-				label: "migration-aws",
+				label: "legacy-aws",
 				message: `migrated readings ${JSON.stringify({ deviceId: device.id, date: formatDate(date) })}`,
 			});
 		}

@@ -9,7 +9,6 @@
 	"dependencies": {
 		"@openaurae/api": "workspace:*",
 		"@openaurae/db": "workspace:*",
-		"@openaurae/migration": "workspace:*",
 		"@openaurae/mqtt": "workspace:*",
 		"date-fns": "^4.1.0"
 	},

@@ -56,4 +56,13 @@ describe("test parsing room name", () => {
 			room: null,
 		});
 	});
+
+	it("should parse nil to null", () => {
+		const actual = parseBuildingAndRoom(null);
+
+		expect(actual).toEqual({
+			building: null,
+			room: null,
+		});
+	});
 });

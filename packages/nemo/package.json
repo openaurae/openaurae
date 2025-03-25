@@ -1,0 +1,19 @@
+{
+  "name": "@openaurae/nemo",
+  "module": "index.ts",
+  "type": "module",
+  "dependencies": {
+    "@openaurae/db": "workspace:*",
+    "@openaurae/lib": "workspace:*",
+    "@openaurae/types": "workspace:*",
+    "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

@@ -123,3 +123,14 @@ CREATE TABLE IF NOT EXISTS reading
     primary key ((device, date), reading_type, sensor_id, processed, time)
 ) WITH CLUSTERING ORDER BY (reading_type ASC, sensor_id ASC, processed ASC, time DESC);
 `;
+
+const measureSetSchema = `
+CREATE TABLE IF NOT EXISTS nemo_measure_set
+(
+	device_serial TEXT,
+	bid INT,
+	start_time TIMESTAMP,
+	end_time TIMESTAMP,
+	PRIMARY KEY ((device_serial), bid)
+);
+`;
