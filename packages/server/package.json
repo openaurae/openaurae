@@ -1,16 +1,20 @@
 {
-	"name": "server",
-	"module": "index.ts",
+	"name": "@openaurae/api",
 	"type": "module",
+	"module": "index.ts",
 	"scripts": {
 		"dev": "NODE_ENV=development bun run --hot index.ts",
 		"build": "NODE_ENV=production bun build index.ts --compile --outfile ./openaurae-server"
 	},
 	"dependencies": {
-		"@openaurae/api": "workspace:*",
+		"@clerk/backend": "^1.15.5",
+		"@hono/clerk-auth": "^2.0.0",
+		"@hono/zod-validator": "^0.4.1",
 		"@openaurae/db": "workspace:*",
-		"@openaurae/mqtt": "workspace:*",
-		"date-fns": "^4.1.0"
+		"@openaurae/types": "workspace:*",
+		"csv": "^6.3.10",
+		"hono": "^4.6.9",
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"

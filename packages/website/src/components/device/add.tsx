@@ -65,7 +65,7 @@ export function AddNewDevice({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger onClick={() => setOpen(true)}>{children}</DialogTrigger>
+			<DialogTrigger asChild onClick={() => setOpen(true)}>{children}</DialogTrigger>
 
 			<DialogContent className="w-[400px]">
 				<DialogHeader>

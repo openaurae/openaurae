@@ -1,14 +1,14 @@
 {
 	"name": "openaurae-mono",
-	"workspaces": ["packages/*", "website", "server"],
+	"workspaces": ["packages/*"],
 	"scripts": {
 		"office:website": "bun run website:build && sudo cp -r website/dist/* /var/www/html/openaurae/",
 		"office:server": "bun run server:build && sudo cp server/openaurae-server /var/openaurae/",
-		"website:dev": "cd website && bun run dev",
-		"website:build": "cd website && bun run build",
-		"server:dev": "cd server && bun run dev",
-		"server:build": "cd server && bun run build",
-		"api:dev": "cd packages/api && bun run dev",
+		"website:dev": "cd packages/website && bun run dev",
+		"website:build": "cd packages/website && bun run build",
+		"server:dev": "cd packages/server && bun run dev",
+		"server:build": "cd packages/server && bun run build",
+		"api:dev": "cd packages/server && bun run dev",
 		"check": "bunx biome check --write",
 		"precommit:install": "bunx lefthook install"
 	},

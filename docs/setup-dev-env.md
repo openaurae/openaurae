@@ -65,7 +65,7 @@ mqtt pub -t zigbee/dev1 -h localhost -p 1883 -u openaurae -pw development \
 The backend requires several environment variables. Create a `.env.development` file in the `server` directory:
 
 ```shell
-cat <<EOF > server/.env.development
+cat <<EOF > packages/server/.env.development
 # Clerk API keys (auth)
 CLERK_PUBLISHABLE_KEY=pk_test_???
 CLERK_SECRET_KEY=sk_test_???
@@ -104,7 +104,7 @@ Select the **Development** environment of the OpenAurae application and go to `C
 Start the backend server:
 
 ```shell
-cd server && bun run dev
+cd packages/server && bun run dev
 ```
 
 ## Start Frontend Dev Server
@@ -112,7 +112,7 @@ cd server && bun run dev
 Create a `.env.development` file in the `website` directory with Clerk public key and backend URL:
 
 ```shell
-cat <<EOF > website/.env.development
+cat <<EOF > packages/website/.env.development
 # Clerk API pub key
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_???
 
@@ -124,5 +124,5 @@ EOF
 Start the frontend development server:
 
 ```shell
-cd website && bun run dev
+cd packages/website && bun run dev
 ```

@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { showRoutes } from "hono/dev";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
+import { serveStatic } from 'hono/bun'
 import { ZodError } from "zod";
 
 import { buildingApi } from "./building";
@@ -12,16 +13,16 @@ import { exportApi } from "./export";
 import { internalApi } from "./internal";
 import { userInfo } from "./middleware";
 
-const api = new Hono();
+const app = new Hono();
 
 // Note: cors must be the first one to handle requests
-api.use(cors());
+app.use(cors());
 
 if (Bun.env.NODE_ENV === "development") {
-	api.use(logger());
+	app.use(logger());
 }
 
-api.onError((err, c) => {
+app.onError((err, c) => {
 	if (err instanceof HTTPException) {
 		return err.getResponse();
 	}
@@ -33,23 +34,26 @@ api.onError((err, c) => {
 	return c.text(err.message, 500);
 });
 
-api.get("/health", (c) => {
+app.get("/health", (c) => {
 	return c.json({
 		status: "up",
 	});
 });
 
-api.use("/api/*", clerkMiddleware(), userInfo);
-api
+app.use("/api/*", clerkMiddleware(), userInfo);
+app
 	.basePath("/api/v1")
 	.route("/devices", devicesApi)
 	.route("/buildings", buildingApi);
 
-api.route("/", exportApi);
-api.route("/api", internalApi);
+app.route("/", exportApi);
+app.route("/api", internalApi);
+
+app.use('*', serveStatic({ root: './static' }))
+app.get('*', serveStatic({ path: './static/index.html' }))
 
 if (Bun.env.NODE_ENV === "development") {
-	showRoutes(api, { verbose: true });
+	showRoutes(app, { verbose: true });
 }
 
-export { api };
+export default app;
