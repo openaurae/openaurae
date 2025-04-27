@@ -19,6 +19,7 @@
   "dependencies": {
     "@nuxt/eslint": "^1.3.0",
     "@nuxt/ui": "^3.0.2",
+    "date-fns": "^4.1.0",
     "kysely": "^0.28.2",
     "nuxt": "^3.16.2",
     "pg": "^8.15.6",

@@ -30,17 +30,17 @@ CREATE TABLE IF NOT EXISTS readings_nemo_cloud
     device_id varchar(32) NOT NULL,
     sensor_id varchar(32) NOT NULL,
     time      timestamptz NOT NULL,
-    battery   float8      NOT NULL,
+    battery   float8,
     ch2o      float8,
-    tmp       float8      NOT NULL,
-    rh        float8      NOT NULL,
-    pressure  float8      NOT NULL,
-    co2       float8      NOT NULL,
-    lvoc      float8      NOT NULL,
-    pm1       float8      NOT NULL,
-    pm10      float8      NOT NULL,
-    pm2_5     float8      NOT NULL,
-    pm4       float8      NOT NULL,
+    tmp       float8,
+    rh        float8,
+    pressure  float8,
+    co2       float8,
+    lvoc      float8,
+    pm1       float8,
+    pm10      float8,
+    pm2_5     float8,
+    pm4       float8,
     PRIMARY KEY (device_id, sensor_id, time),
     FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
 );
@@ -49,3 +49,13 @@ SELECT *
 FROM create_hypertable('readings_nemo_cloud', by_range('time'));
 SELECT *
 FROM add_dimension('readings_nemo_cloud', by_hash('device_id', 16));
+
+CREATE TABLE IF NOT EXISTS nemo_measure_sets
+(
+    bid           bigint,
+    device_serial varchar(64),
+    start         timestamptz NOT NULL,
+    "end"         timestamptz NOT NULL,
+    values_number int8,
+    PRIMARY KEY (device_serial, bid)
+);
