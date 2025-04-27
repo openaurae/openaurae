@@ -50,6 +50,10 @@ export default defineNitroPlugin((nitroApp) => {
             await persistPmsMessage(message);
           } else if (message.sensor === "ptqs1005") {
             await persistPtqsMessage(message);
+          } else {
+            console.log(
+              `[mqtt] [${topic}] Unknown AQ sensor type: ${message.sensor}`,
+            );
           }
         } else if (topic.startsWith("zigbee")) {
           const { device_id, sensor_id } = parseZigbeeTopic(topic);
@@ -57,7 +61,34 @@ export default defineNitroPlugin((nitroApp) => {
             // invalid topic format or unrelated topics
             return;
           }
-          // TODO: handle Zigbee messages
+          if ("power" in message) {
+            await db
+              .insertInto("readings_zigbee_power")
+              .values($Reading.zigbee_power.parse(message))
+              .execute();
+          } else if ("temperature" in message) {
+            await db
+              .insertInto("readings_zigbee_temp")
+              .values($Reading.zigbee_temp.parse(message))
+              .execute();
+          } else if ("contact" in message) {
+            await db
+              .insertInto("readings_zigbee_contact")
+              .values($Reading.zigbee_contact.parse(message))
+              .execute();
+          } else if ("occupancy" in message) {
+            await db
+              .insertInto("readings_zigbee_occupancy")
+              .values($Reading.zigbee_occupancy.parse(message))
+              .execute();
+          } else if ("angle_x" in message) {
+            await db
+              .insertInto("readings_zigbee_vibration")
+              .values($Reading.zigbee_vibration.parse(message))
+              .execute();
+          } else {
+            console.log(`[mqtt] [${topic}] Unknown Zigbee sensor type`);
+          }
         }
       } catch (e: unknown) {
         // skip handling message if
