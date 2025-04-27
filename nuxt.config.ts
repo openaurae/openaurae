@@ -21,6 +21,11 @@ export default defineNuxtConfig({
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
     },
+    mqtt: {
+      protocol: process.env.MQTT_PROTOCOL,
+      host: process.env.MQTT_HOST,
+      port: process.env.MQTT_PORT,
+    },
     nemo: {
       cloud: {
         url: process.env.NEMO_CLOUD_URL,
