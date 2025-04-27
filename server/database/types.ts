@@ -10,6 +10,11 @@ export type Database = {
   nemo_measure_sets: NemoMeasureSetTable;
   readings_pms5003st: Pms5003stReadingTable;
   readings_ptqs1005: Ptqs1005ReadingTable;
+  readings_zigbee_temp: ZigbeeTempReadingTable;
+  readings_zigbee_contact: ZigbeeContactReadingTable;
+  readings_zigbee_occupancy: ZigbeeOccupancyReadingTable;
+  readings_zigbee_power: ZigbeePowerReadingTable;
+  readings_zigbee_vibration: ZigbeeVibrationReadingTable;
 };
 
 export type Reading<T extends keyof typeof $Reading> = z.infer<
@@ -18,6 +23,11 @@ export type Reading<T extends keyof typeof $Reading> = z.infer<
 
 type Pms5003stReadingTable = Reading<"pms5003st">;
 type Ptqs1005ReadingTable = Reading<"ptqs1005">;
+type ZigbeeTempReadingTable = Reading<"zigbee_temp">;
+type ZigbeeOccupancyReadingTable = Reading<"zigbee_occupancy">;
+type ZigbeeContactReadingTable = Reading<"zigbee_contact">;
+type ZigbeePowerReadingTable = Reading<"zigbee_power">;
+type ZigbeeVibrationReadingTable = Reading<"zigbee_vibration">;
 
 type DeviceTable = {
   id: string;

@@ -60,6 +60,105 @@ CREATE TABLE IF NOT EXISTS nemo_measure_sets
     PRIMARY KEY (device_serial, bid)
 );
 
+CREATE TABLE IF NOT EXISTS readings_zigbee_temp
+(
+    device_id   varchar(32) NOT NULL,
+    sensor_id   varchar(32) NOT NULL,
+    time        timestamptz NOT NULL,
+    temperature float8      NOT NULL,
+    humidity    float8      NOT NULL,
+    battery     float8      NOT NULL,
+    voltage     float8      NOT NULL,
+    PRIMARY KEY (device_id, sensor_id, time),
+    FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
+);
+
+SELECT *
+FROM create_hypertable('readings_zigbee_temp', by_range('time'));
+SELECT *
+FROM add_dimension('readings_zigbee_temp', by_hash('device_id', 16));
+
+
+CREATE TABLE IF NOT EXISTS readings_zigbee_occupancy
+(
+    device_id   varchar(32) NOT NULL,
+    sensor_id   varchar(32) NOT NULL,
+    time        timestamptz NOT NULL,
+    occupancy   bool        NOT NULL,
+    illuminance float8      NOT NULL,
+    battery     float8      NOT NULL,
+    voltage     float8      NOT NULL,
+    PRIMARY KEY (device_id, sensor_id, time),
+    FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
+);
+
+SELECT *
+FROM create_hypertable('readings_zigbee_occupancy', by_range('time'));
+SELECT *
+FROM add_dimension('readings_zigbee_occupancy', by_hash('device_id', 16));
+
+
+CREATE TABLE IF NOT EXISTS readings_zigbee_contact
+(
+    device_id varchar(32) NOT NULL,
+    sensor_id varchar(32) NOT NULL,
+    time      timestamptz NOT NULL,
+    contact   bool        NOT NULL,
+    battery   float8      NOT NULL,
+    voltage   float8      NOT NULL,
+    PRIMARY KEY (device_id, sensor_id, time),
+    FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
+);
+
+SELECT *
+FROM create_hypertable('readings_zigbee_contact', by_range('time'));
+SELECT *
+FROM add_dimension('readings_zigbee_contact', by_hash('device_id', 16));
+
+
+CREATE TABLE IF NOT EXISTS readings_zigbee_power
+(
+    device_id   varchar(32) NOT NULL,
+    sensor_id   varchar(32) NOT NULL,
+    time        timestamptz NOT NULL,
+    state       varchar(32),
+    power       float8      NOT NULL,
+    battery     float8      NOT NULL,
+    voltage     float8      NOT NULL,
+    consumption float8      NOT NULL,
+    PRIMARY KEY (device_id, sensor_id, time),
+    FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
+);
+
+SELECT *
+FROM create_hypertable('readings_zigbee_power', by_range('time'));
+SELECT *
+FROM add_dimension('readings_zigbee_power', by_hash('device_id', 16));
+
+CREATE TABLE IF NOT EXISTS readings_zigbee_vibration
+(
+    device_id        varchar(32) NOT NULL,
+    sensor_id        varchar(32) NOT NULL,
+    time             timestamptz NOT NULL,
+    angle            float8      NOT NULL,
+    angle_x          float8      NOT NULL,
+    angle_y          float8      NOT NULL,
+    angle_z          float8      NOT NULL,
+    angle_x_absolute float8      NOT NULL,
+    angle_y_absolute float8      NOT NULL,
+    action           varchar(32),
+    battery          float8      NOT NULL,
+    voltage          float8      NOT NULL,
+    PRIMARY KEY (device_id, sensor_id, time),
+    FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
+);
+
+SELECT *
+FROM create_hypertable('readings_zigbee_vibration', by_range('time'));
+SELECT *
+FROM add_dimension('readings_zigbee_vibration', by_hash('device_id', 16));
+
+
 CREATE TABLE IF NOT EXISTS readings_ptqs1005
 (
     device_id varchar(32) NOT NULL,

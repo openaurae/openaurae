@@ -20,6 +20,41 @@ const $ReadingPk = z.object({
 });
 
 export const $Reading = {
+  zigbee_temp: $ReadingPk.extend({
+    temperature: z.number(),
+    humidity: z.number(),
+    battery: z.number(),
+    voltage: z.number(),
+  }),
+  zigbee_occupancy: $ReadingPk.extend({
+    occupancy: z.boolean(),
+    illuminance: z.number(),
+    battery: z.number(),
+    voltage: z.number(),
+  }),
+  zigbee_contact: $ReadingPk.extend({
+    contact: z.boolean(),
+    battery: z.number(),
+    voltage: z.number(),
+  }),
+  zigbee_power: $ReadingPk.extend({
+    state: z.string().nullish(),
+    power: z.number(),
+    battery: z.number(),
+    voltage: z.number(),
+    consumption: z.number(),
+  }),
+  zigbee_vibration: $ReadingPk.extend({
+    angle: z.number().nullish(),
+    angle_x: z.number().nullish(),
+    angle_y: z.number().nullish(),
+    angle_z: z.number().nullish(),
+    angle_x_absolute: z.number().nullish(),
+    angle_y_absolute: z.number().nullish(),
+    action: z.string().nullish(),
+    battery: z.number(),
+    voltage: z.number(),
+  }),
   pms5003st: $ReadingPk.extend({
     cf_pm1: z.number(),
     cf_pm10: z.number(),
