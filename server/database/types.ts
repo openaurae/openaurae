@@ -1,13 +1,25 @@
-import type { Insertable, Selectable, Updateable } from "kysely";
+import type { Selectable } from "kysely";
+import type z from "zod";
 
-export interface Database {
+import type { $Reading } from "./schemas";
+
+export type Database = {
   devices: DeviceTable;
   sensors: SensorTable;
   readings_nemo_cloud: NemoCloudReadingTable;
   nemo_measure_sets: NemoMeasureSetTable;
-}
+  readings_pms5003st: Pms5003stReadingTable;
+  readings_ptqs1005: Ptqs1005ReadingTable;
+};
 
-export interface DeviceTable {
+export type Reading<T extends keyof typeof $Reading> = z.infer<
+  (typeof $Reading)[T]
+>;
+
+type Pms5003stReadingTable = Reading<"pms5003st">;
+type Ptqs1005ReadingTable = Reading<"ptqs1005">;
+
+type DeviceTable = {
   id: string;
   name: string | null;
   type: "air_quality" | "zigbee" | "nemo_cloud";
@@ -16,9 +28,9 @@ export interface DeviceTable {
   building: string | null;
   room: string | null;
   is_public: boolean;
-}
+};
 
-export interface SensorTable {
+export type SensorTable = {
   id: string;
   device_id: string;
   name: string | null;
@@ -31,9 +43,9 @@ export interface SensorTable {
     | "zigbee_vibration"
     | "zigbee_power"
     | "nemo_cloud";
-}
+};
 
-export interface NemoCloudReadingTable {
+export type NemoCloudReadingTable = {
   device_id: string;
   sensor_id: string;
   time: Date;
@@ -48,20 +60,17 @@ export interface NemoCloudReadingTable {
   pm2_5: number | null;
   pm4: number | null;
   pm10: number | null;
-}
+};
 
-export interface NemoMeasureSetTable {
+export type NemoMeasureSetTable = {
   bid: number;
   device_serial: string;
   start: Date;
   end: Date;
   values_number: number;
-}
+};
 
 export type Device = Selectable<DeviceTable>;
 export type Sensor = Selectable<SensorTable>;
 export type NemoCloudReading = Selectable<NemoCloudReadingTable>;
 export type NemoMeasureSet = Selectable<NemoMeasureSetTable>;
-export type NewNemoCloudReading = Insertable<NemoCloudReadingTable>;
-export type NewNemoMeasureSet = Insertable<NemoMeasureSetTable>;
-export type UpdateNemoMeasureSet = Updateable<NemoMeasureSetTable>;
