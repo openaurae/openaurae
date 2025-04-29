@@ -1,0 +1,35 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+Dockerfile
+.dockerignore
+
+# fly.io
+deploy
+fly.toml
+
+# Node dependencies
+node_modules
+
+# Docs
+docs
+*.md
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+.husky
+
+# Local env files
+.env
+.env.*
