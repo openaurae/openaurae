@@ -1,0 +1,38 @@
+# fly.toml app configuration file generated for openaurae-app on 2025-04-29T23:59:58+10:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'openaurae-app'
+primary_region = 'syd'
+
+[build]
+  dockerfile = 'Dockerfile'
+  ignorefile = '.dockerignore'
+
+[env]
+  NUXT_DB_DATABASE = 'openaurae'
+  NUXT_DB_HOST = 'openaurae-timescale.internal'
+  NUXT_DB_PORT = '5432'
+  NUXT_DB_USER = 'openaurae'
+  NUXT_MQTT_HOST = 'openaurae-mqtt.internal'
+  NUXT_MQTT_PORT = '1883'
+  NUXT_MQTT_PROTOCOL = 'mqtt'
+  NUXT_NEMO_CLOUD_URL = 'https://www.nemocloud.com'
+  NUXT_NEMO_S5_URL = 'https://s5.nemocloud.com'
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = 'off'
+  auto_start_machines = false
+  min_machines_running = 1
+
+[[restart]]
+  policy = 'always'
+  retries = 10
+
+[[vm]]
+  memory = '1G'
+  cpu_kind = 'shared'
+  cpus = 1

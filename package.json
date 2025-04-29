@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "npx prettier . --write",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy:mqtt": "fly deploy deploy/mqtt",
+    "deploy:db": "fly deploy deploy/timescale",
+    "deploy:app": "fly deploy"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
