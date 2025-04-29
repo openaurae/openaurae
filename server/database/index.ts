@@ -1,5 +1,5 @@
 import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
+import { Pool, types } from "pg";
 
 import { config } from "./config";
 import type { Database } from "./types";
@@ -12,6 +12,11 @@ const dialect = new PostgresDialect({
     ...config,
     max: 10,
   }),
+});
+
+// Map int8 to number (https://kysely.dev/docs/recipes/data-types)
+types.setTypeParser(20, (val) => {
+  return parseInt(val, 10);
 });
 
 export const db = new Kysely<Database>({
