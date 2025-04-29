@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for openaurae-mqtt on 2025-04-29T23:31:40+10:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'openaurae-mqtt'
+primary_region = 'syd'
+
+[build]
+  image = 'emqx/emqx-enterprise:5.8.6'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 1883
+  auto_stop_machines = 'off'
+  auto_start_machines = false
+  min_machines_running = 1
+
+  [[services.ports]]
+    port = 1883
+
+[[restart]]
+  policy = 'always'
+  retries = 10
+
+[[vm]]
+  memory = '512MB'
+  cpu_kind = 'shared'
+  cpus = 1
