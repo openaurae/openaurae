@@ -1,0 +1,38 @@
+# fly.toml app configuration file generated for openaurae-timescale on 2025-04-29T23:42:41+10:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'openaurae-timescale'
+primary_region = 'syd'
+
+[build]
+  image = 'timescale/timescaledb-ha:pg17'
+
+[env]
+  PGDATA = '/var/lib/postgresql/data/pgdata'
+  POSTGRES_DB = 'openaurae'
+  POSTGRES_USER = 'openaurae'
+
+[[mounts]]
+  source = 'openaurae_timescale_data'
+  destination = '/var/lib/postgresql/data'
+  initial_size = '10GB'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 5432
+  auto_stop_machines = 'off'
+  min_machines_running = 1
+
+  [[services.ports]]
+    port = 5432
+
+[[restart]]
+  policy = 'always'
+  retries = 10
+
+[[vm]]
+  memory = '2GB'
+  cpu_kind = 'shared'
+  cpus = 1
