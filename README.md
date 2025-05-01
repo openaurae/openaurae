@@ -28,7 +28,8 @@ docker run -d --name emqx \
 
 Start app
 
-Create `.env` file, get NemoCloud accounts from the lab manager
+Create `.env` file, get NemoCloud accounts from the lab manager and
+Clerk keys from the configuration page (Development environment / Developers / API keys).
 
 ```text
 NUXT_DB_HOST="localhost"
@@ -50,6 +51,9 @@ NUXT_NEMO_S5_URL="https://s5.nemocloud.com"
 NUXT_NEMO_S5_OPERATOR=
 NUXT_NEMO_S5_PASSWORD=
 NUXT_NEMO_S5_COMPANY=
+
+NUXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+NUXT_CLERK_SECRET_KEY=
 ```
 
 Start server
@@ -103,3 +107,9 @@ fly deploy
 
 [Setup custom domains](https://fly.io/docs/networking/custom-domain/) for MQTT broker and app.
 The domain is available in the AWS account (Route53).
+
+## Resources
+
+- [fly.io Pricing](https://fly.io/docs/about/pricing/)
+
+- [Clerk Production](https://clerk.com/docs/deployments/overview)
