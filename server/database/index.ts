@@ -16,7 +16,7 @@ const dialect = new PostgresDialect({
 
 // Map int8 to number (https://kysely.dev/docs/recipes/data-types)
 types.setTypeParser(20, (val) => {
-  return parseInt(val, 10);
+  return Number.parseInt(val, 10);
 });
 
 export const db = new Kysely<Database>({

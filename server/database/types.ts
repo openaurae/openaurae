@@ -1,7 +1,7 @@
 import type { Selectable } from "kysely";
 import type z from "zod";
 
-import type { $Reading } from "./schemas";
+import type { $Device, $DeviceType, $Reading } from "./schemas";
 
 export type Database = {
   devices: DeviceTable;
@@ -29,16 +29,7 @@ type ZigbeeContactReadingTable = Reading<"zigbee_contact">;
 type ZigbeePowerReadingTable = Reading<"zigbee_power">;
 type ZigbeeVibrationReadingTable = Reading<"zigbee_vibration">;
 
-type DeviceTable = {
-  id: string;
-  name: string | null;
-  type: "air_quality" | "zigbee" | "nemo_cloud";
-  latitude: number | null;
-  longitude: number | null;
-  building: string | null;
-  room: string | null;
-  is_public: boolean;
-};
+type DeviceTable = z.infer<typeof $Device>;
 
 export type SensorTable = {
   id: string;
@@ -80,7 +71,8 @@ export type NemoMeasureSetTable = {
   values_number: number;
 };
 
-export type Device = Selectable<DeviceTable>;
+export type Device = z.infer<typeof $Device>;
+export type DeviceType = z.infer<typeof $DeviceType>;
 export type Sensor = Selectable<SensorTable>;
 export type NemoCloudReading = Selectable<NemoCloudReadingTable>;
 export type NemoMeasureSet = Selectable<NemoMeasureSetTable>;
