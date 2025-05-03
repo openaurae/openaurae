@@ -6,7 +6,7 @@ export const $DeviceType = z.enum(["air_quality", "zigbee", "nemo_cloud"], {
 
 export const $Device = z.object({
   id: z.string(),
-  name: z.string().nullish(),
+  name: z.string(),
   type: $DeviceType,
   latitude: z.coerce.number().nullish(),
   longitude: z.coerce.number().nullish(),
@@ -27,7 +27,12 @@ export const $SensorType = z.enum([
   "nemo_cloud",
 ]);
 
-export type SensorType = z.infer<typeof $SensorType>;
+export const $Sensor = z.object({
+  id: z.string(),
+  device_id: z.string(),
+  name: z.string(),
+  type: $SensorType,
+});
 
 const $ReadingPk = z.object({
   device_id: z.string(),

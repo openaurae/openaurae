@@ -1,7 +1,13 @@
 import type { Selectable } from "kysely";
 import type z from "zod";
 
-import type { $Device, $DeviceType, $Reading } from "./schemas";
+import type {
+  $Device,
+  $DeviceType,
+  $Reading,
+  $Sensor,
+  $SensorType,
+} from "./schemas";
 
 export type Database = {
   devices: DeviceTable;
@@ -17,9 +23,8 @@ export type Database = {
   readings_zigbee_vibration: ZigbeeVibrationReadingTable;
 };
 
-export type Reading<T extends keyof typeof $Reading> = z.infer<
-  (typeof $Reading)[T]
->;
+type DeviceTable = z.infer<typeof $Device>;
+type SensorTable = z.infer<typeof $Sensor>;
 
 type Pms5003stReadingTable = Reading<"pms5003st">;
 type Ptqs1005ReadingTable = Reading<"ptqs1005">;
@@ -29,22 +34,9 @@ type ZigbeeContactReadingTable = Reading<"zigbee_contact">;
 type ZigbeePowerReadingTable = Reading<"zigbee_power">;
 type ZigbeeVibrationReadingTable = Reading<"zigbee_vibration">;
 
-type DeviceTable = z.infer<typeof $Device>;
-
-export type SensorTable = {
-  id: string;
-  device_id: string;
-  name: string | null;
-  type:
-    | "ptqs1005"
-    | "pms5003st"
-    | "zigbee_temp"
-    | "zigbee_occupancy"
-    | "zigbee_contact"
-    | "zigbee_vibration"
-    | "zigbee_power"
-    | "nemo_cloud";
-};
+export type Reading<T extends keyof typeof $Reading> = z.infer<
+  (typeof $Reading)[T]
+>;
 
 export type NemoCloudReadingTable = {
   device_id: string;
@@ -71,8 +63,9 @@ export type NemoMeasureSetTable = {
   values_number: number;
 };
 
-export type Device = z.infer<typeof $Device>;
+export type Device = Selectable<DeviceTable>;
 export type DeviceType = z.infer<typeof $DeviceType>;
 export type Sensor = Selectable<SensorTable>;
+export type SensorType = z.infer<typeof $SensorType>;
 export type NemoCloudReading = Selectable<NemoCloudReadingTable>;
 export type NemoMeasureSet = Selectable<NemoMeasureSetTable>;

@@ -54,11 +54,12 @@ export async function migrateDevice(context: DeviceMigrationContext) {
 
   await upsertDevice({
     id: device.serial,
-    name: device.name,
+    name: device.name || device.serial,
     type: "nemo_cloud",
     latitude: device.latitude,
     longitude: device.longitude,
     is_public: false,
+    user_id: null,
     ...parseLocation(room?.name),
   });
 }
@@ -149,7 +150,7 @@ async function migrateMeasureSetSensor({
   return await upsertSensor({
     device_id: deviceSerial,
     id: serial,
-    name: refExposition,
+    name: refExposition ?? serial,
     type: "nemo_cloud",
   });
 }

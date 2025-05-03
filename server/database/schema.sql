@@ -4,7 +4,7 @@ CREATE TYPE sensor_type AS ENUM ('ptqs1005', 'pms5003st', 'zigbee_temp', 'zigbee
 CREATE TABLE IF NOT EXISTS devices
 (
     id        varchar(32) NOT NULL PRIMARY KEY,
-    name      varchar(32),
+    name      varchar(32) NOT NULL,
     type      device_type NOT NULL,
     user_id   varchar(64),
     latitude  float8,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS sensors
 (
     device_id varchar(32) NOT NULL references devices (id),
     id        varchar(32) NOT NULL,
-    name      varchar(32),
+    name      varchar(32) NOT NULL,
     type      sensor_type NOT NULL,
 
     PRIMARY KEY (device_id, id)

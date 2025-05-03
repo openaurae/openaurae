@@ -1,6 +1,9 @@
 export type Device = {
   bid: number;
   serial: string;
+  /**
+   * Device name, COULD be `""`.
+   */
   name: string;
 };
 
