@@ -1,11 +1,7 @@
+import { $DeviceType, type Device, type DeviceType } from "#shared/types";
 import { z } from "zod";
 import { fromError } from "zod-validation-error";
-import {
-  $DeviceType,
-  type Device,
-  type DeviceType,
-  db,
-} from "~/server/database";
+import { db } from "~/server/database";
 
 const $Query = z.object({
   type: $DeviceType.optional(),

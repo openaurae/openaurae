@@ -3,7 +3,7 @@ import z from "zod";
 /**
  * Represents a set of measure of different sensors for a device during a continuous time.
  */
-export type MeasureSet = {
+export type NemoMeasureSet = {
   /**
    * The measureSet’s BID
    */
@@ -49,12 +49,12 @@ export type MeasureSet = {
 /**
  * Represents a set of values measured by a specific sensor.
  */
-export type Measure = {
+export type NemoMeasure = {
   measureBid: number;
   variable: MeasureVariable | null;
 };
 
-export type MeasureVariable = {
+export type NemoMeasureVariable = {
   /**
    * Represent the variable for this specific measure.
    */
@@ -70,14 +70,14 @@ export type MeasureVariable = {
   /**
    * The variable’s name.
    */
-  name?: VariableName;
+  name?: NemoVariableName;
   /**
    * The unit of variable.
    */
   unit?: string;
 };
 
-export type MeasureValue = {
+export type NemoMeasureValue = {
   /**
    * The value's time of the measure associate to a device and a measureSet, in seconds since the UnixEpoch
    */
@@ -105,7 +105,7 @@ export type MeasureValue = {
   errorCode?: number;
 };
 
-export const VariableNameSchema = z.enum([
+export const $NemoVariableName = z.enum([
   "Battery",
   "Formaldehyde",
   "Temperature",
@@ -119,4 +119,4 @@ export const VariableNameSchema = z.enum([
   "Particulate matter 10",
 ]);
 
-export type VariableName = z.infer<typeof VariableNameSchema>;
+export type NemoVariableName = z.infer<typeof $NemoVariableName>;

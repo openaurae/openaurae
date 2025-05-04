@@ -1,4 +1,4 @@
-import type { Device } from "~/server/database";
+import type { Device } from "#shared/types";
 
 /**
  * Room names are manually recorded in format `<building>_<room><_Env>?`

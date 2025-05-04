@@ -1,4 +1,4 @@
-export type Device = {
+export type NemoDevice = {
   bid: number;
   serial: string;
   /**
@@ -7,7 +7,7 @@ export type Device = {
   name: string;
 };
 
-export type DeviceDetails = Device & {
+export type NemoDeviceDetails = NemoDevice & {
   roomBid?: number;
   campaignBid: number;
   /**

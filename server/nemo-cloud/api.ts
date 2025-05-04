@@ -1,15 +1,15 @@
-import type { Account } from "./config";
+import type { NemoAccount } from "./config";
 import type {
-  Device,
-  DeviceDetails,
-  Measure,
-  MeasureSet,
-  MeasureValue,
-  Room,
-  Sensor,
+  NemoDevice,
+  NemoDeviceDetails,
+  NemoMeasure,
+  NemoMeasureSet,
+  NemoMeasureValue,
+  NemoRoom,
+  NemoSensor,
 } from "./types";
 
-export async function login(account: Account): Promise<Session> {
+export async function login(account: NemoAccount): Promise<NemoSession> {
   const { sessionId } = await $fetch<{ sessionId: string }>(
     "/AirQualityAPI/session/login",
     {
@@ -23,10 +23,10 @@ export async function login(account: Account): Promise<Session> {
       baseURL: account.url,
     },
   );
-  return new Session(account.url, sessionId);
+  return new NemoSession(account.url, sessionId);
 }
 
-export class Session {
+export class NemoSession {
   private readonly sessionId: string;
   private readonly baseURL: string;
 
@@ -40,8 +40,8 @@ export class Session {
    *
    * An operator with administrator right can view all devices.
    */
-  public async devices(): Promise<Device[]> {
-    return await $fetch<Device[]>("/devices", {
+  public async devices(): Promise<NemoDevice[]> {
+    return await $fetch<NemoDevice[]>("/devices", {
       baseURL: this.baseURL,
       headers: {
         "Accept-version": "v4",
@@ -60,8 +60,8 @@ export class Session {
    */
   public async device(
     deviceSerialNumber: string,
-  ): Promise<DeviceDetails | null> {
-    const dev = await $fetch<DeviceDetails | undefined>(
+  ): Promise<NemoDeviceDetails | null> {
+    const dev = await $fetch<NemoDeviceDetails | undefined>(
       `/devices/${deviceSerialNumber}`,
       {
         baseURL: this.baseURL,
@@ -80,8 +80,8 @@ export class Session {
    *
    * @param roomBid The room’s BID. This bid must correspond to an existing room
    */
-  public async room(roomBid: number): Promise<Room> {
-    return await $fetch<Room>(`/rooms/${roomBid}`, {
+  public async room(roomBid: number): Promise<NemoRoom> {
+    return await $fetch<NemoRoom>(`/rooms/${roomBid}`, {
       baseURL: this.baseURL,
       headers: {
         "Accept-version": "v4",
@@ -97,21 +97,18 @@ export class Session {
    */
   public async measureSets(
     options: { deviceSerialNumber?: string; start?: number; end?: number } = {},
-  ) {
-    const sets = await $fetch<
-      | {
-          deviceSerialNumber: string;
-          measureSets: MeasureSet[];
-        }[]
-      | undefined
-    >("/measureSets", {
-      query: options,
-      baseURL: this.baseURL,
-      headers: {
-        "Accept-version": "v4",
-        sessionId: this.sessionId,
+  ): Promise<NemoDeviceMeasureSetsList> {
+    const sets = await $fetch<NemoDeviceMeasureSetsList | undefined>(
+      "/measureSets",
+      {
+        query: options,
+        baseURL: this.baseURL,
+        headers: {
+          "Accept-version": "v4",
+          sessionId: this.sessionId,
+        },
       },
-    });
+    );
     return sets ?? [];
   }
 
@@ -121,7 +118,7 @@ export class Session {
    */
   public async deviceMeasureSets(
     deviceSerialNumber: string,
-  ): Promise<MeasureSet[]> {
+  ): Promise<NemoMeasureSet[]> {
     const measureSetsList = await this.measureSets({ deviceSerialNumber });
 
     if (measureSetsList.length === 0) {
@@ -131,8 +128,8 @@ export class Session {
     return measureSetsList[0].measureSets ?? [];
   }
 
-  public async measureSetSensor(measureSetBid: number): Promise<Sensor> {
-    return await $fetch<Sensor>(`/measureSets/${measureSetBid}/sensors`, {
+  public async measureSetSensor(measureSetBid: number): Promise<NemoSensor> {
+    return await $fetch<NemoSensor>(`/measureSets/${measureSetBid}/sensors`, {
       baseURL: this.baseURL,
       headers: {
         "Accept-version": "v4",
@@ -146,14 +143,19 @@ export class Session {
    *
    * @param measureSetBid The measureSet’s BID as returned by the returned by the /measureSets/ endpoint
    */
-  public async measureSetMeasures(measureSetBid: number): Promise<Measure[]> {
-    return await $fetch<Measure[]>(`/measureSets/${measureSetBid}/measures`, {
-      baseURL: this.baseURL,
-      headers: {
-        "Accept-version": "v4",
-        sessionId: this.sessionId,
+  public async measureSetMeasures(
+    measureSetBid: number,
+  ): Promise<NemoMeasure[]> {
+    return await $fetch<NemoMeasure[]>(
+      `/measureSets/${measureSetBid}/measures`,
+      {
+        baseURL: this.baseURL,
+        headers: {
+          "Accept-version": "v4",
+          sessionId: this.sessionId,
+        },
       },
-    });
+    );
   }
 
   /**
@@ -161,8 +163,8 @@ export class Session {
    *
    * @param measureBid The measure’s bid as return by the /measureSets/{measureSetBid}/measures endpoint
    */
-  public async measureValues(measureBid: number): Promise<MeasureValue[]> {
-    const values = await $fetch<MeasureValue[] | undefined>(
+  public async measureValues(measureBid: number): Promise<NemoMeasureValue[]> {
+    const values = await $fetch<NemoMeasureValue[] | undefined>(
       `/measures/${measureBid}/values`,
       {
         baseURL: this.baseURL,
@@ -175,3 +177,8 @@ export class Session {
     return values ?? [];
   }
 }
+
+type NemoDeviceMeasureSetsList = {
+  deviceSerialNumber: string;
+  measureSets: NemoMeasureSet[];
+}[];

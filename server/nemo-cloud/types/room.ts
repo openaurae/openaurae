@@ -1,4 +1,4 @@
-export type Room = {
+export type NemoRoom = {
   bid: number;
   /**
    * Name of the room which is manually input by the admin, otherwise would be the default value `Pièce par défaut`.

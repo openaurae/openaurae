@@ -1,38 +1,5 @@
 import z from "zod";
-
-export const $DeviceType = z.enum(["air_quality", "zigbee", "nemo_cloud"], {
-  message: "Invalid device type",
-});
-
-export const $Device = z.object({
-  id: z.string(),
-  name: z.string(),
-  type: $DeviceType,
-  latitude: z.coerce.number().nullish(),
-  longitude: z.coerce.number().nullish(),
-  building: z.string().nullish(),
-  room: z.string().nullish(),
-  user_id: z.string().nullish(),
-  is_public: z.coerce.boolean(),
-});
-
-export const $SensorType = z.enum([
-  "ptqs1005",
-  "pms5003st",
-  "zigbee_temp",
-  "zigbee_occupancy",
-  "zigbee_contact",
-  "zigbee_vibration",
-  "zigbee_power",
-  "nemo_cloud",
-]);
-
-export const $Sensor = z.object({
-  id: z.string(),
-  device_id: z.string(),
-  name: z.string(),
-  type: $SensorType,
-});
+import type { SensorType } from "~/server/database";
 
 const $ReadingPk = z.object({
   device_id: z.string(),
@@ -110,4 +77,20 @@ export const $Reading = {
     latitude: z.number().nullish(),
     longitude: z.number().nullish(),
   }),
+  nemo_cloud: $ReadingPk.extend({
+    battery: z.number().nullish(),
+    ch2o: z.number().nullish(),
+    tmp: z.number().nullish(),
+    rh: z.number().nullish(),
+    pressure: z.number().nullish(),
+    co2: z.number().nullish(),
+    lvoc: z.number().nullish(),
+    pm1: z.number().nullish(),
+    pm2_5: z.number().nullish(),
+    pm4: z.number().nullish(),
+    pm10: z.number().nullish(),
+  }),
 };
+
+export type Reading<T extends SensorType> = z.infer<(typeof $Reading)[T]>;
+export type NemoCloudReading = z.infer<typeof $Reading.nemo_cloud>;

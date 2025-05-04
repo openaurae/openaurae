@@ -1,13 +1,5 @@
+import type { Device, Reading, Sensor } from "#shared/types";
 import type { Selectable } from "kysely";
-import type z from "zod";
-
-import type {
-  $Device,
-  $DeviceType,
-  $Reading,
-  $Sensor,
-  $SensorType,
-} from "./schemas";
 
 export type Database = {
   devices: DeviceTable;
@@ -23,8 +15,8 @@ export type Database = {
   readings_zigbee_vibration: ZigbeeVibrationReadingTable;
 };
 
-type DeviceTable = z.infer<typeof $Device>;
-type SensorTable = z.infer<typeof $Sensor>;
+type DeviceTable = Device;
+type SensorTable = Sensor;
 
 type Pms5003stReadingTable = Reading<"pms5003st">;
 type Ptqs1005ReadingTable = Reading<"ptqs1005">;
@@ -33,29 +25,9 @@ type ZigbeeOccupancyReadingTable = Reading<"zigbee_occupancy">;
 type ZigbeeContactReadingTable = Reading<"zigbee_contact">;
 type ZigbeePowerReadingTable = Reading<"zigbee_power">;
 type ZigbeeVibrationReadingTable = Reading<"zigbee_vibration">;
+type NemoCloudReadingTable = Reading<"nemo_cloud">;
 
-export type Reading<T extends keyof typeof $Reading> = z.infer<
-  (typeof $Reading)[T]
->;
-
-export type NemoCloudReadingTable = {
-  device_id: string;
-  sensor_id: string;
-  time: Date;
-  battery: number | null;
-  ch2o: number | null;
-  tmp: number | null;
-  rh: number | null;
-  pressure: number | null;
-  co2: number | null;
-  lvoc: number | null;
-  pm1: number | null;
-  pm2_5: number | null;
-  pm4: number | null;
-  pm10: number | null;
-};
-
-export type NemoMeasureSetTable = {
+type NemoMeasureSetTable = {
   bid: number;
   device_serial: string;
   start: Date;
@@ -63,9 +35,4 @@ export type NemoMeasureSetTable = {
   values_number: number;
 };
 
-export type Device = Selectable<DeviceTable>;
-export type DeviceType = z.infer<typeof $DeviceType>;
-export type Sensor = Selectable<SensorTable>;
-export type SensorType = z.infer<typeof $SensorType>;
-export type NemoCloudReading = Selectable<NemoCloudReadingTable>;
 export type NemoMeasureSet = Selectable<NemoMeasureSetTable>;

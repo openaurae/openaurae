@@ -5,7 +5,6 @@ import { config } from "./config";
 import type { Database } from "./types";
 
 export * from "./types";
-export * from "./schemas";
 
 const dialect = new PostgresDialect({
   pool: new Pool({

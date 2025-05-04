@@ -1,6 +1,7 @@
+import { $Reading } from "#shared/types";
 import mqtt from "mqtt";
 import z, { ZodError } from "zod";
-import { $Reading, db } from "~/server/database";
+import { db } from "~/server/database";
 
 const runtimeConfig = useRuntimeConfig();
 

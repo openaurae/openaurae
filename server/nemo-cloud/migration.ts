@@ -1,18 +1,14 @@
-import type {
-  Device,
-  NemoCloudReading,
-  NemoMeasureSet,
-  Sensor,
-} from "~/server/database";
+import type { Device, NemoCloudReading, Sensor } from "#shared/types";
+import type { NemoMeasureSet } from "~/server/database";
 import { db } from "~/server/database";
 
-import { type Session, login } from "./api";
-import { type Configs, configs } from "./config";
+import { type NemoSession, login } from "./api";
+import { type NemoConfig, configs } from "./config";
 import { parseLocation } from "./location";
 import {
-  type MeasureVariable,
-  type VariableName,
-  VariableNameSchema,
+  $NemoVariableName,
+  type NemoMeasureVariable,
+  type NemoVariableName,
 } from "./types";
 
 export type MigrationOptions = {
@@ -20,7 +16,7 @@ export type MigrationOptions = {
 };
 
 export async function migrateNemoCloud(
-  account: keyof Configs,
+  account: keyof NemoConfig,
   options: MigrationOptions = {},
 ) {
   console.log(`[nemo-cloud] [${configs[account].url}] start migration`);
@@ -39,7 +35,7 @@ export async function migrateNemoCloud(
 }
 
 type DeviceMigrationContext = {
-  session: Session;
+  session: NemoSession;
   deviceSerial: string;
 };
 
@@ -237,15 +233,17 @@ type MetricName = keyof Omit<
   "device_id" | "sensor_id" | "time"
 >;
 
-function parseMetricName(variable: MeasureVariable | null): MetricName | null {
-  const { data: variableName, success } = VariableNameSchema.safeParse(
+function parseMetricName(
+  variable: NemoMeasureVariable | null,
+): MetricName | null {
+  const { data: variableName, success } = $NemoVariableName.safeParse(
     variable?.name,
   );
 
   return success ? metricNameMapping[variableName] : null;
 }
 
-export const metricNameMapping: Record<VariableName, MetricName> = {
+export const metricNameMapping: Record<NemoVariableName, MetricName> = {
   Battery: "battery",
   Formaldehyde: "ch2o",
   Temperature: "tmp",

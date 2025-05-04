@@ -1,4 +1,4 @@
-export type Sensor = {
+export type NemoSensor = {
   /**
    * The sensor’s BID.
    */

@@ -1,20 +1,20 @@
 import z from "zod";
 
-const accountSchema = z.object({
+const $NemoAccount = z.object({
   url: z.string().url(),
   operator: z.string(),
   password: z.string(),
   company: z.string(),
 });
 
-const configsSchema = z.object({
-  cloud: accountSchema,
-  s5: accountSchema,
+const $NemoConfig = z.object({
+  cloud: $NemoAccount,
+  s5: $NemoAccount,
 });
 
-export type Account = z.infer<typeof accountSchema>;
-export type Configs = z.infer<typeof configsSchema>;
+export type NemoAccount = z.infer<typeof $NemoAccount>;
+export type NemoConfig = z.infer<typeof $NemoConfig>;
 
 const runtimeConfig = useRuntimeConfig();
 
-export const configs = configsSchema.parse(runtimeConfig.nemo);
+export const configs = $NemoConfig.parse(runtimeConfig.nemo);
