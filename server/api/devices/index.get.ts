@@ -1,34 +1,21 @@
 import { $DeviceType, type Device, type DeviceType } from "#shared/types";
 import { z } from "zod";
-import { fromError } from "zod-validation-error";
 import { db } from "~/server/database";
+import { getUserId, hasPermission, validateRequest } from "~/server/utils";
 
-const $Query = z.object({
+const $Filter = z.object({
   type: $DeviceType.optional(),
 });
 
 export default defineEventHandler(async (event) => {
-  const {
-    success,
-    data: query,
-    error,
-  } = await getValidatedQuery(event, $Query.safeParseAsync);
-
-  if (!success && error) {
-    throw createError({
-      status: 400,
-      message: fromError(error).toString(),
-    });
-  }
-
-  const { type } = query;
-  const { has, userId } = event.context.auth();
+  const { type } = await validateRequest(event, "query", $Filter);
+  const userId = getUserId(event);
 
   if (!userId) {
     return await getPublicDevices(type);
   }
 
-  if (has({ permission: "org:all:read" })) {
+  if (hasPermission(event, "org:all:read")) {
     return await getDevices(type);
   }
 
@@ -44,8 +31,6 @@ async function getPublicDevices(type?: DeviceType): Promise<Device[]> {
   if (type) {
     query = query.where("type", "=", type);
   }
-
-  console.log(query);
 
   return await query.execute();
 }
