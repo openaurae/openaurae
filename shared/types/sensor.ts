@@ -1,14 +1,25 @@
 import z from "zod";
 
+export const SensorTypes = {
+  AQ_PTQS: "ptqs1005",
+  AQ_PMS: "pms5003st",
+  ZG_TEMP: "zigbee_temp",
+  ZG_OCCUPANCY: "zigbee_occupancy",
+  ZG_CONTACT: "zigbee_contact",
+  ZG_VIBRATION: "zigbee_vibration",
+  ZG_POWER: "zigbee_power",
+  NEMO_CLOUD: "nemo_cloud",
+} as const;
+
 export const $SensorType = z.enum([
-  "ptqs1005",
-  "pms5003st",
-  "zigbee_temp",
-  "zigbee_occupancy",
-  "zigbee_contact",
-  "zigbee_vibration",
-  "zigbee_power",
-  "nemo_cloud",
+  SensorTypes.AQ_PTQS,
+  SensorTypes.AQ_PMS,
+  SensorTypes.ZG_TEMP,
+  SensorTypes.ZG_OCCUPANCY,
+  SensorTypes.ZG_CONTACT,
+  SensorTypes.ZG_VIBRATION,
+  SensorTypes.ZG_POWER,
+  SensorTypes.NEMO_CLOUD,
 ]);
 
 export const $Sensor = z.object({
