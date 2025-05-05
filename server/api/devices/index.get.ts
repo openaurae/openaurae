@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
   if (!userId) {
     devices = await getPublicDevices(type);
-  } else if (hasPermission(event, "org:all:read")) {
+  } else if (hasPermission(event, "readAll")) {
     devices = await getDevices(type);
   } else {
     devices = await getUserDevices(userId, type);

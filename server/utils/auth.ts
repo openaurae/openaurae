@@ -19,11 +19,24 @@ export function requireLogin(event: H3Event): string {
   return userId;
 }
 
+// Currently premission creation is not supported in the free Clerk account,
+// checking the admin role as workaround for now.
+const Permissions = {
+  readAll: "org:all:read",
+  updateAll: "org:all:update",
+} as const;
+
 export function hasPermission(
   event: H3Event,
-  permission: "org:all:read" | "org:all:update",
+  permission: keyof typeof Permissions,
 ): boolean {
   const { has, userId } = event.context.auth();
 
-  return userId !== null && has({ permission });
+  if (!userId) {
+    return false;
+  }
+
+  return (
+    has({ permission: Permissions[permission] }) || has({ role: "org:admin" })
+  );
 }

@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
 
   if (
     !device.is_public &&
-    !hasPermission(event, "org:all:read") &&
+    !hasPermission(event, "readAll") &&
     !isDeviceOwner(event, device)
   ) {
     throw createError({
