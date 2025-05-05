@@ -11,15 +11,27 @@ export default defineEventHandler(async (event) => {
   const { type } = await validateRequest(event, "query", $Filter);
   const userId = getUserId(event);
 
+  let devices: Device[] = [];
+
   if (!userId) {
-    return await getPublicDevices(type);
+    devices = await getPublicDevices(type);
+  } else if (hasPermission(event, "org:all:read")) {
+    devices = await getDevices(type);
+  } else {
+    devices = await getUserDevices(userId, type);
   }
 
-  if (hasPermission(event, "org:all:read")) {
-    return await getDevices(type);
-  }
-
-  return await getUserDevices(userId, type);
+  return await Promise.all(
+    devices.map(async (device) => {
+      const sensors = await deviceSensors(device.id);
+      const status = calculateDeviceDailyStatus(sensors);
+      return {
+        ...device,
+        ...status,
+        sensors,
+      };
+    }),
+  );
 });
 
 async function getPublicDevices(type?: DeviceType): Promise<Device[]> {

@@ -3,7 +3,7 @@ import { $DeviceId } from "#shared/types";
 import type { H3Event } from "h3";
 import { z } from "zod";
 import { db } from "~/server/database";
-import { hasPermission } from "~/server/utils";
+import { calculateDeviceDailyStatus, hasPermission } from "~/server/utils";
 
 const $Params = z.object({
   deviceId: $DeviceId,
@@ -15,17 +15,24 @@ export default defineEventHandler(async (event) => {
   const device = await validateDeviceId(deviceId);
 
   if (
-    device.is_public ||
-    hasPermission(event, "org:all:read") ||
-    isDeviceOwner(event, device)
+    !device.is_public &&
+    !hasPermission(event, "org:all:read") &&
+    !isDeviceOwner(event, device)
   ) {
-    return device;
+    throw createError({
+      statusCode: 403,
+      message: "Permission required",
+    });
   }
 
-  throw createError({
-    statusCode: 403,
-    message: "Permission required",
-  });
+  const sensors = await deviceSensors(device.id);
+  const status = calculateDeviceDailyStatus(sensors);
+
+  return {
+    ...device,
+    ...status,
+    sensors,
+  };
 });
 
 function isDeviceOwner(event: H3Event, device: Device): boolean {
