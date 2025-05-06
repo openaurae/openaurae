@@ -51,35 +51,50 @@ const card = tv({
   },
 });
 
-const { base, header, body, footer, tag, label, link } = card({
-  type: device.type,
+const slots = computed(() =>
+  card({
+    type: device.type,
+  }),
+);
+
+const isNemo = computed(() => device.type === DeviceTypes.NEMO_CLOUD);
+
+const lastUpdateTime = computed(() => {
+  if (!device.updated_at) {
+    return "NA";
+  }
+  const distanceToNow = formatDistanceToNow(device.updated_at);
+  return `${distanceToNow} ago`;
 });
-const isNemo = isNemoCloudDevice(device);
+
+const sensorCount = computed(() => {
+  const count = device.sensors?.length ?? 0;
+
+  return count === 1 ? "1 sensor" : `${count} sensors`;
+});
 </script>
 
 <template>
-  <div :class="base()">
-    <div :class="header()">
+  <div :class="slots.base()">
+    <div :class="slots.header()">
       <div class="flex flex-col">
         <h3 class="text-lg font-semibold text-gray-900">
           {{ device.name }}
         </h3>
-        <h5 :class="label()">#{{ device.id }}</h5>
+        <h5 :class="slots.label()">#{{ device.id }}</h5>
       </div>
 
-      <span :class="tag()">{{ formatDeviceType(device.type) }}</span>
+      <span :class="slots.tag()">{{ formatDeviceType(device.type) }}</span>
     </div>
 
-    <div :class="body()">
+    <div :class="slots.body()">
       <DeviceField>
         <template #name>Readings Today</template>
         <template #value>{{ device.readings_today }}</template>
       </DeviceField>
       <DeviceField>
         <template #name>Last Update</template>
-        <template #value>{{
-          device.updated_at ? formatDistanceToNow(device.updated_at) : "NA"
-        }}</template>
+        <template #value>{{ lastUpdateTime }}</template>
       </DeviceField>
 
       <DeviceField v-if="isNemo">
@@ -101,12 +116,11 @@ const isNemo = isNemoCloudDevice(device);
       </DeviceField>
     </div>
     <!-- class="flex justify-between items-center px-6 py-4 bg-gray-500/7 border-t border-black/5" -->
-    <div :class="footer()">
-      <div class="flex items-center gap-2 text-sm text-gray-500 font-semibold">
-        <span>{{ device.sensors.length }}</span>
-        sensors
-      </div>
-      <ULink to="/" :class="link()">View Details →</ULink>
+    <div :class="slots.footer()">
+      <p class="flex items-center gap-2 text-sm text-gray-500 font-semibold">
+        {{ sensorCount }}
+      </p>
+      <ULink to="/" :class="slots.link()">View Details →</ULink>
     </div>
   </div>
 </template>
