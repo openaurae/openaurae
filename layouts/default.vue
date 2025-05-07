@@ -1,41 +1,37 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="w-full h-full bg-slate-100">
+  <div class="w-full min-h-screen flex flex-col">
     <header
-      class="bg-slate-100/75 backdrop-blur border-b border-slate-200 h-14 sticky top-0 z-50"
+      class="h-14 sticky top-0 z-50 backdrop-blur border-b border-(--ui-border) bg-(--ui-bg)/75"
     >
-      <div
-        class="w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 h-full"
-      >
-        <ULink to="/" class="text-black">
+      <UContainer class="flex justify-between items-center h-full">
+        <ULink to="/">
           <div class="flex gap-2 justify-center items-center">
             <AppLogo class="size-10 fill-slate-700 stroke-slate-700" />
             <span class="font-semibold text-slate-700 text-xl">OpenAurae</span>
           </div>
         </ULink>
 
-        <div>
-          <SignedOut>
-            <SignInButton>
-              <UButton
-                size="md"
-                class="cursor-pointer"
-                color="secondary"
-                variant="soft"
-                >Sign In</UButton
-              >
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </div>
-      </div>
+        <UserAuth />
+      </UContainer>
     </header>
-    <main>
+
+    <UContainer as="main" class="grid grid-cols-1 gap-10 py-10">
       <slot />
-    </main>
+    </UContainer>
+
+    <footer class="h-48 border-t border-(--ui-border)">
+      <UContainer class="grid h-full place-content-center text-center gap-6">
+        <p class="text-sm">openaurae.org@gmail.com</p>
+        <div class="text-sm">
+          <p>Building 60, 23 Colledge Walk, Clayton Campus</p>
+          <p>Monash University, VIC 3800, Australia</p>
+        </div>
+
+        <p class="text-xs">Copyright © 2025 openaurae.org</p>
+      </UContainer>
+    </footer>
   </div>
 </template>
 
