@@ -1,5 +1,5 @@
+import type { SensorType } from "#shared/types";
 import z from "zod";
-import type { SensorType } from "~/server/database";
 
 const $ReadingPk = z.object({
   device_id: z.string(),
@@ -90,7 +90,7 @@ export const $Reading = {
     pm4: z.number().nullish(),
     pm10: z.number().nullish(),
   }),
-};
+} as const;
 
 export type Reading<T extends SensorType> = z.infer<(typeof $Reading)[T]>;
 export type NemoCloudReading = z.infer<typeof $Reading.nemo_cloud>;

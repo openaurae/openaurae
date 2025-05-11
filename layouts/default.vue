@@ -17,9 +17,7 @@
       </UContainer>
     </header>
 
-    <UContainer as="main" class="grid grid-cols-1 gap-10 py-10">
-      <slot />
-    </UContainer>
+    <slot />
 
     <footer class="h-48 border-t border-(--ui-border)">
       <UContainer class="grid h-full place-content-center text-center gap-6">

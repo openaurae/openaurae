@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import {
-  type Device,
-  DeviceTypes,
-  type ReadingStatus,
-  type Sensor,
-} from "#shared/types";
+import { DeviceTypes, type DeviceWithSensorsAndStatus } from "#shared/types";
 import { formatDistanceToNow } from "date-fns";
 import { tv } from "tailwind-variants";
 
 const { device } = defineProps<{
-  device: Device & ReadingStatus & { sensors: Sensor[] };
+  device: DeviceWithSensorsAndStatus;
 }>();
 
 const card = tv({
@@ -60,11 +55,12 @@ const slots = computed(() =>
 const isNemo = computed(() => device.type === DeviceTypes.NEMO_CLOUD);
 
 const lastUpdateTime = computed(() => {
-  if (!device.updated_at) {
+  if (!device.last_update) {
     return "NA";
   }
-  const distanceToNow = formatDistanceToNow(device.updated_at);
-  return `${distanceToNow} ago`;
+  return formatDistanceToNow(device.last_update, {
+    addSuffix: true,
+  });
 });
 
 const sensorCount = computed(() => {
@@ -72,6 +68,8 @@ const sensorCount = computed(() => {
 
   return count === 1 ? "1 sensor" : `${count} sensors`;
 });
+
+const detailsLink = computed(() => `/devices/${device.id}`);
 </script>
 
 <template>
@@ -90,7 +88,7 @@ const sensorCount = computed(() => {
     <div :class="slots.body()">
       <DeviceField>
         <template #name>Readings Today</template>
-        <template #value>{{ device.readings_today }}</template>
+        <template #value>{{ device.daily_reading_count }}</template>
       </DeviceField>
       <DeviceField>
         <template #name>Last Update</template>
@@ -120,7 +118,7 @@ const sensorCount = computed(() => {
       <p class="flex items-center gap-2 text-sm text-gray-500 font-semibold">
         {{ sensorCount }}
       </p>
-      <ULink to="/" :class="slots.link()">View Details →</ULink>
+      <ULink :to="detailsLink" :class="slots.link()">View Details →</ULink>
     </div>
   </div>
 </template>

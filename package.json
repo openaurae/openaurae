@@ -23,6 +23,8 @@
     "@clerk/nuxt": "^1.5.10",
     "@nuxt/eslint": "^1.3.0",
     "@nuxt/ui": "^3.0.2",
+    "@vueuse/core": "^13.1.0",
+    "@vueuse/nuxt": "^13.1.0",
     "date-fns": "^4.1.0",
     "kysely": "^0.28.2",
     "mqtt": "^5.11.1",

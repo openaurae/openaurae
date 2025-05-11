@@ -1,3 +1,4 @@
 export * from "./validation";
 export * from "./auth";
-export * from "./query";
+export * from "./device";
+export * from "./sensor";
