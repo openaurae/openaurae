@@ -28,19 +28,19 @@ const card = tv({
   variants: {
     type: {
       [DeviceTypes.AIR_QUALITY]: {
-        base: "bg-indigo-500/8",
-        tag: "from-indigo-400 to-indigo-700",
-        link: "text-indigo-600",
+        base: "bg-air-quality-500/8",
+        tag: "from-air-quality-400 to-air-quality-700",
+        link: "text-air-quality-600",
       },
       [DeviceTypes.ZIGBEE]: {
-        base: "bg-emerald-500/8",
-        tag: "from-emerald-400 to-emerald-700",
-        link: "text-emerald-600",
+        base: "bg-zigbee-500/8",
+        tag: "from-zigbee-400 to-zigbee-700",
+        link: "text-zigbee-600",
       },
       [DeviceTypes.NEMO_CLOUD]: {
-        base: "bg-amber-500/8",
-        tag: "from-amber-400 to-amber-700",
-        link: "text-amber-600",
+        base: "bg-nemo-cloud-500/8",
+        tag: "from-nemo-cloud-400 to-nemo-cloud-700",
+        link: "text-nemo-cloud-600",
       },
     },
   },

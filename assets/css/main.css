@@ -3,6 +3,21 @@
 
 @theme static {
   --container-8xl: 90rem;
+
+  --color-nemo-cloud-400: var(--color-amber-400);
+  --color-nemo-cloud-500: var(--color-amber-500);
+  --color-nemo-cloud-600: var(--color-amber-600);
+  --color-nemo-cloud-700: var(--color-amber-700);
+
+  --color-air-quality-400: var(--color-indigo-400);
+  --color-air-quality-500: var(--color-indigo-500);
+  --color-air-quality-600: var(--color-indigo-600);
+  --color-air-quality-700: var(--color-indigo-700);
+
+  --color-zigbee-400: var(--color-emerald-400);
+  --color-zigbee-500: var(--color-emerald-500);
+  --color-zigbee-600: var(--color-emerald-600);
+  --color-zigbee-700: var(--color-emerald-700);
 }
 
 :root {
