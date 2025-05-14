@@ -51,7 +51,7 @@ const container = tv({
     </div>
 
     <div v-else-if="devices.length === 0" :class="container({ type: 'text' })">
-      <span>Error loading devices</span>
+      <span>No devices</span>
     </div>
 
     <div v-else :class="container({ type: 'cards' })">
