@@ -5,7 +5,7 @@ import { startOfDay } from "date-fns";
 const route = useRoute();
 const { user } = useUser();
 const now = useNow();
-const userId = ref(user?.value?.id);
+const userId = computed(() => user?.value?.id);
 const { data: device } = useFetch(`/api/devices/${route.params.deviceId}`, {
   watch: [userId],
   query: {
@@ -57,6 +57,7 @@ const selectedSensor = ref<Sensor | null>(null);
 
     <div v-if="isDefined(selectedSensor)">
       <h2 class="text-2xl font-semibold">Sensor {{ selectedSensor.name }}</h2>
+      <SensorDetails :sensor="selectedSensor" :theme="device?.type" />
     </div>
   </UContainer>
 </template>
