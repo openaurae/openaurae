@@ -49,6 +49,7 @@ export const card = tv({
         body: "grid grid-cols-2 lg:grid-cols-4 gap-4",
       },
       md: {
+        wrapper: "h-70",
         header: "p-4",
         body: "px-4 grid grid-cols-2 gap-2 grow",
         footer: "w-full h-12 px-4",
