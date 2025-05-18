@@ -26,11 +26,24 @@ const deviceTypeSelections = ref(
 );
 
 const deviceTypes = ref([...$DeviceType.options]);
+const searchInput = ref("");
+const searched = computed(() => searchInput.value?.trim().toLowerCase());
 
 const allDevices = computed(() => data.value ?? []);
-const devices = useArrayFilter(allDevices, (device) =>
-  deviceTypes.value.includes(device.type),
-);
+const devices = useArrayFilter(allDevices, (device) => {
+  if (!deviceTypes.value.includes(device.type)) {
+    return false;
+  }
+
+  if (!searched.value) {
+    return true;
+  }
+
+  return (
+    device.id.toLowerCase().includes(searched.value) ||
+    device.name.toLowerCase().includes(searched.value)
+  );
+});
 
 const container = tv({
   base: ["w-full h-full min-h-[60vh]"],
@@ -45,20 +58,34 @@ const container = tv({
 </script>
 
 <template>
-  <UContainer class="py-10 min-h-screen w-full h-full flex flex-col">
-    <div class="flex justify-between items-center">
+  <UContainer
+    class="md:pt-4 pb-10 min-h-screen w-full h-full flex flex-col gap-4"
+  >
+    <header
+      class="flex flex-col md:flex-row md:justify-between md:items-center"
+    >
       <h1 class="text-2xl my-4">Devices</h1>
-      <USelect
-        v-model="deviceTypes"
-        multiple
-        :items="deviceTypeSelections"
-        placeholder="Select Device Types"
-        class="w-50"
-        color="neutral"
-        variant="subtle"
-        size="lg"
-      />
-    </div>
+      <div class="flex flex-col md:flex-row gap-4">
+        <USelect
+          v-model="deviceTypes"
+          multiple
+          :items="deviceTypeSelections"
+          placeholder="Select Device Types"
+          class="w-full md:w-50"
+          color="neutral"
+          variant="outline"
+          size="lg"
+        />
+        <UInput
+          v-model="searchInput"
+          color="neutral"
+          variant="outline"
+          size="lg"
+          placeholder="Search by Id or Name..."
+          class="w-full md:w-50"
+        />
+      </div>
+    </header>
 
     <div v-if="status === 'pending'" :class="container({ type: 'cards' })">
       <USkeleton
