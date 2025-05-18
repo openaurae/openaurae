@@ -1,3 +1,4 @@
+import type { SensorMetricName } from "#shared/types";
 import z from "zod";
 
 /**
@@ -51,7 +52,7 @@ export type NemoMeasureSet = {
  */
 export type NemoMeasure = {
   measureBid: number;
-  variable: MeasureVariable | null;
+  variable: NemoMeasureVariable | null;
 };
 
 export type NemoMeasureVariable = {
@@ -120,3 +121,20 @@ export const $NemoVariableName = z.enum([
 ]);
 
 export type NemoVariableName = z.infer<typeof $NemoVariableName>;
+
+export const NemoMetricNames: Record<
+  NemoVariableName,
+  SensorMetricName<"nemo_cloud">
+> = {
+  Battery: "battery",
+  Formaldehyde: "ch2o",
+  Temperature: "tmp",
+  Humidity: "rh",
+  Pressure: "pressure",
+  "Carbon dioxide": "co2",
+  "Light Volatile Organic Compounds": "lvoc",
+  "Particulate matter 1": "pm1",
+  "Particulate matter 2.5": "pm2_5",
+  "Particulate matter 4": "pm4",
+  "Particulate matter 10": "pm10",
+} as const;

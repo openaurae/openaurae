@@ -3,6 +3,39 @@ import { max as maxDate } from "date-fns";
 import { sql } from "kysely";
 import { db } from "~/server/database";
 
+export async function upsertSensor(sensor: Sensor): Promise<Sensor> {
+  return await db
+    .insertInto("sensors")
+    .values(sensor)
+    .onConflict((oc) =>
+      oc.columns(["device_id", "id"]).doUpdateSet({
+        name: sensor.name,
+      }),
+    )
+    .returningAll()
+    .executeTakeFirstOrThrow();
+}
+
+export async function insertSensor(sensor: Sensor): Promise<Sensor> {
+  return await db
+    .insertInto("sensors")
+    .values(sensor)
+    .returningAll()
+    .executeTakeFirstOrThrow();
+}
+
+export async function getSensorById(
+  deviceId: string,
+  sensorId: string,
+): Promise<Sensor | undefined> {
+  return await db
+    .selectFrom("sensors")
+    .selectAll()
+    .where("device_id", "=", deviceId)
+    .where("id", "=", sensorId)
+    .executeTakeFirst();
+}
+
 export async function getSensorsByDeviceId(
   deviceId: string,
 ): Promise<Sensor[]> {
@@ -11,42 +44,6 @@ export async function getSensorsByDeviceId(
     .selectAll()
     .where("device_id", "=", deviceId)
     .execute();
-}
-
-export async function getSensorLastUpdateTime(
-  sensor: Sensor,
-): Promise<Date | null> {
-  const table = `readings_${sensor.type}`;
-  const result = await sql<{ max_time: Date | null }>`
-  select
-   	max(time) as max_time
-  from
- 	  ${sql.table(table)}
-  where
-   	device_id = ${sensor.device_id}
-   	and sensor_id = ${sensor.id};
-  `.execute(db);
-
-  return result.rows[0].max_time;
-}
-
-export async function countSensorReadingsToday(
-  sensor: Sensor,
-  startOfToday: Date,
-): Promise<number> {
-  const table = `readings_${sensor.type}`;
-  const result = await sql<{ count: number }>`
-  select
-   	count(*) as count
-  from
- 	  ${sql.table(table)}
-  where
-   	device_id = ${sensor.device_id}
-   	and sensor_id = ${sensor.id}
-    and time > ${startOfToday.toISOString()};
-  `.execute(db);
-
-  return result.rows[0].count;
 }
 
 export function aggregateSensorDailyStatus(

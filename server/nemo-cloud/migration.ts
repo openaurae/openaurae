@@ -1,6 +1,7 @@
-import type { Device, NemoCloudReading, Sensor } from "#shared/types";
-import type { NemoMeasureSet } from "~/server/database";
-import { db } from "~/server/database";
+import type { Sensor, SensorMetricName, SensorReading } from "#shared/types";
+import { secondsToDate } from "#shared/utils";
+import { type NemoMeasureSet, db } from "~/server/database";
+import { upsertDevice, upsertSensor } from "~/server/utils";
 
 import { type NemoSession, login } from "./api";
 import { type NemoConfig, configs } from "./config";
@@ -8,7 +9,7 @@ import { parseLocation } from "./location";
 import {
   $NemoVariableName,
   type NemoMeasureVariable,
-  type NemoVariableName,
+  NemoMetricNames,
 } from "./types";
 
 export type MigrationOptions = {
@@ -75,8 +76,8 @@ export async function migrateMeasureSets(
         bid,
         device_serial: deviceSerial,
         values_number: valuesNumber,
-        start: dateFromSecs(start),
-        end: dateFromSecs(end),
+        start: secondsToDate(start),
+        end: secondsToDate(end),
       },
     });
 
@@ -162,7 +163,7 @@ async function migrateMeasures({
   sensorId,
 }: MeasuresMigrationContext): Promise<void> {
   const measures = await session.measureSetMeasures(measureSet.bid);
-  const metricsByTime = new Map<number, Partial<NemoCloudReading>>();
+  const metricsByTime = new Map<number, Partial<SensorReading<"nemo_cloud">>>();
 
   for (const { measureBid, variable } of measures) {
     const metricName = parseMetricName(variable);
@@ -183,7 +184,7 @@ async function migrateMeasures({
       .insertInto("readings_nemo_cloud")
       .values({
         ...reading,
-        time: dateFromSecs(seconds),
+        time: secondsToDate(seconds),
         device_id: deviceSerial,
         sensor_id: sensorId,
       })
@@ -195,64 +196,12 @@ async function migrateMeasures({
   }
 }
 
-async function upsertDevice(device: Device) {
-  await db
-    .insertInto("devices")
-    .values(device)
-    .onConflict((oc) =>
-      oc.column("id").doUpdateSet({
-        name: device.name,
-        latitude: device.latitude,
-        longitude: device.longitude,
-        room: device.room,
-        building: device.building,
-      }),
-    )
-    .executeTakeFirst();
-}
-
-async function upsertSensor(sensor: Sensor): Promise<Sensor> {
-  return await db
-    .insertInto("sensors")
-    .values(sensor)
-    .onConflict((oc) =>
-      oc.columns(["device_id", "id"]).doUpdateSet({
-        name: sensor.name,
-      }),
-    )
-    .returningAll()
-    .executeTakeFirstOrThrow();
-}
-
-function dateFromSecs(seconds: number): Date {
-  return new Date(seconds * 1000);
-}
-
-type MetricName = keyof Omit<
-  NemoCloudReading,
-  "device_id" | "sensor_id" | "time"
->;
-
 function parseMetricName(
   variable: NemoMeasureVariable | null,
-): MetricName | null {
+): SensorMetricName<"nemo_cloud"> | null {
   const { data: variableName, success } = $NemoVariableName.safeParse(
     variable?.name,
   );
 
-  return success ? metricNameMapping[variableName] : null;
+  return success ? NemoMetricNames[variableName] : null;
 }
-
-export const metricNameMapping: Record<NemoVariableName, MetricName> = {
-  Battery: "battery",
-  Formaldehyde: "ch2o",
-  Temperature: "tmp",
-  Humidity: "rh",
-  Pressure: "pressure",
-  "Carbon dioxide": "co2",
-  "Light Volatile Organic Compounds": "lvoc",
-  "Particulate matter 1": "pm1",
-  "Particulate matter 2.5": "pm2_5",
-  "Particulate matter 4": "pm4",
-  "Particulate matter 10": "pm10",
-};

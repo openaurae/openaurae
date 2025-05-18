@@ -7,11 +7,20 @@ import type {
 import { compareDesc } from "date-fns";
 import { db } from "~/server/database";
 
-import {
-  countSensorReadingsToday,
-  getSensorLastUpdateTime,
-  getSensorsByDeviceId,
-} from "./sensor";
+import { countSensorReadings, getSensorLastestReadingTime } from "./reading";
+import { getSensorsByDeviceId } from "./sensor";
+
+export async function insertDevice(device: Device): Promise<void> {
+  await db.insertInto("devices").values(device).execute();
+}
+
+export async function upsertDevice(device: Device): Promise<void> {
+  await db
+    .insertInto("devices")
+    .values(device)
+    .onConflict((oc) => oc.column("id").doUpdateSet(device))
+    .execute();
+}
 
 export async function getDevices(type?: DeviceType): Promise<Device[]> {
   let query = db.selectFrom("devices").selectAll();
@@ -64,11 +73,8 @@ export async function getDeviceSensorsWithStatus(
     sensors.map(async (sensor) => {
       return {
         ...sensor,
-        daily_reading_count: await countSensorReadingsToday(
-          sensor,
-          startOfToday,
-        ),
-        last_update: await getSensorLastUpdateTime(sensor),
+        daily_reading_count: await countSensorReadings(sensor, startOfToday),
+        last_update: await getSensorLastestReadingTime(sensor),
       };
     }),
   );

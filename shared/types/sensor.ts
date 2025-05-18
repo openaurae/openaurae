@@ -22,8 +22,10 @@ export const $SensorType = z.enum([
   SensorTypes.NEMO_CLOUD,
 ]);
 
+export const $SensorId = z.string();
+
 export const $Sensor = z.object({
-  id: z.string(),
+  id: $SensorId,
   device_id: z.string(),
   name: z.string(),
   type: $SensorType,

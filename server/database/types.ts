@@ -1,32 +1,14 @@
-import type { Device, Reading, Sensor } from "#shared/types";
+import type { Device, Sensor, SensorReading, SensorType } from "#shared/types";
 import type { Selectable } from "kysely";
 
 export type Database = {
   devices: DeviceTable;
   sensors: SensorTable;
-  readings_nemo_cloud: NemoCloudReadingTable;
   nemo_measure_sets: NemoMeasureSetTable;
-  readings_pms5003st: Pms5003stReadingTable;
-  readings_ptqs1005: Ptqs1005ReadingTable;
-  readings_zigbee_temp: ZigbeeTempReadingTable;
-  readings_zigbee_contact: ZigbeeContactReadingTable;
-  readings_zigbee_occupancy: ZigbeeOccupancyReadingTable;
-  readings_zigbee_power: ZigbeePowerReadingTable;
-  readings_zigbee_vibration: ZigbeeVibrationReadingTable;
-};
+} & ReadingTables;
 
 type DeviceTable = Device;
 type SensorTable = Sensor;
-
-type Pms5003stReadingTable = Reading<"pms5003st">;
-type Ptqs1005ReadingTable = Reading<"ptqs1005">;
-type ZigbeeTempReadingTable = Reading<"zigbee_temp">;
-type ZigbeeOccupancyReadingTable = Reading<"zigbee_occupancy">;
-type ZigbeeContactReadingTable = Reading<"zigbee_contact">;
-type ZigbeePowerReadingTable = Reading<"zigbee_power">;
-type ZigbeeVibrationReadingTable = Reading<"zigbee_vibration">;
-type NemoCloudReadingTable = Reading<"nemo_cloud">;
-
 type NemoMeasureSetTable = {
   bid: number;
   device_serial: string;
@@ -34,5 +16,12 @@ type NemoMeasureSetTable = {
   end: Date;
   values_number: number;
 };
+export type ReadingTables = {
+  // [T in SensorType as ReadingTable<T>]: Reading<T>;
+  [T in SensorType as `readings_${T}`]: SensorReading<T>;
+};
+
+// export type ReadingTable<T extends SensorType> = `readings_${T}`;
+export type ReadingTable = keyof ReadingTables;
 
 export type NemoMeasureSet = Selectable<NemoMeasureSetTable>;

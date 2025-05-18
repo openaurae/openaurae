@@ -1,5 +1,5 @@
 import type { SensorType } from "#shared/types";
-import z from "zod";
+import { z } from "zod";
 
 const $ReadingPk = z.object({
   device_id: z.string(),
@@ -92,5 +92,17 @@ export const $Reading = {
   }),
 } as const;
 
-export type Reading<T extends SensorType> = z.infer<(typeof $Reading)[T]>;
-export type NemoCloudReading = z.infer<typeof $Reading.nemo_cloud>;
+type ReadingPK = z.infer<typeof $ReadingPk>;
+
+type ReadingTypes = {
+  [T in SensorType]: z.infer<(typeof $Reading)[T]>;
+};
+
+export type Reading = ReadingTypes[keyof ReadingTypes];
+
+export type SensorReading<T extends SensorType> = ReadingTypes[T];
+export type SensorMetrics<T extends SensorType> = Omit<
+  SensorReading<T>,
+  keyof ReadingPK
+>;
+export type SensorMetricName<T extends SensorType> = keyof SensorMetrics<T>;

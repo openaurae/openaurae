@@ -47,7 +47,7 @@ function isDeviceOwner(event: H3Event, device: Device): boolean {
   return userId !== null && device.user_id === userId;
 }
 
-async function validateDeviceId(deviceId: string) {
+async function validateDeviceId(deviceId: string): Promise<Device> {
   return await db
     .selectFrom("devices")
     .where("id", "=", deviceId)
