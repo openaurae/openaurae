@@ -21,7 +21,7 @@ const container = tv({
   base: ["w-full h-full grid grid-cols-1 gap-6 place-content-center grow"],
   variants: {
     type: {
-      cards: ["md:grid-cols-2 lg:grid-cols-3", "xl:grid-cols-4 xl:gap-10"],
+      cards: ["sm:grid-cols-2 lg:grid-cols-3", "xl:grid-cols-4 xl:gap-10"],
       text: [
         "rounded-2xl bg-(--ui-bg-muted)",
         "text-xl text-center text-(--ui-text-highlighted)",
@@ -55,7 +55,11 @@ const container = tv({
     </div>
 
     <div v-else :class="container({ type: 'cards' })">
-      <DeviceCard v-for="device in devices" :key="device.id" :device="device" />
+      <DeviceOverview
+        v-for="device in devices"
+        :key="device.id"
+        :device="device"
+      />
     </div>
   </UContainer>
 </template>
