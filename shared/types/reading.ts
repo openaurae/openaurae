@@ -1,38 +1,38 @@
 import type { SensorType } from "#shared/types";
 import { z } from "zod";
 
-const $ReadingPk = z.object({
+const $ReadingKey = z.object({
   device_id: z.string(),
   sensor_id: z.string(),
   time: z.coerce.date(),
 });
 
 export const $Reading = {
-  zigbee_temp: $ReadingPk.extend({
+  zigbee_temp: $ReadingKey.extend({
     temperature: z.number(),
     humidity: z.number(),
     battery: z.number(),
     voltage: z.number(),
   }),
-  zigbee_occupancy: $ReadingPk.extend({
+  zigbee_occupancy: $ReadingKey.extend({
     occupancy: z.boolean(),
     illuminance: z.number(),
     battery: z.number(),
     voltage: z.number(),
   }),
-  zigbee_contact: $ReadingPk.extend({
+  zigbee_contact: $ReadingKey.extend({
     contact: z.boolean(),
     battery: z.number(),
     voltage: z.number(),
   }),
-  zigbee_power: $ReadingPk.extend({
+  zigbee_power: $ReadingKey.extend({
     state: z.string().nullish(),
     power: z.number(),
     battery: z.number(),
     voltage: z.number(),
     consumption: z.number(),
   }),
-  zigbee_vibration: $ReadingPk.extend({
+  zigbee_vibration: $ReadingKey.extend({
     angle: z.number().nullish(),
     angle_x: z.number().nullish(),
     angle_y: z.number().nullish(),
@@ -43,7 +43,7 @@ export const $Reading = {
     battery: z.number(),
     voltage: z.number(),
   }),
-  pms5003st: $ReadingPk.extend({
+  pms5003st: $ReadingKey.extend({
     cf_pm1: z.number(),
     cf_pm10: z.number(),
     cf_pm25: z.number(),
@@ -67,7 +67,7 @@ export const $Reading = {
     latitude: z.number().nullish(),
     longitude: z.number().nullish(),
   }),
-  ptqs1005: $ReadingPk.extend({
+  ptqs1005: $ReadingKey.extend({
     tvoc: z.number(),
     ch2o: z.number(),
     co2: z.number(),
@@ -77,7 +77,7 @@ export const $Reading = {
     latitude: z.number().nullish(),
     longitude: z.number().nullish(),
   }),
-  nemo_cloud: $ReadingPk.extend({
+  nemo_cloud: $ReadingKey.extend({
     battery: z.number().nullish(),
     ch2o: z.number().nullish(),
     tmp: z.number().nullish(),
@@ -92,7 +92,7 @@ export const $Reading = {
   }),
 } as const;
 
-type ReadingPK = z.infer<typeof $ReadingPk>;
+export type ReadingKey = z.infer<typeof $ReadingKey>;
 
 type ReadingTypes = {
   [T in SensorType]: z.infer<(typeof $Reading)[T]>;
@@ -103,6 +103,6 @@ export type Reading = ReadingTypes[keyof ReadingTypes];
 export type SensorReading<T extends SensorType> = ReadingTypes[T];
 export type SensorMetrics<T extends SensorType> = Omit<
   SensorReading<T>,
-  keyof ReadingPK
+  keyof ReadingKey
 >;
 export type SensorMetricName<T extends SensorType> = keyof SensorMetrics<T>;
