@@ -1,3 +1,6 @@
+import { dateToSeconds } from "#shared/utils";
+import { type $Fetch, ofetch } from "ofetch";
+
 import type { NemoAccount } from "./config";
 import type {
   NemoDevice,
@@ -9,30 +12,50 @@ import type {
   NemoSensor,
 } from "./types";
 
-export async function login(account: NemoAccount): Promise<NemoSession> {
-  const { sessionId } = await $fetch<{ sessionId: string }>(
-    "/AirQualityAPI/session/login",
-    {
-      method: "POST",
-      body: account,
-      headers: {
-        // got 401 if using MD5(A1:nonce:A2), but the example value in the API docs works...
-        Authorization:
-          "Digest username=Test,realm=Authorized users of etheraApi,nonce=33e4dbaf2b2fd2c78769b436ffbe9d05,uri=/AirQualityAPI/session/login,response=b9e580f4f3b9d8ffd9205f58f5e18ee8,opaque=f8333b33f212bae4ba905cea2b4819e6",
-      },
-      baseURL: account.url,
-    },
-  );
-  return new NemoSession(account.url, sessionId);
-}
-
 export class NemoSession {
-  private readonly sessionId: string;
-  private readonly baseURL: string;
+  private readonly account: Omit<NemoAccount, "url">;
+  private fetch: $Fetch;
 
-  constructor(serverUrl: string, sessionId: string) {
-    this.sessionId = sessionId;
-    this.baseURL = `${serverUrl}/AirQualityAPI`;
+  private constructor({ url, ...account }: NemoAccount) {
+    this.account = account;
+    this.fetch = ofetch.create({
+      baseURL: `${url}/AirQualityAPI`,
+      headers: {
+        "Accept-version": "v4",
+      },
+    });
+  }
+
+  static async create(account: NemoAccount): Promise<NemoSession> {
+    const session = new NemoSession(account);
+    await session.login();
+
+    return session;
+  }
+
+  /**
+   * Must be called to access other API endpoints.
+   * Session expires after 30 min of inactivity.
+   */
+  public async login(): Promise<void> {
+    const { sessionId } = await this.fetch<{ sessionId: string }>(
+      "/session/login",
+      {
+        method: "POST",
+        body: this.account,
+        headers: {
+          // got 401 if using MD5(A1:nonce:A2), but the example value in the API docs works...
+          Authorization:
+            "Digest username=Test,realm=Authorized users of etheraApi,nonce=33e4dbaf2b2fd2c78769b436ffbe9d05,uri=/AirQualityAPI/session/login,response=b9e580f4f3b9d8ffd9205f58f5e18ee8,opaque=f8333b33f212bae4ba905cea2b4819e6",
+        },
+      },
+    );
+
+    this.fetch = this.fetch.create({
+      headers: {
+        sessionId,
+      },
+    });
   }
 
   /**
@@ -41,13 +64,7 @@ export class NemoSession {
    * An operator with administrator right can view all devices.
    */
   public async devices(): Promise<NemoDevice[]> {
-    return await $fetch<NemoDevice[]>("/devices", {
-      baseURL: this.baseURL,
-      headers: {
-        "Accept-version": "v4",
-        sessionId: this.sessionId,
-      },
-    });
+    return await this.fetch<NemoDevice[]>("/devices");
   }
 
   /**
@@ -61,18 +78,11 @@ export class NemoSession {
   public async device(
     deviceSerialNumber: string,
   ): Promise<NemoDeviceDetails | null> {
-    const dev = await $fetch<NemoDeviceDetails | undefined>(
+    const device = await this.fetch<NemoDeviceDetails | undefined>(
       `/devices/${deviceSerialNumber}`,
-      {
-        baseURL: this.baseURL,
-        headers: {
-          "Accept-version": "v4",
-          sessionId: this.sessionId,
-        },
-      },
     );
 
-    return dev ?? null;
+    return device ?? null;
   }
 
   /**
@@ -81,13 +91,7 @@ export class NemoSession {
    * @param roomBid The room’s BID. This bid must correspond to an existing room
    */
   public async room(roomBid: number): Promise<NemoRoom> {
-    return await $fetch<NemoRoom>(`/rooms/${roomBid}`, {
-      baseURL: this.baseURL,
-      headers: {
-        "Accept-version": "v4",
-        sessionId: this.sessionId,
-      },
-    });
+    return await this.fetch<NemoRoom>(`/rooms/${roomBid}`);
   }
 
   /**
@@ -98,15 +102,10 @@ export class NemoSession {
   public async measureSets(
     options: { deviceSerialNumber?: string; start?: number; end?: number } = {},
   ): Promise<NemoDeviceMeasureSetsList> {
-    const sets = await $fetch<NemoDeviceMeasureSetsList | undefined>(
+    const sets = await this.fetch<NemoDeviceMeasureSetsList | undefined>(
       "/measureSets",
       {
         query: options,
-        baseURL: this.baseURL,
-        headers: {
-          "Accept-version": "v4",
-          sessionId: this.sessionId,
-        },
       },
     );
     return sets ?? [];
@@ -128,14 +127,42 @@ export class NemoSession {
     return measureSetsList[0].measureSets ?? [];
   }
 
+  /**
+   * Get the first device measureSet at the given time.
+   */
+  public async deviceMeasureSetsAt(
+    deviceSerialNumber: string,
+    time: Date,
+  ): Promise<NemoMeasureSet | null> {
+    const seconds = dateToSeconds(time);
+
+    const measureSet = await this.fetch<NemoMeasureSet | undefined>(
+      `/devices/${deviceSerialNumber}/measureSets/atDate/${seconds}`,
+    );
+
+    return measureSet ?? null;
+  }
+
+  /**
+   * Get the first device measureSet after the given time.
+   */
+  public async deviceMeasureSetsAfter(
+    deviceSerialNumber: string,
+    time: Date,
+  ): Promise<NemoMeasureSet | null> {
+    const seconds = dateToSeconds(time);
+
+    const measureSet = await this.fetch<NemoMeasureSet | undefined>(
+      `/devices/${deviceSerialNumber}/measureSets/afterDate/${seconds}`,
+    );
+
+    return measureSet ?? null;
+  }
+
   public async measureSetSensor(measureSetBid: number): Promise<NemoSensor> {
-    return await $fetch<NemoSensor>(`/measureSets/${measureSetBid}/sensors`, {
-      baseURL: this.baseURL,
-      headers: {
-        "Accept-version": "v4",
-        sessionId: this.sessionId,
-      },
-    });
+    return await this.fetch<NemoSensor>(
+      `/measureSets/${measureSetBid}/sensors`,
+    );
   }
 
   /**
@@ -146,15 +173,8 @@ export class NemoSession {
   public async measureSetMeasures(
     measureSetBid: number,
   ): Promise<NemoMeasure[]> {
-    return await $fetch<NemoMeasure[]>(
+    return await this.fetch<NemoMeasure[]>(
       `/measureSets/${measureSetBid}/measures`,
-      {
-        baseURL: this.baseURL,
-        headers: {
-          "Accept-version": "v4",
-          sessionId: this.sessionId,
-        },
-      },
     );
   }
 
@@ -164,15 +184,8 @@ export class NemoSession {
    * @param measureBid The measure’s bid as return by the /measureSets/{measureSetBid}/measures endpoint
    */
   public async measureValues(measureBid: number): Promise<NemoMeasureValue[]> {
-    const values = await $fetch<NemoMeasureValue[] | undefined>(
+    const values = await this.fetch<NemoMeasureValue[] | undefined>(
       `/measures/${measureBid}/values`,
-      {
-        baseURL: this.baseURL,
-        headers: {
-          "Accept-version": "v4",
-          sessionId: this.sessionId,
-        },
-      },
     );
     return values ?? [];
   }

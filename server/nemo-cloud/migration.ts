@@ -1,207 +1,193 @@
-import type { Sensor, SensorMetricName, SensorReading } from "#shared/types";
+import type { Device, Sensor } from "#shared/types";
 import { secondsToDate } from "#shared/utils";
-import { type NemoMeasureSet, db } from "~/server/database";
-import { upsertDevice, upsertSensor } from "~/server/utils";
+import { minTime } from "date-fns/constants";
+import { db } from "~/server/database";
+import { upsertDevice } from "~/server/utils";
 
-import { type NemoSession, login } from "./api";
-import { type NemoConfig, configs } from "./config";
-import { parseLocation } from "./location";
-import {
-  $NemoVariableName,
-  type NemoMeasureVariable,
-  NemoMetricNames,
-} from "./types";
+import { NemoSession } from "./api";
+import { type NemoVersion, nemoConfig } from "./config";
+import { type Location, parseLocation } from "./location";
+import { ReadingStore } from "./reading";
+import type { NemoMeasureSet } from "./types";
 
-export type MigrationOptions = {
-  maxMeasureSetUpdatesPerDevice?: number;
-};
+export async function migrateNemoCloud(version: NemoVersion) {
+  const account = nemoConfig[version];
+  const session = await NemoSession.create(account);
 
-export async function migrateNemoCloud(
-  account: keyof NemoConfig,
-  options: MigrationOptions = {},
-) {
-  console.log(`[nemo-cloud] [${configs[account].url}] start migration`);
-  const { maxMeasureSetUpdatesPerDevice = 2 } = options;
-  const session = await login(configs[account]);
+  console.log(`[nemo-cloud] Start migration ${account.url}`);
+
   const devices = await session.devices();
 
-  const tasks = devices.map(async (device) => {
-    const context = { account, session, deviceSerial: device.serial };
-    await migrateDevice(context);
-    await migrateMeasureSets(context, maxMeasureSetUpdatesPerDevice);
-  });
+  const promises = devices
+    .map((device) => new NemoDeviceMigration(session, device.serial))
+    .map((migration) => migration.migrate());
 
-  await Promise.all(tasks);
-  console.log(`[nemo-cloud] [${configs[account].url}] finish migration`);
+  await Promise.all(promises);
+
+  console.log(`[nemo-cloud] Finish migration ${account.url}`);
 }
 
-type DeviceMigrationContext = {
-  session: NemoSession;
-  deviceSerial: string;
-};
+export class NemoDeviceMigration {
+  private readonly session: NemoSession;
+  private readonly deviceSerial: string;
 
-export async function migrateDevice(context: DeviceMigrationContext) {
-  const { session, deviceSerial } = context;
-  const device = await session.device(deviceSerial);
-  if (!device) {
-    return;
+  constructor(session: NemoSession, deviceSerial: string) {
+    this.session = session;
+    this.deviceSerial = deviceSerial;
   }
 
-  const room = device.roomBid ? await session.room(device.roomBid) : null;
-
-  await upsertDevice({
-    id: device.serial,
-    name: device.name || device.serial,
-    type: "nemo_cloud",
-    latitude: device.latitude,
-    longitude: device.longitude,
-    is_public: false,
-    user_id: null,
-    ...parseLocation(room?.name),
-  });
-}
-
-export async function migrateMeasureSets(
-  context: DeviceMigrationContext,
-  maxUpdate = 1,
-) {
-  const { session, deviceSerial } = context;
-  const measureSets = await session.deviceMeasureSets(deviceSerial);
-  let totalUpdated = 0;
-
-  for (const { bid, valuesNumber, start, end } of measureSets) {
-    const updated = await migrateMeasureSet({
-      ...context,
-      measureSet: {
-        bid,
-        device_serial: deviceSerial,
-        values_number: valuesNumber,
-        start: secondsToDate(start),
-        end: secondsToDate(end),
-      },
-    });
-
-    if (updated) {
-      totalUpdated++;
-    }
-
-    if (totalUpdated >= maxUpdate) {
+  async migrate(): Promise<void> {
+    const device = await this.getDevice();
+    if (!device) {
       return;
     }
-  }
-}
 
-type MeasureSetMigrationContext = DeviceMigrationContext & {
-  measureSet: NemoMeasureSet;
-};
+    await upsertDevice(device);
 
-export async function migrateMeasureSet(
-  context: MeasureSetMigrationContext,
-): Promise<boolean> {
-  const { deviceSerial, measureSet } = context;
-  const record = await db
-    .selectFrom("nemo_measure_sets")
-    .where("device_serial", "=", deviceSerial)
-    .where("bid", "=", measureSet.bid)
-    .selectAll()
-    .executeTakeFirst();
+    const lastUpdate = await this.getLatestReadingTime();
+    //             |
+    //             V
+    // <-- current --> <-- new -->
+    const measureSets = [
+      await this.session.deviceMeasureSetsAt(this.deviceSerial, lastUpdate),
+      await this.session.deviceMeasureSetsAfter(this.deviceSerial, lastUpdate),
+    ];
 
-  if (record && record.values_number === measureSet.values_number) {
-    return false;
+    for (const measureSet of measureSets) {
+      await this.migrateMeasureSet(measureSet);
+    }
   }
 
-  const { id: sensorId } = await migrateMeasureSetSensor(context);
-  await migrateMeasures({
-    ...context,
-    sensorId,
-  });
+  async migrateAll(): Promise<void> {
+    const device = await this.getDevice();
+    if (!device) {
+      return;
+    }
 
-  if (!record) {
+    await upsertDevice(device);
+
+    const measureSets = await this.session.deviceMeasureSets(this.deviceSerial);
+
+    for (const measureSet of measureSets) {
+      await this.migrateMeasureSet(measureSet);
+    }
+  }
+
+  async migrateMeasureSet(measureSet: NemoMeasureSet | null) {
+    if (!measureSet) {
+      return;
+    }
+
+    if (await this.isMeasureSetNewOrUpdated(measureSet)) {
+      const sensor = await this.getMeasureSetSensor(measureSet.bid);
+      await upsertSensor(sensor);
+
+      const readingStore = new ReadingStore(
+        this.session,
+        this.deviceSerial,
+        sensor.id,
+      );
+      await readingStore.addMeasures(measureSet.bid);
+
+      for (const reading of readingStore.allReadings()) {
+        await upsertSensorReading("nemo_cloud", reading);
+      }
+    }
+
+    // Need to update db even if measureSet.bid == db.latestMeasureSet(device).bid because the end time may be extended.
+    // Otherwise the latest update time won't be update and will always get the same measureSet from API.
+    await this.upsertMeasureSet(measureSet);
+
+    // console.log(
+    //   `[nemo-cloud] Migrated measure set ${measureSet.bid} of device ${this.deviceSerial}`,
+    // );
+  }
+
+  async getMeasureSetSensor(measureSetBid: number): Promise<Sensor> {
+    const sensor = await this.session.measureSetSensor(measureSetBid);
+
+    return {
+      device_id: this.deviceSerial,
+      id: sensor.serial,
+      name: sensor.refExposition ?? sensor.serial,
+      type: "nemo_cloud",
+    };
+  }
+
+  async upsertMeasureSet({
+    bid,
+    start,
+    end,
+    valuesNumber: values_number,
+  }: NemoMeasureSet): Promise<void> {
+    const measureSet = {
+      device_serial: this.deviceSerial,
+      bid,
+      values_number,
+      start: secondsToDate(start),
+      end: secondsToDate(end),
+    };
     await db
       .insertInto("nemo_measure_sets")
       .values(measureSet)
-      .executeTakeFirstOrThrow();
-  } else {
-    await db
-      .updateTable("nemo_measure_sets")
-      .set(measureSet)
-      .where("device_serial", "=", deviceSerial)
-      .where("bid", "=", measureSet.bid)
-      .executeTakeFirstOrThrow();
-  }
-
-  console.log(
-    `[nemo-cloud] [measure-set] migrated ${JSON.stringify(measureSet)}`,
-  );
-  return true;
-}
-
-async function migrateMeasureSetSensor({
-  session,
-  measureSet,
-  deviceSerial,
-}: MeasureSetMigrationContext): Promise<Sensor> {
-  const { serial, refExposition } = await session.measureSetSensor(
-    measureSet.bid,
-  );
-  return await upsertSensor({
-    device_id: deviceSerial,
-    id: serial,
-    name: refExposition ?? serial,
-    type: "nemo_cloud",
-  });
-}
-
-type MeasuresMigrationContext = MeasureSetMigrationContext & {
-  sensorId: string;
-};
-
-async function migrateMeasures({
-  session,
-  measureSet,
-  deviceSerial,
-  sensorId,
-}: MeasuresMigrationContext): Promise<void> {
-  const measures = await session.measureSetMeasures(measureSet.bid);
-  const metricsByTime = new Map<number, Partial<SensorReading<"nemo_cloud">>>();
-
-  for (const { measureBid, variable } of measures) {
-    const metricName = parseMetricName(variable);
-    if (!metricName) {
-      continue;
-    }
-
-    const values = await session.measureValues(measureBid);
-    for (const { time: seconds, value } of values) {
-      const reading = metricsByTime.get(seconds) ?? {};
-      reading[metricName] = value;
-      metricsByTime.set(seconds, reading);
-    }
-  }
-
-  for (const [seconds, reading] of metricsByTime.entries()) {
-    await db
-      .insertInto("readings_nemo_cloud")
-      .values({
-        ...reading,
-        time: secondsToDate(seconds),
-        device_id: deviceSerial,
-        sensor_id: sensorId,
-      })
       .onConflict((oc) =>
-        oc.columns(["device_id", "sensor_id", "time"]).doUpdateSet(reading),
+        oc.columns(["device_serial", "bid"]).doUpdateSet(measureSet),
       )
-      .execute()
-      .catch((error) => console.error(error));
+      .execute();
   }
-}
 
-function parseMetricName(
-  variable: NemoMeasureVariable | null,
-): SensorMetricName<"nemo_cloud"> | null {
-  const { data: variableName, success } = $NemoVariableName.safeParse(
-    variable?.name,
-  );
+  async getLatestReadingTime(): Promise<Date> {
+    const result = await db
+      .selectFrom("nemo_measure_sets")
+      .select(["end"])
+      .where("device_serial", "=", this.deviceSerial)
+      .orderBy("end", "desc")
+      .limit(1)
+      .executeTakeFirst();
 
-  return success ? NemoMetricNames[variableName] : null;
+    return result?.end ?? new Date(minTime);
+  }
+
+  async isMeasureSetNewOrUpdated(measureSet: NemoMeasureSet) {
+    const stored = await db
+      .selectFrom("nemo_measure_sets")
+      .selectAll()
+      .where("device_serial", "=", this.deviceSerial)
+      .where("bid", "=", measureSet.bid)
+      .executeTakeFirst();
+
+    // could be the latest measure set but end time is extended
+    // in this case need re-migrate the measure set if there's new measure values
+    return !stored || stored.values_number < measureSet.valuesNumber;
+  }
+
+  async getDevice(): Promise<Device | null> {
+    const device = await this.session.device(this.deviceSerial);
+
+    if (!device) {
+      // console.log(`[nemo-cloud] device details ${this.deviceSerial} not found`);
+      return null;
+    }
+
+    const location = await this.getDeviceLocation(device.roomBid);
+
+    return {
+      id: device.serial,
+      name: device.name || device.serial,
+      type: "nemo_cloud",
+      latitude: device.latitude,
+      longitude: device.longitude,
+      is_public: false,
+      user_id: null,
+      ...location,
+    };
+  }
+
+  async getDeviceLocation(roomBid?: number): Promise<Location> {
+    if (!roomBid) {
+      return {};
+    }
+    const room = await this.session.room(roomBid);
+    return parseLocation(room?.name);
+  }
 }

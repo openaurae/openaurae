@@ -17,8 +17,8 @@ export default defineNuxtConfig({
       tasks: true,
     },
     scheduledTasks: {
-      // migrate NemoCloud data every 2 hours
-      "0 */2 * * *": ["migrate-nemo-cloud"],
+      // migrate NemoCloud data every 5 minutes
+      "*/5 * * * *": ["migrate-nemo-cloud"],
     },
   },
   routeRules: {

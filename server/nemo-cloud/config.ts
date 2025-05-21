@@ -14,7 +14,8 @@ const $NemoConfig = z.object({
 
 export type NemoAccount = z.infer<typeof $NemoAccount>;
 export type NemoConfig = z.infer<typeof $NemoConfig>;
+export type NemoVersion = keyof NemoConfig;
 
 const runtimeConfig = useRuntimeConfig();
 
-export const configs = $NemoConfig.parse(runtimeConfig.nemo);
+export const nemoConfig = $NemoConfig.parse(runtimeConfig.nemo);
