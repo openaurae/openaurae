@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { DeviceWithSensorsAndStatus } from "#shared/types";
+import type { GetDeviceResult } from "#shared/types";
 import { card } from "~/utils/variants";
 
 const { device } = defineProps<{
-  device: DeviceWithSensorsAndStatus | null;
+  device: GetDeviceResult | null;
 }>();
 
 const variants = computed(() =>
@@ -42,8 +42,8 @@ const variants = computed(() =>
       </LabelValue>
 
       <LabelValue>
-        <template #label>Readings Today</template>
-        <template #value>{{ device.daily_reading_count }}</template>
+        <template #label>Sensor Count</template>
+        <template #value>{{ device.sensors.length }}</template>
       </LabelValue>
 
       <LabelValue>

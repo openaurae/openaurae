@@ -1,34 +1,14 @@
-import type { Device, GetDeviceResult } from "#shared/types";
-import { $DeviceId } from "#shared/types";
-import type { H3Event } from "h3";
+import type { GetDeviceResult } from "#shared/types";
 import { z } from "zod/v4";
-import { db } from "~/server/database";
-import { getDeviceSensorsWithStatus, hasPermission } from "~/server/utils";
-
-const $Params = z.object({
-  deviceId: $DeviceId,
-});
+import { getDeviceSensorsWithStatus, validateDeviceId } from "~/server/utils";
 
 const $Query = z.object({
   startOfToday: z.coerce.date(),
 });
 
 export default defineEventHandler(async (event): Promise<GetDeviceResult> => {
-  const { deviceId } = await validateRequest(event, "params", $Params);
   const { startOfToday } = await validateRequest(event, "query", $Query);
-
-  const device = await validateDeviceId(deviceId);
-
-  if (
-    !device.is_public &&
-    !hasPermission(event, "readAll") &&
-    !isDeviceOwner(event, device)
-  ) {
-    throw createError({
-      statusCode: 403,
-      message: "Permission required",
-    });
-  }
+  const device = await validateDeviceId(event);
 
   const sensors = await getDeviceSensorsWithStatus(device.id, startOfToday);
   const status = aggregateSensorDailyStatus(sensors);
@@ -39,21 +19,3 @@ export default defineEventHandler(async (event): Promise<GetDeviceResult> => {
     sensors,
   };
 });
-
-function isDeviceOwner(event: H3Event, device: Device): boolean {
-  const userId = getUserId(event);
-  return userId !== null && device.user_id === userId;
-}
-
-async function validateDeviceId(deviceId: string): Promise<Device> {
-  return await db
-    .selectFrom("devices")
-    .where("id", "=", deviceId)
-    .selectAll()
-    .executeTakeFirstOrThrow(() =>
-      createError({
-        statusCode: 404,
-        message: "Device not found",
-      }),
-    );
-}

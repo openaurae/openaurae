@@ -9,7 +9,7 @@ export const card = tv({
     ],
     header: "flex items-center justify-between",
     title: "font-semibold",
-    subtitle: "text-xs text-(--ui-text-muted)",
+    subtitle: "text-xs text-muted",
     badge: [
       "bg-gradient-to-br",
       "px-3 py-1 rounded-full",

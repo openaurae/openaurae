@@ -1,6 +1,9 @@
+import { $DeviceId, type Device } from "#shared/types";
 import type { H3Event } from "h3";
 import { fromError } from "zod-validation-error";
-import type { ZodSchema } from "zod/v4";
+import { type ZodSchema, z } from "zod/v4";
+
+import { getDeviceById, isDeviceOwner } from "./device";
 
 const Validators = {
   body: readValidatedBody,
@@ -24,4 +27,40 @@ export async function validateRequest<T>(
   }
 
   return data;
+}
+
+const $DeviceApiParam = z.object({
+  deviceId: $DeviceId,
+});
+
+type DeviceApiParam = z.infer<typeof $DeviceApiParam>;
+
+export async function validateDeviceId(event: H3Event): Promise<Device> {
+  const { deviceId } = await validateRequest<DeviceApiParam>(
+    event,
+    "params",
+    $DeviceApiParam,
+  );
+
+  const device = await getDeviceById(deviceId);
+
+  if (!device) {
+    throw createError({
+      statusCode: 404,
+      message: "Device not found",
+    });
+  }
+
+  if (
+    device.is_public ||
+    hasPermission(event, "readAll") ||
+    isDeviceOwner(device, getUserId(event))
+  ) {
+    return device;
+  }
+
+  throw createError({
+    statusCode: 403,
+    message: "Permission required",
+  });
 }

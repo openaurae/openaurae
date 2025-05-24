@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { DeviceTypes, type DeviceWithSensorsAndStatus } from "#shared/types";
+import { DeviceTypes, type GetDeviceResult } from "#shared/types";
 import { formatDistanceToNow } from "date-fns";
 import { card } from "~/utils/variants";
 
 const { device } = defineProps<{
-  device: DeviceWithSensorsAndStatus;
+  device: GetDeviceResult;
 }>();
 
 const { wrapper, header, body, title, subtitle, text, badge, footer } = card({
@@ -76,7 +76,7 @@ const detailsLink = computed(() => `/devices/${device.id}`);
     </div>
 
     <div :class="footer()">
-      <p class="font-semibold text-md text-(--ui-text-muted)">
+      <p class="font-semibold text-md text-muted">
         {{ sensorCount }}
       </p>
       <ULink :to="detailsLink" :class="text()">View Details →</ULink>

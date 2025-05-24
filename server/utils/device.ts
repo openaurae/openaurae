@@ -4,11 +4,16 @@ import type {
   GetDeviceResult,
   GetSensorResult,
 } from "#shared/types";
+import { isNotNil } from "#shared/utils";
 import { compareDesc } from "date-fns";
 import { db } from "~/server/database";
 
-import { countSensorReadings, getSensorLastestReadingTime } from "./reading";
+import { countSensorReadings } from "./reading";
 import { getSensorsByDeviceId } from "./sensor";
+
+export function isDeviceOwner(device: Device, userId: unknown): boolean {
+  return isNotNil(device.user_id) && device.user_id === userId;
+}
 
 export async function insertDevice(device: Device): Promise<void> {
   await db.insertInto("devices").values(device).execute();
@@ -20,6 +25,16 @@ export async function upsertDevice(device: Device): Promise<void> {
     .values(device)
     .onConflict((oc) => oc.column("id").doUpdateSet(device))
     .execute();
+}
+
+export async function getDeviceById(deviceId: string): Promise<Device | null> {
+  const device = await db
+    .selectFrom("devices")
+    .where("id", "=", deviceId)
+    .selectAll()
+    .executeTakeFirst();
+
+  return device ?? null;
 }
 
 export async function getDevices(type?: DeviceType): Promise<Device[]> {

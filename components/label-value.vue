@@ -4,8 +4,8 @@ import { tv } from "tailwind-variants";
 const variants = tv({
   slots: {
     wrapper: "w-full",
-    name: "text-xs text-(--ui-text-muted) uppercase",
-    value: "text-sm font-semibold text-(--ui-text-highlighted)",
+    name: "text-xs text-muted uppercase",
+    value: "text-sm font-semibold text-highlighted",
   },
   variants: {
     orientation: {

@@ -1,20 +1,52 @@
 <script setup lang="ts">
-import { $DeviceWithSensorsAndStatus, type Sensor } from "#shared/types";
-import { startOfDay } from "date-fns";
+import {
+  $GetDeviceResult,
+  $Reading,
+  type GetSensorResult,
+} from "#shared/types";
+import { useEventSource } from "@vueuse/core";
+import { isBefore, startOfDay } from "date-fns";
+import { minTime } from "date-fns/constants";
 
-const route = useRoute();
+const { deviceId } = useRoute().params;
 const { user } = useUser();
 const now = useNow();
 const userId = computed(() => user?.value?.id);
-const { data: device } = useFetch(`/api/devices/${route.params.deviceId}`, {
+const { data: device } = useFetch(`/api/devices/${deviceId}`, {
   watch: [userId],
   query: {
     startOfToday: startOfDay(now.value).toISOString(),
   },
-  transform: $DeviceWithSensorsAndStatus.parse,
+  transform: $GetDeviceResult.parse,
 });
-const deviceType = computed(() => device.value?.type);
-const selectedSensor = ref<Sensor | null>(null);
+
+const sensors = computed(() => device.value?.sensors ?? []);
+
+const sensorById = computed(() => {
+  const entries = sensors.value.map((sensor) => [sensor.id, sensor]);
+  return Object.fromEntries(entries) as Record<string, GetSensorResult>;
+});
+
+const selectedSensor = ref<GetSensorResult | null>(null);
+
+const { data: readingEvent, close } = useEventSource(
+  `/api/devices/${deviceId}/sse`,
+);
+
+watch(readingEvent, (event) => {
+  const reading = $Reading.parse(JSON.parse(event));
+  const sensor = sensorById.value[reading.sensor_id];
+
+  if (isBefore(sensor.last_update ?? minTime, reading.time)) {
+    sensor.last_update = reading.time;
+    sensor.latest_reading = reading;
+    sensor.daily_reading_count++;
+  }
+});
+
+onUnmounted(() => {
+  close();
+});
 </script>
 
 <template>
@@ -27,38 +59,35 @@ const selectedSensor = ref<Sensor | null>(null);
           <h2 class="text-2xl font-semibold">Sensors</h2>
           <!-- <UButton>Add</UButton> -->
         </div>
-        <p class="text-sm text-(--ui-text-muted)">
-          Scroll horizontally to view all sensors, click on a sensor to view
-          details.
+        <p class="text-sm text-muted">
+          Swipe to see all sensors. Tap any sensor to view its
+          <b>real-time</b>
+          metrics.
         </p>
       </div>
 
-      <div class="w-full min-h-lg flex gap-10">
-        <UCarousel
-          v-slot="{ item: sensor }"
-          class="w-full"
-          :items="isDefined(device) ? device.sensors : [null, null, null]"
-          :ui="{
-            item: 'basis-auto my-4',
-          }"
-        >
-          <SensorCard
-            :sensor="sensor"
-            :theme="
-              isDefined(selectedSensor) && sensor?.id === selectedSensor.id
-                ? deviceType
-                : undefined
-            "
-            @sensor-selected="(sensor) => (selectedSensor = sensor)"
-          />
-        </UCarousel>
+      <div v-if="sensors.length === 0" class="py-4">
+        <PlaceHolder text="No sensors" />
       </div>
+      <UCarousel
+        v-else
+        v-slot="{ item: sensor }"
+        class="w-full"
+        :items="sensors"
+        :ui="{
+          item: 'basis-auto',
+          container: 'py-4',
+        }"
+      >
+        <SensorOverview
+          :is-selected="selectedSensor?.id === sensor?.id"
+          :sensor="sensor"
+          @sensor-selected="(sensor) => (selectedSensor = sensor)"
+        />
+      </UCarousel>
     </section>
 
-    <div v-if="isDefined(selectedSensor)">
-      <h2 class="text-2xl font-semibold">Sensor {{ selectedSensor.name }}</h2>
-      <SensorDetails :sensor="selectedSensor" :theme="device?.type" />
-    </div>
+    <SensorDetails v-if="isDefined(selectedSensor)" :sensor="selectedSensor" />
   </UContainer>
 </template>
 

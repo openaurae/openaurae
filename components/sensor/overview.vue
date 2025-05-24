@@ -1,34 +1,44 @@
 <script setup lang="ts">
-import type { DeviceType, Sensor, SensorWithStatus } from "#shared/types";
+import type { GetSensorResult } from "#shared/types";
 import { formatDistance } from "date-fns";
+import { sensorDeviceType } from "~/shared/utils";
 import { card } from "~/utils/variants";
 
 const now = useNow();
 
-const { sensor, theme } = defineProps<{
-  theme?: DeviceType | "default";
-  sensor: SensorWithStatus | null;
+const { sensor, isSelected } = defineProps<{
+  isSelected: boolean;
+  sensor: GetSensorResult | null;
 }>();
+
+const emit = defineEmits<{
+  sensorSelected: [sensor: GetSensorResult];
+}>();
+
+const theme = computed(() => {
+  if (!sensor || !isSelected) {
+    return "default";
+  }
+
+  return sensorDeviceType(sensor.type);
+});
 
 const variants = computed(() =>
   card({
-    theme,
+    theme: theme.value,
     size: "sm",
   }),
 );
 
-const emit = defineEmits<{
-  sensorSelected: [sensor: Sensor];
-}>();
+const formattedLatestReadingTime = computed(() => {
+  const lastUpdate = sensor?.latest_reading?.time;
 
-const lastUpdateTime = computed(() => {
-  if (!isDefined(sensor) || !sensor.last_update) {
-    return "NA";
-  }
-  return formatDistance(sensor.last_update, now.value, {
-    addSuffix: true,
-    includeSeconds: true,
-  });
+  return lastUpdate
+    ? formatDistance(lastUpdate, now.value, {
+        addSuffix: true,
+        includeSeconds: true,
+      })
+    : "NA";
 });
 </script>
 
@@ -36,7 +46,7 @@ const lastUpdateTime = computed(() => {
   <USkeleton v-if="!isDefined(sensor)" :class="variants.wrapper()" />
   <div
     v-else
-    :class="variants.wrapper({ class: 'cursor-pointer', theme })"
+    :class="variants.wrapper({ class: 'cursor-pointer' })"
     @click="emit('sensorSelected', sensor)"
   >
     <div :class="variants.header()">
@@ -44,7 +54,7 @@ const lastUpdateTime = computed(() => {
         <h3 :class="variants.title()">
           {{ sensor.name }}
         </h3>
-        <h5 class="text-xs text-(--ui-text-muted)">#{{ sensor.id }}</h5>
+        <h5 class="text-xs text-muted">#{{ sensor.id }}</h5>
       </div>
 
       <span :class="variants.badge()">{{ formatSensorType(sensor.type) }}</span>
@@ -58,7 +68,7 @@ const lastUpdateTime = computed(() => {
 
       <LabelValue orientation="horizontal">
         <template #label> Last Update: </template>
-        <template #value> {{ lastUpdateTime }} </template>
+        <template #value> {{ formattedLatestReadingTime }} </template>
       </LabelValue>
     </div>
   </div>
