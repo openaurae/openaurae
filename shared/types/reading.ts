@@ -1,5 +1,5 @@
 import type { SensorType } from "#shared/types";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const $ReadingKey = z.object({
   device_id: z.string(),
@@ -7,7 +7,7 @@ const $ReadingKey = z.object({
   time: z.coerce.date(),
 });
 
-export const $Reading = {
+export const $Readings = {
   zigbee_temp: $ReadingKey.extend({
     temperature: z.number(),
     humidity: z.number(),
@@ -92,13 +92,24 @@ export const $Reading = {
   }),
 } as const;
 
+export const $Reading = z.union([
+  $Readings.nemo_cloud,
+  $Readings.ptqs1005,
+  $Readings.pms5003st,
+  $Readings.zigbee_contact,
+  $Readings.zigbee_temp,
+  $Readings.zigbee_power,
+  $Readings.zigbee_contact,
+  $Readings.zigbee_occupancy,
+]);
+
 export type ReadingKey = z.infer<typeof $ReadingKey>;
 
 type ReadingTypes = {
-  [T in SensorType]: z.infer<(typeof $Reading)[T]>;
+  [T in SensorType]: z.infer<(typeof $Readings)[T]>;
 };
 
-export type Reading = ReadingTypes[keyof ReadingTypes];
+export type Reading = z.infer<typeof $Reading>;
 
 export type SensorReading<T extends SensorType> = ReadingTypes[T];
 export type SensorMetrics<T extends SensorType> = Omit<

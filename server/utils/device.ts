@@ -1,8 +1,8 @@
 import type {
   Device,
   DeviceType,
-  DeviceWithSensorsAndStatus,
-  SensorWithStatus,
+  GetDeviceResult,
+  GetSensorResult,
 } from "#shared/types";
 import { compareDesc } from "date-fns";
 import { db } from "~/server/database";
@@ -66,23 +66,24 @@ export async function getUserDevices(
 export async function getDeviceSensorsWithStatus(
   deviceId: string,
   startOfToday: Date,
-): Promise<SensorWithStatus[]> {
+): Promise<GetSensorResult[]> {
   const sensors = await getSensorsByDeviceId(deviceId);
 
   return await Promise.all(
     sensors.map(async (sensor) => {
+      const latestReading = await getSensorLatestReading(sensor);
+
       return {
         ...sensor,
         daily_reading_count: await countSensorReadings(sensor, startOfToday),
-        last_update: await getSensorLastestReadingTime(sensor),
+        latest_reading: latestReading,
+        last_update: latestReading?.time || null,
       };
     }),
   );
 }
 
-export function sortDevicesByLastUpdateTimeDesc(
-  devices: DeviceWithSensorsAndStatus[],
-) {
+export function sortDevicesByLastUpdateTimeDesc(devices: GetDeviceResult[]) {
   devices.sort((a, b) => {
     if (!a.last_update && !b.last_update) {
       return a.name < b.name ? -1 : 1;

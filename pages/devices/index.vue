@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $DeviceType, $DeviceWithSensorsAndStatus } from "#shared/types";
+import { $DeviceType, $GetDeviceResult } from "#shared/types";
 import type { SelectItem } from "@nuxt/ui";
 import { startOfDay } from "date-fns";
 import { tv } from "tailwind-variants";
@@ -15,7 +15,7 @@ const { data, status } = useFetch("/api/devices", {
   query: {
     startOfToday,
   },
-  transform: $DeviceWithSensorsAndStatus.array().parse,
+  transform: $GetDeviceResult.array().parse,
 });
 
 const deviceTypeSelections = ref(
@@ -99,7 +99,7 @@ const container = tv({
       v-else-if="devices.length === 0"
       :class="container({ type: 'placeholder' })"
     >
-      <span class="text-md text-(--ui-text-muted)">No devices</span>
+      <span class="text-md text-muted">No devices</span>
     </div>
 
     <div v-else :class="container({ type: 'cards' })">

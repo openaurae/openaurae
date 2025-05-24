@@ -1,6 +1,6 @@
 import type { H3Event } from "h3";
-import type { ZodSchema } from "zod";
 import { fromError } from "zod-validation-error";
+import type { ZodSchema } from "zod/v4";
 
 const Validators = {
   body: readValidatedBody,

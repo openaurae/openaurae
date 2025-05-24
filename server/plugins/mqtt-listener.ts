@@ -1,4 +1,4 @@
-import { $Reading } from "#shared/types";
+import { $Readings } from "#shared/types";
 import mqtt from "mqtt";
 import z, { ZodError } from "zod";
 import { db } from "~/server/database";
@@ -65,27 +65,27 @@ export default defineNitroPlugin((nitroApp) => {
           if ("power" in message) {
             await db
               .insertInto("readings_zigbee_power")
-              .values($Reading.zigbee_power.parse(message))
+              .values($Readings.zigbee_power.parse(message))
               .execute();
           } else if ("temperature" in message) {
             await db
               .insertInto("readings_zigbee_temp")
-              .values($Reading.zigbee_temp.parse(message))
+              .values($Readings.zigbee_temp.parse(message))
               .execute();
           } else if ("contact" in message) {
             await db
               .insertInto("readings_zigbee_contact")
-              .values($Reading.zigbee_contact.parse(message))
+              .values($Readings.zigbee_contact.parse(message))
               .execute();
           } else if ("occupancy" in message) {
             await db
               .insertInto("readings_zigbee_occupancy")
-              .values($Reading.zigbee_occupancy.parse(message))
+              .values($Readings.zigbee_occupancy.parse(message))
               .execute();
           } else if ("angle_x" in message) {
             await db
               .insertInto("readings_zigbee_vibration")
-              .values($Reading.zigbee_vibration.parse(message))
+              .values($Readings.zigbee_vibration.parse(message))
               .execute();
           } else {
             console.log(`[mqtt] [${topic}] Unknown Zigbee sensor type`);
@@ -117,7 +117,7 @@ async function persistPmsMessage({
   PMVtotal: pmv_total,
   ...message
 }: Message): Promise<void> {
-  const reading = $Reading.pms5003st.parse({
+  const reading = $Readings.pms5003st.parse({
     ...lowercasedKeys(message),
     sensor_id,
     pmv_total,
@@ -130,7 +130,7 @@ async function persistPtqsMessage({
   sensor: sensor_id,
   ...message
 }: Message): Promise<void> {
-  const reading = $Reading.ptqs1005.parse({
+  const reading = $Readings.ptqs1005.parse({
     ...lowercasedKeys(message),
     sensor_id,
   });

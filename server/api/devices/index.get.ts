@@ -1,9 +1,5 @@
-import {
-  $DeviceType,
-  type Device,
-  type DeviceWithSensorsAndStatus,
-} from "#shared/types";
-import { z } from "zod";
+import { $DeviceType, type Device, type GetDeviceResult } from "#shared/types";
+import { z } from "zod/v4";
 import {
   aggregateSensorDailyStatus,
   getDeviceSensorsWithStatus,
@@ -21,41 +17,36 @@ const $QueryParams = z.object({
   startOfToday: z.coerce.date(),
 });
 
-export default defineEventHandler(
-  async (event): Promise<DeviceWithSensorsAndStatus[]> => {
-    const { type, startOfToday } = await validateRequest(
-      event,
-      "query",
-      $QueryParams,
-    );
-    const userId = getUserId(event);
+export default defineEventHandler(async (event): Promise<GetDeviceResult[]> => {
+  const { type, startOfToday } = await validateRequest(
+    event,
+    "query",
+    $QueryParams,
+  );
+  const userId = getUserId(event);
 
-    let devices: Device[] = [];
+  let devices: Device[] = [];
 
-    if (!userId) {
-      devices = await getPublicDevices(type);
-    } else if (hasPermission(event, "readAll")) {
-      devices = await getDevices(type);
-    } else {
-      devices = await getUserDevices(userId, type);
-    }
+  if (!userId) {
+    devices = await getPublicDevices(type);
+  } else if (hasPermission(event, "readAll")) {
+    devices = await getDevices(type);
+  } else {
+    devices = await getUserDevices(userId, type);
+  }
 
-    const devicesWithStatus = await Promise.all(
-      devices.map(async (device) => {
-        const sensors = await getDeviceSensorsWithStatus(
-          device.id,
-          startOfToday,
-        );
-        const status = aggregateSensorDailyStatus(sensors);
-        return {
-          ...device,
-          ...status,
-          sensors,
-        };
-      }),
-    );
+  const devicesWithStatus = await Promise.all(
+    devices.map(async (device) => {
+      const sensors = await getDeviceSensorsWithStatus(device.id, startOfToday);
+      const status = aggregateSensorDailyStatus(sensors);
+      return {
+        ...device,
+        ...status,
+        sensors,
+      };
+    }),
+  );
 
-    sortDevicesByLastUpdateTimeDesc(devicesWithStatus);
-    return devicesWithStatus;
-  },
-);
+  sortDevicesByLastUpdateTimeDesc(devicesWithStatus);
+  return devicesWithStatus;
+});

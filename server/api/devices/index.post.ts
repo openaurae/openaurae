@@ -1,5 +1,5 @@
 import { $Device, type Device, DeviceTypes, SensorTypes } from "#shared/types";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { db } from "~/server/database";
 import { requireLogin, validateRequest } from "~/server/utils";
 
