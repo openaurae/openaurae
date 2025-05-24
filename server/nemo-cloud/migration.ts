@@ -2,6 +2,7 @@ import type { Device, Sensor } from "#shared/types";
 import { secondsToDate } from "#shared/utils";
 import { minTime } from "date-fns/constants";
 import { db } from "~/server/database";
+import { publish } from "~/server/mqtt/sse";
 import { upsertDevice } from "~/server/utils";
 
 import { NemoSession } from "./api";
@@ -91,6 +92,7 @@ export class NemoDeviceMigration {
 
       for (const reading of readingStore.allReadings()) {
         await upsertSensorReading("nemo_cloud", reading);
+        publish(this.deviceSerial, reading);
       }
     }
 
