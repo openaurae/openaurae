@@ -10,7 +10,7 @@ import { requireLogin, validateRequest } from "~/server/utils";
 export default defineEventHandler(async (event) => {
   const userId = requireLogin(event);
   const newDevice = await validateRequest(event, "body", $NewDevice);
-  await requireUniqueIdAndName(newDevice.id, newDevice.name);
+  await requireUniqueId(newDevice.id);
 
   const device = {
     ...newDevice,
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     default:
       throw createError({
         status: 400,
-        message: "Device creation is not supported",
+        statusText: "Device creation is not supported",
       });
   }
 
@@ -57,17 +57,13 @@ async function insertAirQualityDeviceAndSensors(device: Device) {
   });
 }
 
-async function requireUniqueIdAndName(id: string, name: string) {
-  const device = await db
-    .selectFrom("devices")
-    .select(["id"])
-    .where((eb) => eb.or([eb("id", "=", id), eb("name", "=", name)]))
-    .executeTakeFirst();
+async function requireUniqueId(id: string) {
+  const device = await getDeviceById(id);
 
   if (device) {
     throw createError({
       statusCode: 409,
-      statusText: "Device ID or name already exists",
+      statusText: "Device ID is already in use",
     });
   }
 }
