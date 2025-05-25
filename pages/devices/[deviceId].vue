@@ -12,18 +12,22 @@ const { deviceId } = useRoute().params;
 const { user } = useUser();
 const now = useNow();
 const userId = computed(() => user?.value?.id);
-const { data: device } = useFetch<GetDeviceResult>(`/api/devices/${deviceId}`, {
-  watch: [userId],
-  query: {
-    startOfToday: startOfDay(now.value).toISOString(),
+const { data: device, refresh } = useFetch<GetDeviceResult>(
+  `/api/devices/${deviceId}`,
+  {
+    watch: [userId],
+    query: {
+      startOfToday: startOfDay(now.value).toISOString(),
+    },
   },
-});
+);
 
+const isZigbee = computed(() => isZigbeeDevice(device.value));
 const sensors = computed(() => device.value?.sensors ?? []);
 
-const sensorById = computed(() => {
+const sensorById = computed<Record<string, GetSensorResult>>(() => {
   const entries = sensors.value.map((sensor) => [sensor.id, sensor]);
-  return Object.fromEntries(entries) as Record<string, GetSensorResult>;
+  return Object.fromEntries(entries);
 });
 
 const selectedSensor = ref<GetSensorResult | null>(null);
@@ -56,7 +60,11 @@ onUnmounted(() => {
       <div class="flex flex-col">
         <div class="flex justify-between mb-2">
           <h2 class="text-2xl font-semibold">Sensors</h2>
-          <!-- <UButton>Add</UButton> -->
+          <SensorCreateForm
+            v-if="isDefined(device) && isZigbee"
+            :device-id="device.id"
+            @sensor-created="refresh"
+          />
         </div>
         <p class="text-sm text-muted">
           Swipe to see all sensors. Tap any sensor to view its

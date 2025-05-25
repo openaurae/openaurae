@@ -41,6 +41,10 @@ export function formatSensorType(type: SensorType): string {
   }
 }
 
-export function isNemoCloudDevice(device: Device): boolean {
-  return device.type === DeviceTypes.NEMO_CLOUD;
+export function isNemoCloudDevice(device?: Device | null): boolean {
+  return device?.type === DeviceTypes.NEMO_CLOUD;
+}
+
+export function isZigbeeDevice(device?: Device | null): boolean {
+  return device?.type === DeviceTypes.ZIGBEE;
 }
