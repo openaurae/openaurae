@@ -1,4 +1,6 @@
-import z from "zod/v4";
+import { z } from "zod/v4";
+
+import { $DeviceId } from "./device";
 
 export const SensorTypes = {
   AQ_PTQS: "ptqs1005",
@@ -22,14 +24,39 @@ export const $SensorType = z.enum([
   SensorTypes.NEMO_CLOUD,
 ]);
 
-export const $SensorId = z.string();
+export const $ZigbeeSensorType = $SensorType.extract([
+  "zigbee_temp",
+  "zigbee_contact",
+  "zigbee_occupancy",
+  "zigbee_vibration",
+  "zigbee_power",
+]);
+
+export const $SensorId = z
+  .string()
+  .min(1, { message: "Sensor ID cannot be empty." })
+  .max(32, { message: "Sensor ID must be at most 32 characters long." })
+  .regex(/^[a-zA-Z0-9_:]+$/, {
+    message:
+      "Sensor ID can only contain letters, numbers, underscores and colons.",
+  });
+
+export const $SensorName = z
+  .string()
+  .min(1, { message: "Sensor name cannot be empty." })
+  .max(32, { message: "Sensor name must be at most 32 characters long." })
+  .regex(/^[a-zA-Z0-9_:]+$/, {
+    message:
+      "Sensor name can only contain letters, numbers, underscores and colons.",
+  });
 
 export const $Sensor = z.object({
   id: $SensorId,
-  device_id: z.string(),
-  name: z.string(),
+  device_id: $DeviceId,
+  name: $SensorName,
   type: $SensorType,
 });
 
 export type Sensor = z.infer<typeof $Sensor>;
 export type SensorType = z.infer<typeof $SensorType>;
+export type ZigbeeSensorType = z.infer<typeof $ZigbeeSensorType>;

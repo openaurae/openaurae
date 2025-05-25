@@ -2,7 +2,7 @@ import z from "zod/v4";
 
 import { $Device, $DeviceType } from "./device";
 import { $Reading } from "./reading";
-import { $Sensor } from "./sensor";
+import { $Sensor, $ZigbeeSensorType } from "./sensor";
 
 export const $DailyReadingStatus = z.object({
   daily_reading_count: z.number(),
@@ -39,3 +39,13 @@ export const $NewDevice = $Device
   });
 
 export type NewDevice = z.infer<typeof $NewDevice>;
+
+export const $NewSensor = $Sensor
+  .omit({
+    device_id: true,
+  })
+  .extend({
+    type: $ZigbeeSensorType,
+  });
+
+export type NewSensor = z.infer<typeof $NewSensor>;
