@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
-  $GetDeviceResult,
   $Reading,
+  type GetDeviceResult,
   type GetSensorResult,
 } from "#shared/types";
 import { useEventSource } from "@vueuse/core";
@@ -12,12 +12,11 @@ const { deviceId } = useRoute().params;
 const { user } = useUser();
 const now = useNow();
 const userId = computed(() => user?.value?.id);
-const { data: device } = useFetch(`/api/devices/${deviceId}`, {
+const { data: device } = useFetch<GetDeviceResult>(`/api/devices/${deviceId}`, {
   watch: [userId],
   query: {
     startOfToday: startOfDay(now.value).toISOString(),
   },
-  transform: $GetDeviceResult.parse,
 });
 
 const sensors = computed(() => device.value?.sensors ?? []);

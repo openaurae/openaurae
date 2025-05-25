@@ -14,6 +14,7 @@ export type DailyReadingStatus = z.infer<typeof $DailyReadingStatus>;
 export const $GetSensorResult = z.object({
   ...$Sensor.shape,
   ...$DailyReadingStatus.shape,
+  // TODO: $Reading treats PMS readings as PTQS readings
   latest_reading: $Reading.nullable(),
 });
 
