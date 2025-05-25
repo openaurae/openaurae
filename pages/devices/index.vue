@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $DeviceType, $GetDeviceResult } from "#shared/types";
+import { $DeviceType, type GetDeviceResult } from "#shared/types";
 import type { SelectItem } from "@nuxt/ui";
 import { startOfDay } from "date-fns";
 import { tv } from "tailwind-variants";
@@ -10,12 +10,11 @@ const userId = computed(() => user?.value?.id);
 const now = useNow();
 const startOfToday = computed(() => startOfDay(now.value).toISOString());
 
-const { data, status } = useFetch("/api/devices", {
+const { data, status, refresh } = useFetch<GetDeviceResult[]>("/api/devices", {
   watch: [userId],
   query: {
     startOfToday,
   },
-  transform: $GetDeviceResult.array().parse,
 });
 
 const deviceTypeSelections = ref(
@@ -84,6 +83,7 @@ const container = tv({
           placeholder="Search by Id or Name..."
           class="w-full md:w-50"
         />
+        <DeviceCreateForm v-if="isDefined(userId)" @device-created="refresh" />
       </div>
     </header>
 
@@ -95,12 +95,7 @@ const container = tv({
       />
     </div>
 
-    <div
-      v-else-if="devices.length === 0"
-      :class="container({ type: 'placeholder' })"
-    >
-      <span class="text-md text-muted">No devices</span>
-    </div>
+    <PlaceHolder v-else-if="devices.length === 0" text="No devices" />
 
     <div v-else :class="container({ type: 'cards' })">
       <DeviceOverview

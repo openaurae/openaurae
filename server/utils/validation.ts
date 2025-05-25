@@ -1,6 +1,6 @@
 import { $DeviceId, type Device } from "#shared/types";
+import { formatError } from "#shared/utils";
 import type { H3Event } from "h3";
-import { fromError } from "zod-validation-error";
 import { type ZodSchema, z } from "zod/v4";
 
 import { getDeviceById, isDeviceOwner } from "./device";
@@ -22,7 +22,7 @@ export async function validateRequest<T>(
   if (error) {
     throw createError({
       statusCode: 400,
-      message: fromError(error).toString(),
+      message: formatError(error),
     });
   }
 

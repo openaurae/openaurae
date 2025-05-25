@@ -1,15 +1,11 @@
-import { $Device, type Device, DeviceTypes, SensorTypes } from "#shared/types";
-import { z } from "zod/v4";
+import {
+  $NewDevice,
+  type Device,
+  DeviceTypes,
+  SensorTypes,
+} from "#shared/types";
 import { db } from "~/server/database";
 import { requireLogin, validateRequest } from "~/server/utils";
-
-const $NewDevice = $Device
-  .omit({
-    user_id: true,
-  })
-  .extend({
-    type: z.enum([DeviceTypes.AIR_QUALITY, DeviceTypes.ZIGBEE]),
-  });
 
 export default defineEventHandler(async (event) => {
   const userId = requireLogin(event);
@@ -26,8 +22,13 @@ export default defineEventHandler(async (event) => {
       await insertAirQualityDeviceAndSensors(device);
       break;
     case DeviceTypes.ZIGBEE:
-      await insertZigbeeDevice(device);
+      await upsertDevice(device);
       break;
+    default:
+      throw createError({
+        status: 400,
+        message: "Device creation is not supported",
+      });
   }
 
   setResponseStatus(event, 201, "Device created successfully");
@@ -56,10 +57,6 @@ async function insertAirQualityDeviceAndSensors(device: Device) {
   });
 }
 
-async function insertZigbeeDevice(device: Device) {
-  await db.insertInto("devices").values(device).execute();
-}
-
 async function requireUniqueIdAndName(id: string, name: string) {
   const device = await db
     .selectFrom("devices")
@@ -70,7 +67,7 @@ async function requireUniqueIdAndName(id: string, name: string) {
   if (device) {
     throw createError({
       statusCode: 409,
-      message: "Device id or name already exists",
+      statusText: "Device ID or name already exists",
     });
   }
 }

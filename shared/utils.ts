@@ -1,4 +1,6 @@
 import { millisecondsToSeconds, secondsToMilliseconds, toDate } from "date-fns";
+import { FetchError } from "ofetch";
+import { ZodError, z } from "zod/v4";
 
 import { type DeviceType, type SensorType, SensorTypes } from "./types";
 
@@ -24,6 +26,23 @@ export function sensorDeviceType(sensorType: SensorType): DeviceType {
     case SensorTypes.ZG_VIBRATION:
       return "zigbee";
   }
+}
+
+export function formatError(error: unknown): string {
+  if (error instanceof FetchError) {
+    return error.statusText ?? `${error.statusCode} Unknown error`;
+  }
+  if (error instanceof ZodError) {
+    return z.prettifyError(error);
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Unknown error";
+}
+
+export function blankToNull(value: unknown) {
+  return value === "" ? null : value;
 }
 
 export function isNil(value: unknown): boolean {
