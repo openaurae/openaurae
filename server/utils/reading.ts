@@ -24,14 +24,17 @@ export async function insertSensorReading<T extends SensorType>(
 export async function getSensorReadings(
   sensor: Sensor,
   start: Date,
+  end: Date,
 ): Promise<Reading[]> {
   const table = db.dynamic.table(readingTable(sensor.type));
+
   return await db
     .selectFrom(table.as("t"))
     .selectAll()
     .where("t.device_id", "=", sensor.device_id)
     .where("t.sensor_id", "=", sensor.id)
     .where("t.time", ">=", start)
+    .where("t.time", "<=", end)
     .orderBy("t.time", "asc")
     .execute();
 }

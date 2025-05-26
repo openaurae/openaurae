@@ -1,7 +1,7 @@
-import { $DeviceId, type Device } from "#shared/types";
+import { $DeviceId, $SensorId, type Device, type Sensor } from "#shared/types";
 import { formatError } from "#shared/utils";
 import type { H3Event } from "h3";
-import { type ZodSchema, z } from "zod/v4";
+import { z } from "zod/v4";
 
 import { getDeviceById, isDeviceOwner } from "./device";
 
@@ -11,15 +11,15 @@ const Validators = {
   params: getValidatedRouterParams,
 } as const;
 
-export async function validateRequest<T>(
+export async function validateRequest<Schema extends z.Schema>(
   event: H3Event,
   target: keyof typeof Validators,
-  schema: ZodSchema<T>,
-): Promise<T> {
+  schema: Schema,
+): Promise<z.output<Schema>> {
   const validator = Validators[target];
   const { error, data } = await validator(event, schema.safeParseAsync);
 
-  if (error) {
+  if (error || data === undefined) {
     throw createError({
       statusCode: 400,
       message: formatError(error),
@@ -33,21 +33,15 @@ const $DeviceApiParam = z.object({
   deviceId: $DeviceId,
 });
 
-type DeviceApiParam = z.infer<typeof $DeviceApiParam>;
-
 export async function validateDeviceId(event: H3Event): Promise<Device> {
-  const { deviceId } = await validateRequest<DeviceApiParam>(
-    event,
-    "params",
-    $DeviceApiParam,
-  );
+  const { deviceId } = await validateRequest(event, "params", $DeviceApiParam);
 
   const device = await getDeviceById(deviceId);
 
   if (!device) {
     throw createError({
       statusCode: 404,
-      message: "Device not found",
+      statusMessage: "Device not found",
     });
   }
 
@@ -61,6 +55,26 @@ export async function validateDeviceId(event: H3Event): Promise<Device> {
 
   throw createError({
     statusCode: 403,
-    message: "Permission required",
+    statusMessage: "Permission required",
   });
+}
+
+const $SensorApiParam = z.object({
+  sensorId: $SensorId,
+});
+
+export async function validateSensorId(event: H3Event): Promise<Sensor> {
+  const { sensorId } = await validateRequest(event, "params", $SensorApiParam);
+  const device = await validateDeviceId(event);
+
+  const sensor = await getSensorById(device.id, sensorId);
+
+  if (!sensor) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Sensor not found",
+    });
+  }
+
+  return sensor;
 }

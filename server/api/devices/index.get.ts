@@ -12,20 +12,16 @@ import {
   validateRequest,
 } from "~/server/utils";
 
-const $QueryParams = z.object({
+const $Query = z.object({
   type: $DeviceType.optional(),
   startOfToday: z.coerce.date(),
 });
 
 export default defineEventHandler(async (event): Promise<GetDeviceResult[]> => {
-  const { type, startOfToday } = await validateRequest(
-    event,
-    "query",
-    $QueryParams,
-  );
+  const { type, startOfToday } = await validateRequest(event, "query", $Query);
   const userId = getUserId(event);
 
-  let devices: Device[] = [];
+  let devices: Device[];
 
   if (!userId) {
     devices = await getPublicDevices(type);
