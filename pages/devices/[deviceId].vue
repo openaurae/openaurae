@@ -4,6 +4,7 @@ import {
   type GetDeviceResult,
   type GetSensorResult,
 } from "#shared/types";
+import type { BreadcrumbItem } from "@nuxt/ui";
 import { useEventSource } from "@vueuse/core";
 import { isBefore, startOfDay } from "date-fns";
 import { minTime } from "date-fns/constants";
@@ -50,10 +51,22 @@ watch(readingEvent, (event) => {
 onUnmounted(() => {
   close();
 });
+
+const items = computed<BreadcrumbItem[]>(() => [
+  {
+    label: "Devices",
+    to: "/devices",
+  },
+  {
+    label: device.value?.name,
+    to: `/devices/${device.value?.id}`,
+  },
+]);
 </script>
 
 <template>
   <UContainer class="py-10 min-h-screen w-full h-full flex flex-col gap-10">
+    <UBreadcrumb :items="items" />
     <DeviceDetails :device="device" />
 
     <section>
