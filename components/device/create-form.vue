@@ -57,7 +57,12 @@ const deviceTypeSelections = ref(
     title="Create Device"
     description="Register your Air Quality box or Zigbee device to the system."
   >
-    <UButton label="New Device" color="primary" variant="subtle" />
+    <UButton
+      class="cursor-pointer"
+      label="New Device"
+      color="primary"
+      variant="subtle"
+    />
 
     <template #body>
       <UForm

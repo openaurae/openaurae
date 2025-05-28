@@ -13,7 +13,9 @@
           </div>
         </ULink>
 
-        <UserAuth />
+        <div class="flex gap-4 items-center">
+          <UserAuth />
+        </div>
       </UContainer>
     </header>
 

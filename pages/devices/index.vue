@@ -4,14 +4,12 @@ import type { SelectItem } from "@nuxt/ui";
 import { startOfDay } from "date-fns";
 import { tv } from "tailwind-variants";
 
-const { user } = useUser();
-const userId = computed(() => user?.value?.id);
+const { isSignedIn } = useAuth();
 
 const now = useNow();
 const startOfToday = computed(() => startOfDay(now.value).toISOString());
 
 const { data, status, refresh } = useFetch<GetDeviceResult[]>("/api/devices", {
-  watch: [userId],
   query: {
     startOfToday,
   },
@@ -65,6 +63,7 @@ const container = tv({
     >
       <h1 class="text-2xl my-4">Devices</h1>
       <div class="flex flex-col md:flex-row gap-4">
+        <DeviceCreateForm v-if="isSignedIn" @device-created="refresh" />
         <USelect
           v-model="deviceTypes"
           multiple
@@ -83,7 +82,6 @@ const container = tv({
           placeholder="Search by Id or Name..."
           class="w-full md:w-50"
         />
-        <DeviceCreateForm v-if="isDefined(userId)" @device-created="refresh" />
       </div>
     </header>
 
