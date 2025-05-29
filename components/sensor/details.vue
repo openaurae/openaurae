@@ -1,24 +1,91 @@
-<script setup lang="ts">
-import type { GetSensorResult } from "#shared/types";
-import { lightFormat } from "date-fns";
+<script setup lang="ts" generic="T extends SensorType">
+import { MetricsMetadata } from "#shared/metadata";
+import type { GetSensorResult, SensorReading, SensorType } from "#shared/types";
+import type { SelectItem } from "@nuxt/ui";
+import { lightFormat, subHours } from "date-fns";
 
 const { sensor } = defineProps<{
   sensor: GetSensorResult;
 }>();
 
+const span = ref(24);
+const spanOptions = ref<SelectItem[]>([
+  { label: "Last 1 hour", value: 1 },
+  { label: "Last 3 hours", value: 3 },
+  { label: "Last 6 hours", value: 6 },
+  { label: "Last 12 hours", value: 12 },
+  { label: "Last 24 hours", value: 24 },
+  { label: "Last 3 days", value: 24 * 3 },
+  { label: "Last 7 days", value: 24 * 7 },
+]);
+
+const start = computed(() => subHours(new Date(), span.value));
+const end = ref(new Date());
+
+const reading = computed(
+  () => (sensor.latest_reading as SensorReading<T>) ?? null,
+);
+
+const metricsMetadata = computed(() => MetricsMetadata[sensor.type as T]);
+
 const formattedTime = computed(() =>
-  sensor.latest_reading?.time
-    ? lightFormat(sensor.latest_reading.time, "yyyy-MM-dd HH:mm:ss")
+  reading.value?.time
+    ? lightFormat(reading.value.time, "yyyy-MM-dd HH:mm:ss")
     : "NA",
 );
+
+function refresh() {
+  end.value = new Date();
+}
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
-    <h2 class="text-2xl font-semibold">Sensor {{ sensor.name }}</h2>
-    <div class="text-sm text-muted">Latest Reading @ {{ formattedTime }}</div>
+  <div class="grid gap-8">
+    <section class="grid gap-6">
+      <header class="grid gap-1">
+        <h2 class="text-2xl font-semibold">Sensor {{ sensor.name }}</h2>
+        <div class="text-sm text-muted">
+          Latest metrics @ {{ formattedTime }}
+        </div>
+      </header>
 
-    <SensorMetrics :sensor-type="sensor.type" :latest="sensor.latest_reading" />
+      <div
+        v-if="isDefined(reading)"
+        class="grid grid-cols-2 lg:grid-cols-4 gap-4 my-2"
+      >
+        <SensorMetricCard
+          v-for="metadata in metricsMetadata"
+          :key="metadata.name"
+          :metadata="metadata"
+          :value="reading[metadata.name]"
+        />
+      </div>
+      <PlaceHolder v-else text="No Sensor Reading" />
+    </section>
+
+    <section class="grid gap-6">
+      <header class="flex justify-between items-center">
+        <h2 class="text-2xl font-semibold">Metrics History</h2>
+        <div class="flex flex-col md:flex-row gap-4 items-center">
+          <UButton
+            icon="material-symbols:refresh"
+            class="cursor-pointer"
+            variant="subtle"
+            @click="refresh"
+          >
+            Refresh
+          </UButton>
+          <USelect v-model="span" :items="spanOptions" class="w-40" />
+        </div>
+      </header>
+      <SensorReadings
+        :device-id="sensor.device_id"
+        :sensor-id="sensor.id"
+        :type="sensor.type"
+        :start="start"
+        :end="end"
+      />
+    </section>
   </div>
 </template>
 

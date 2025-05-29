@@ -43,11 +43,11 @@ async function onSubmit(event: FormSubmitEvent<NewDevice>) {
   }
 }
 
-const deviceTypeSelections = ref(
+const deviceTypeSelections = ref<SelectItem[]>(
   $CreatableDeviceType.options.map((type) => ({
     value: type,
     label: formatDeviceType(type),
-  })) satisfies SelectItem[],
+  })),
 );
 </script>
 

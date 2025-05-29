@@ -1,4 +1,5 @@
 import type { GetDeviceResult } from "#shared/types";
+import { sortedByTimeDesc } from "#shared/utils";
 import { z } from "zod/v4";
 import { getDeviceSensorsWithStatus, validateDeviceId } from "~/server/utils";
 
@@ -16,6 +17,6 @@ export default defineEventHandler(async (event): Promise<GetDeviceResult> => {
   return {
     ...device,
     ...status,
-    sensors,
+    sensors: sortedByTimeDesc(sensors, (sensor) => sensor.last_update),
   };
 });

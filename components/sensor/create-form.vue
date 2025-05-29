@@ -56,7 +56,12 @@ const sensorTypeSelections = ref(
     title="Create Device"
     description="Pair a new Zigbee sensor and register to the system."
   >
-    <UButton label="New Sensor" color="primary" variant="subtle" />
+    <UButton
+      class="cursor-pointer"
+      label="Pair Sensor"
+      color="primary"
+      variant="subtle"
+    />
 
     <template #body>
       <UForm
@@ -82,7 +87,9 @@ const sensorTypeSelections = ref(
           />
         </UFormField>
 
-        <UButton class="justify-self-end mt-4" type="submit"> Submit </UButton>
+        <UButton class="justify-self-end mt-4 cursor-pointer" type="submit">
+          Submit
+        </UButton>
       </UForm>
     </template>
   </UModal>

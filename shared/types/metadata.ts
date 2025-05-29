@@ -1,9 +1,23 @@
-import type { SensorMetricName } from "./reading";
-import type { SensorType } from "./sensor";
+import type {
+  SensorMetricName,
+  SensorReading,
+  SensorType,
+} from "#shared/types";
 
-export type MetricMetadata<T extends SensorType> = {
-  name: SensorMetricName<T>;
+export type SensorMetricMetadata<
+  T extends SensorType,
+  K extends SensorMetricName<T> = SensorMetricName<T>,
+> = {
+  name: K;
+  type: TypeToString<SensorReading<T>[K]>;
   displayName: string;
   unit?: string;
-  type: "number" | "string" | "boolean";
 };
+
+type TypeToString<T> = T extends string
+  ? "string"
+  : T extends number
+    ? "number"
+    : T extends boolean
+      ? "boolean"
+      : "unknown";

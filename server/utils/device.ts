@@ -1,11 +1,5 @@
-import type {
-  Device,
-  DeviceType,
-  GetDeviceResult,
-  GetSensorResult,
-} from "#shared/types";
+import type { Device, DeviceType, GetSensorResult } from "#shared/types";
 import { isNotNil } from "#shared/utils";
-import { compareDesc } from "date-fns";
 import { db } from "~/server/database";
 
 import { countSensorReadings } from "./reading";
@@ -96,22 +90,4 @@ export async function getDeviceSensorsWithStatus(
       };
     }),
   );
-}
-
-export function sortDevicesByLastUpdateTimeDesc(devices: GetDeviceResult[]) {
-  devices.sort((a, b) => {
-    if (!a.last_update && !b.last_update) {
-      return a.name < b.name ? -1 : 1;
-    }
-
-    if (!a.last_update) {
-      return 1;
-    }
-
-    if (!b.last_update) {
-      return -1;
-    }
-
-    return compareDesc(a.last_update, b.last_update);
-  });
 }

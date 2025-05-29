@@ -1,21 +1,13 @@
-import type { MetricMetadata, SensorType } from "./types";
+import type {
+  SensorMetricMetadata,
+  SensorMetricName,
+  SensorType,
+} from "./types";
 
 export const MetricsMetadata: {
-  [T in SensorType]: MetricMetadata<T>[];
+  [T in SensorType]: SensorMetricMetadata<T, SensorMetricName<T>>[];
 } = {
   nemo_cloud: [
-    {
-      name: "battery",
-      displayName: "Battery",
-      type: "number",
-      unit: "V",
-    },
-    {
-      name: "ch2o",
-      displayName: "CH2O",
-      type: "number",
-      unit: "mg/m3",
-    },
     {
       name: "co2",
       displayName: "CO2",
@@ -35,13 +27,25 @@ export const MetricsMetadata: {
     { name: "pressure", displayName: "Pressure", type: "number", unit: "mb" },
     { name: "rh", displayName: "Humidity", type: "number", unit: "Rh%" },
     { name: "tmp", displayName: "Temperature", type: "number", unit: "°C" },
-  ],
-  zigbee_temp: [
+    {
+      name: "ch2o",
+      displayName: "CH2O",
+      type: "number",
+      unit: "mg/m3",
+    },
     {
       name: "battery",
       displayName: "Battery",
       type: "number",
       unit: "V",
+    },
+  ],
+  zigbee_temp: [
+    {
+      name: "temperature",
+      displayName: "Temperature",
+      type: "number",
+      unit: "°C",
     },
     {
       name: "humidity",
@@ -50,10 +54,10 @@ export const MetricsMetadata: {
       unit: "Rh%",
     },
     {
-      name: "temperature",
-      displayName: "Temperature",
+      name: "battery",
+      displayName: "Battery",
       type: "number",
-      unit: "°C",
+      unit: "V",
     },
     {
       name: "voltage",
@@ -63,12 +67,6 @@ export const MetricsMetadata: {
     },
   ],
   zigbee_contact: [
-    {
-      name: "battery",
-      displayName: "Battery",
-      type: "number",
-      unit: "V",
-    },
     {
       name: "contact",
       displayName: "Contact",
@@ -80,8 +78,24 @@ export const MetricsMetadata: {
       type: "number",
       unit: "V",
     },
+    {
+      name: "battery",
+      displayName: "Battery",
+      type: "number",
+      unit: "V",
+    },
   ],
   zigbee_occupancy: [
+    {
+      name: "occupancy",
+      displayName: "Occupancy",
+      type: "boolean",
+    },
+    {
+      name: "illuminance",
+      displayName: "Illuminance",
+      type: "number",
+    },
     {
       name: "battery",
       displayName: "Battery",
@@ -94,28 +108,15 @@ export const MetricsMetadata: {
       type: "number",
       unit: "V",
     },
-    {
-      name: "illuminance",
-      displayName: "Illuminance",
-      type: "number",
-    },
-    {
-      name: "occupancy",
-      displayName: "Occupancy",
-      type: "boolean",
-    },
   ],
   zigbee_power: [
+    { name: "power", displayName: "Power", type: "number", unit: "W" },
+    { name: "consumption", displayName: "Consumption", type: "number" },
+    { name: "state", displayName: "State", type: "string" },
     { name: "battery", displayName: "Battery", type: "number", unit: "V" },
     { name: "voltage", displayName: "Voltage", type: "number", unit: "V" },
-    { name: "consumption", displayName: "Consumption", type: "number" },
-    { name: "power", displayName: "Power", type: "number", unit: "W" },
-    { name: "state", displayName: "State", type: "string" },
   ],
   zigbee_vibration: [
-    { name: "battery", displayName: "Battery", type: "number", unit: "V" },
-    { name: "voltage", displayName: "Voltage", type: "number", unit: "V" },
-    { name: "action", displayName: "Action", type: "string" },
     { name: "angle", displayName: "Angle", type: "number", unit: "°" },
     { name: "angle_x", displayName: "Angle X", type: "number", unit: "°" },
     {
@@ -132,6 +133,9 @@ export const MetricsMetadata: {
       unit: "°",
     },
     { name: "angle_z", displayName: "Angle Z", type: "number", unit: "°" },
+    { name: "action", displayName: "Action", type: "string" },
+    { name: "battery", displayName: "Battery", type: "number", unit: "V" },
+    { name: "voltage", displayName: "Voltage", type: "number", unit: "V" },
   ],
   pms5003st: [
     { name: "cf_pm1", displayName: "CF PM 1", type: "number" },

@@ -1,4 +1,11 @@
-import { millisecondsToSeconds, secondsToMilliseconds, toDate } from "date-fns";
+import {
+  type DateArg,
+  compareDesc,
+  millisecondsToSeconds,
+  secondsToMilliseconds,
+  toDate,
+} from "date-fns";
+import { minTime } from "date-fns/constants";
 import { FetchError } from "ofetch";
 import { ZodError, z } from "zod/v4";
 
@@ -10,6 +17,15 @@ export function secondsToDate(seconds: number): Date {
 
 export function dateToSeconds(date: Date): number {
   return millisecondsToSeconds(date.getTime());
+}
+
+export function sortedByTimeDesc<T>(
+  items: T[],
+  getTime: (item: T) => DateArg<Date> | null,
+): T[] {
+  return items.toSorted((a, b) =>
+    compareDesc(getTime(a) ?? minTime, getTime(b) ?? minTime),
+  );
 }
 
 export function sensorDeviceType(sensorType: SensorType): DeviceType {

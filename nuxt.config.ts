@@ -1,7 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
-  modules: ["@nuxt/eslint", "@nuxt/ui", "@clerk/nuxt", "@vueuse/nuxt"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxt/ui",
+    "@clerk/nuxt",
+    "@vueuse/nuxt",
+    "nuxt-echarts",
+  ],
   css: ["~/assets/css/main.css"],
   devtools: {
     enabled: true,
@@ -51,5 +57,17 @@ export default defineNuxtConfig({
         company: process.env.NUXT_NEMO_S5_COMPANY,
       },
     },
+  },
+  echarts: {
+    charts: ["LineChart", "BarChart"],
+    renderer: ["svg"],
+    components: [
+      "GridComponent",
+      "TooltipComponent",
+      "LegendComponent",
+      "ToolboxComponent",
+      "TitleComponent",
+    ],
+    features: ["LabelLayout", "UniversalTransition"],
   },
 });

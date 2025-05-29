@@ -1,4 +1,5 @@
 import { $DeviceType, type Device, type GetDeviceResult } from "#shared/types";
+import { sortedByTimeDesc } from "#shared/utils";
 import { z } from "zod/v4";
 import {
   aggregateSensorDailyStatus,
@@ -8,7 +9,6 @@ import {
   getUserDevices,
   getUserId,
   hasPermission,
-  sortDevicesByLastUpdateTimeDesc,
   validateRequest,
 } from "~/server/utils";
 
@@ -43,6 +43,5 @@ export default defineEventHandler(async (event): Promise<GetDeviceResult[]> => {
     }),
   );
 
-  sortDevicesByLastUpdateTimeDesc(devicesWithStatus);
-  return devicesWithStatus;
+  return sortedByTimeDesc(devicesWithStatus, (device) => device.last_update);
 });

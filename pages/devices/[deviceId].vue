@@ -10,15 +10,12 @@ import { isBefore, startOfDay } from "date-fns";
 import { minTime } from "date-fns/constants";
 
 const { deviceId } = useRoute().params;
-const { user } = useUser();
 const now = useNow();
-const userId = computed(() => user?.value?.id);
 const { data: device, refresh } = useFetch<GetDeviceResult>(
   `/api/devices/${deviceId}`,
   {
-    watch: [userId],
     query: {
-      startOfToday: startOfDay(now.value).toISOString(),
+      startOfToday: computed(() => startOfDay(now.value).toISOString()),
     },
   },
 );
@@ -62,6 +59,10 @@ const items = computed<BreadcrumbItem[]>(() => [
     to: `/devices/${device.value?.id}`,
   },
 ]);
+
+function onSensorSelected(sensor: GetSensorResult) {
+  selectedSensor.value = sensor;
+}
 </script>
 
 <template>
@@ -102,7 +103,7 @@ const items = computed<BreadcrumbItem[]>(() => [
         <SensorOverview
           :is-selected="selectedSensor?.id === sensor?.id"
           :sensor="sensor"
-          @sensor-selected="(sensor) => (selectedSensor = sensor)"
+          @sensor-selected="onSensorSelected"
         />
       </UCarousel>
     </section>
