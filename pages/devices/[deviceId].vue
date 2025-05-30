@@ -63,6 +63,13 @@ const items = computed<BreadcrumbItem[]>(() => [
 function onSensorSelected(sensor: GetSensorResult) {
   selectedSensor.value = sensor;
 }
+
+async function onSensorDeleted(deviceId: string, sensorId: string) {
+  if (selectedSensor.value?.id === sensorId) {
+    selectedSensor.value = null;
+  }
+  await refresh();
+}
 </script>
 
 <template>
@@ -108,7 +115,11 @@ function onSensorSelected(sensor: GetSensorResult) {
       </UCarousel>
     </section>
 
-    <SensorDetails v-if="isDefined(selectedSensor)" :sensor="selectedSensor" />
+    <SensorDetails
+      v-if="isDefined(selectedSensor)"
+      :sensor="selectedSensor"
+      @sensor-deleted="onSensorDeleted"
+    />
   </UContainer>
 </template>
 

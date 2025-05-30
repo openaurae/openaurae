@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T extends SensorType">
+import { SensorDeleteForm } from "#components";
 import { MetricsMetadata } from "#shared/metadata";
 import type { GetSensorResult, SensorReading, SensorType } from "#shared/types";
 import type { SelectItem } from "@nuxt/ui";
@@ -6,6 +7,10 @@ import { lightFormat, subHours } from "date-fns";
 
 const { sensor } = defineProps<{
   sensor: GetSensorResult;
+}>();
+
+const emit = defineEmits<{
+  sensorDeleted: [deviceId: string, sensorId: string];
 }>();
 
 const span = ref(24);
@@ -37,13 +42,28 @@ const formattedTime = computed(() =>
 function refresh() {
   end.value = new Date();
 }
+
+// bubble up
+function onSensorDeleted(deviceId: string, sensorId: string) {
+  emit("sensorDeleted", deviceId, sensorId);
+}
 </script>
 
 <template>
   <div class="grid gap-8">
     <section class="grid gap-6">
       <header class="grid gap-1">
-        <h2 class="text-2xl font-semibold">Sensor {{ sensor.name }}</h2>
+        <div
+          class="flex flex-col gap-1 lg:flex-row items-start justify-between"
+        >
+          <h2 class="text-2xl font-semibold">Sensor {{ sensor.name }}</h2>
+          <SensorDeleteForm
+            :device-id="sensor.device_id"
+            :sensor-id="sensor.id"
+            @sensor-deleted="onSensorDeleted"
+          />
+        </div>
+
         <div class="text-sm text-muted">
           Latest metrics @ {{ formattedTime }}
         </div>

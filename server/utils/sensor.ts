@@ -1,6 +1,5 @@
 import type { DailyReadingStatus, Sensor } from "#shared/types";
 import { max as maxDate } from "date-fns";
-import { sql } from "kysely";
 import { db } from "~/server/database";
 
 export async function upsertSensor(sensor: Sensor): Promise<Sensor> {
@@ -14,6 +13,14 @@ export async function upsertSensor(sensor: Sensor): Promise<Sensor> {
     )
     .returningAll()
     .executeTakeFirstOrThrow();
+}
+
+export async function deleteSensor(sensor: Sensor): Promise<void> {
+  await db
+    .deleteFrom("sensors")
+    .where("device_id", "=", sensor.device_id)
+    .where("id", "=", sensor.id)
+    .execute();
 }
 
 export async function insertSensor(sensor: Sensor): Promise<Sensor> {

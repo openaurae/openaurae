@@ -14,6 +14,16 @@ export async function upsertSensorReading<T extends SensorType>(
     .execute();
 }
 
+export async function deleteSensorReadings(sensor: Sensor): Promise<void> {
+  const table = db.dynamic.table(readingTable(sensor.type));
+
+  await db
+    .deleteFrom(table.as("t"))
+    .where("t.device_id", "=", sensor.device_id)
+    .where("t.sensor_id", "=", sensor.id)
+    .execute();
+}
+
 export async function insertSensorReading<T extends SensorType>(
   sensorType: T,
   reading: SensorReading<T>,

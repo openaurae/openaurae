@@ -53,7 +53,7 @@ const sensorTypeSelections = ref(
 <template>
   <UModal
     v-model:open="open"
-    title="Create Device"
+    title="Pair New Sensor"
     description="Pair a new Zigbee sensor and register to the system."
   >
     <UButton
