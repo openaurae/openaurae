@@ -98,9 +98,9 @@ function onSensorUpdated() {
     </section>
 
     <section class="grid gap-6">
-      <header class="flex justify-between items-center">
+      <header class="flex flex-col md:flex-row justify-between gap-2">
         <h2 class="text-2xl font-semibold">Metrics History</h2>
-        <div class="flex flex-col md:flex-row gap-4 items-center">
+        <div class="flex flex-row justify-between gap-4 items-center">
           <UButton
             icon="material-symbols:refresh"
             class="cursor-pointer"
