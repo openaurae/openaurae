@@ -16,6 +16,15 @@ export async function upsertSensor(sensor: Sensor): Promise<Sensor> {
     .executeTakeFirstOrThrow();
 }
 
+export async function updateSensorById(sensor: Sensor): Promise<void> {
+  await db
+    .updateTable("sensors")
+    .set(sensor)
+    .where("device_id", "=", sensor.device_id)
+    .where("id", "=", sensor.id)
+    .execute();
+}
+
 export async function deleteSensor(
   sensor: Sensor,
   tx?: Transaction<Database>,

@@ -26,9 +26,9 @@ export const $DeviceName = z
   .string()
   .min(1, { message: "Device name cannot be empty." })
   .max(32, { message: "Device name must be at most 32 characters long." })
-  .regex(/^[a-zA-Z0-9_:]+$/, {
+  .regex(/^[a-zA-Z0-9_:-]+$/, {
     message:
-      "Device name can only contain letters, numbers, underscores and colons.",
+      "Device name can only contain letters, numbers, underscores, hyphens and colons.",
   });
 
 export const $Device = z.object({

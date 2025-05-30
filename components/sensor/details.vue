@@ -11,6 +11,7 @@ const { sensor } = defineProps<{
 
 const emit = defineEmits<{
   sensorDeleted: [deviceId: string, sensorId: string];
+  sensorUpdated: [];
 }>();
 
 const span = ref(24);
@@ -47,6 +48,11 @@ function refresh() {
 function onSensorDeleted(deviceId: string, sensorId: string) {
   emit("sensorDeleted", deviceId, sensorId);
 }
+
+// bubble up
+function onSensorUpdated() {
+  emit("sensorUpdated");
+}
 </script>
 
 <template>
@@ -56,7 +62,13 @@ function onSensorDeleted(deviceId: string, sensorId: string) {
         <div
           class="flex flex-col gap-1 lg:flex-row items-start justify-between"
         >
-          <h2 class="text-2xl font-semibold">Sensor {{ sensor.name }}</h2>
+          <div class="flex items-center gap-4">
+            <h2 class="text-2xl font-semibold">Sensor {{ sensor.name }}</h2>
+            <SensorUpdateForm
+              :sensor="sensor"
+              @sensor-updated="onSensorUpdated"
+            />
+          </div>
           <SensorDeleteForm
             :device-id="sensor.device_id"
             :sensor-id="sensor.id"

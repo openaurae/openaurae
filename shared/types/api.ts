@@ -56,3 +56,9 @@ export const $NewSensor = $Sensor
   });
 
 export type NewSensor = z.infer<typeof $NewSensor>;
+
+export const $UpdateSensor = $Sensor.pick({
+  name: true,
+});
+
+export type UpdateSensor = z.infer<typeof $UpdateSensor>;

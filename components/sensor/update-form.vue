@@ -1,38 +1,41 @@
 <script setup lang="ts">
-import { $NewSensor, $ZigbeeSensorType, type NewSensor } from "#shared/types";
+import { $UpdateSensor, type Sensor, type UpdateSensor } from "#shared/types";
 import { formatError } from "#shared/utils";
-import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
+import type { FormSubmitEvent } from "@nuxt/ui";
 
-const { deviceId } = defineProps<{
-  deviceId: string;
+const props = defineProps<{
+  sensor: Sensor;
 }>();
 
+const sensor = toRef(() => props.sensor);
+
 const emit = defineEmits<{
-  sensorCreated: [];
+  sensorUpdated: [];
 }>();
 
 const toast = useToast();
 const open = ref(false);
 
-const state = reactive<Partial<NewSensor>>({
-  id: "",
-  name: "",
-  type: "zigbee_temp",
-});
+const state = computed(() => ({
+  name: sensor.value.name,
+}));
 
-async function onSubmit(event: FormSubmitEvent<NewSensor>) {
+async function onSubmit(event: FormSubmitEvent<UpdateSensor>) {
   try {
-    await $fetch(`/api/devices/${deviceId}/sensors`, {
-      method: "POST",
-      body: event.data,
-    });
+    await $fetch(
+      `/api/devices/${sensor.value.device_id}/sensors/${sensor.value.id}`,
+      {
+        method: "PUT",
+        body: event.data,
+      },
+    );
     toast.add({
       title: "Success",
-      description: "Sensor has been created.",
+      description: "Sensor has been updated.",
       color: "success",
     });
     open.value = false;
-    emit("sensorCreated");
+    emit("sensorUpdated");
   } catch (error) {
     toast.add({
       title: "Error",
@@ -41,37 +44,28 @@ async function onSubmit(event: FormSubmitEvent<NewSensor>) {
     });
   }
 }
-
-const sensorTypeSelections = ref(
-  $ZigbeeSensorType.options.map((type) => ({
-    value: type,
-    label: formatSensorType(type),
-  })) satisfies SelectItem[],
-);
 </script>
 
 <template>
-  <UModal
-    v-model:open="open"
-    title="Pair New Sensor"
-    description="Pair a new Zigbee sensor and register to the system."
-  >
+  <UModal v-model:open="open" title="Edit Sensor Information">
     <UButton
+      icon="material-symbols:edit-square-outline"
       class="cursor-pointer"
-      label="Pair Sensor"
-      color="primary"
+      label="Edit"
+      color="neutral"
       variant="subtle"
+      size="xs"
     />
 
     <template #body>
       <UForm
-        :schema="$NewSensor"
+        :schema="$UpdateSensor"
         :state="state"
         class="w-full grid gap-6"
         @submit="onSubmit"
       >
         <UFormField label="ID" name="id" required>
-          <UInput v-model="state.id" class="w-full" />
+          <UInput v-model="sensor.id" disabled class="w-full" />
         </UFormField>
 
         <UFormField label="Name" name="name" required>
@@ -79,10 +73,9 @@ const sensorTypeSelections = ref(
         </UFormField>
 
         <UFormField label="Type" name="type" required>
-          <USelect
-            v-model="state.type"
-            :items="sensorTypeSelections"
-            placeholder="Select Device Type"
+          <UInput
+            :model-value="formatSensorType(sensor.type)"
+            disabled
             class="w-full"
           />
         </UFormField>

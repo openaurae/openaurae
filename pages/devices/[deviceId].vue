@@ -124,6 +124,7 @@ async function onDeviceUpdated() {
       v-if="isDefined(selectedSensor)"
       :sensor="selectedSensor"
       @sensor-deleted="onSensorDeleted"
+      @sensor-updated="onDeviceUpdated"
     />
   </UContainer>
 </template>
