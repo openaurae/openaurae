@@ -9,7 +9,7 @@ const { device } = defineProps<{
 const variants = computed(() =>
   card({
     theme: device?.type,
-    size: "lg",
+    size: "device_details",
   }),
 );
 </script>

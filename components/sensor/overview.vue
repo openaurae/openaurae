@@ -26,7 +26,7 @@ const theme = computed(() => {
 const variants = computed(() =>
   card({
     theme: theme.value,
-    size: "sm",
+    size: "sensor_overview",
   }),
 );
 

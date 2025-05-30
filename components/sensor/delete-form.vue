@@ -47,9 +47,10 @@ function closeModal() {
     description="Unpair sensor and remove from the system."
   >
     <UButton
+      icon="material-symbols:delete-outline"
       class="cursor-pointer"
       label="Unpair"
-      color="warning"
+      color="error"
       variant="subtle"
     />
 

@@ -9,7 +9,7 @@ const { isSignedIn } = useAuth();
 const now = useNow();
 const startOfToday = computed(() => startOfDay(now.value).toISOString());
 
-const { data, status, refresh } = useFetch<GetDeviceResult[]>("/api/devices", {
+const { data, refresh } = useFetch<GetDeviceResult[]>("/api/devices", {
   query: {
     startOfToday,
   },
@@ -40,17 +40,6 @@ const devices = useArrayFilter(allDevices, (device) => {
     device.id.toLowerCase().includes(searched.value) ||
     device.name.toLowerCase().includes(searched.value)
   );
-});
-
-const container = tv({
-  base: ["w-full h-full min-h-[60vh]"],
-  variants: {
-    type: {
-      cards: ["grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"],
-      placeholder:
-        "rounded-xl bg-(--ui-bg-muted) flex justify-center items-center",
-    },
-  },
 });
 </script>
 
@@ -85,22 +74,26 @@ const container = tv({
       </div>
     </header>
 
-    <div v-if="status === 'pending'" :class="container({ type: 'cards' })">
-      <USkeleton
-        v-for="i in 8"
-        :key="i"
-        class="w-[315px] h-[300px] rounded-2xl"
-      />
-    </div>
+    <PlaceHolder v-if="devices?.length === 0" text="No devices" />
 
-    <PlaceHolder v-else-if="devices.length === 0" text="No devices" />
-
-    <div v-else :class="container({ type: 'cards' })">
-      <DeviceOverview
-        v-for="device in devices"
-        :key="device.id"
-        :device="device"
-      />
+    <div
+      v-else
+      class="w-full h-full min-h-[60vh] grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
+    >
+      <template v-if="!isDefined(devices)">
+        <USkeleton
+          v-for="i in 8"
+          :key="i"
+          class="w-[315px] h-[300px] rounded-2xl"
+        />
+      </template>
+      <template v-else>
+        <DeviceOverview
+          v-for="device in devices"
+          :key="device.id"
+          :device="device"
+        />
+      </template>
     </div>
   </UContainer>
 </template>

@@ -4,7 +4,7 @@ export const card = tv({
   slots: {
     wrapper: [
       "rounded-xl overflow-hidden shadow-md backdrop-blur-lg",
-      "transition-all duration-300 hover:shadow-lg",
+      "transition-all duration-300",
       "flex flex-col gap-4",
     ],
     header: "flex items-center justify-between",
@@ -43,19 +43,19 @@ export const card = tv({
       },
     },
     size: {
-      lg: {
+      device_details: {
         wrapper: "p-4 lg:p-8 gap-10",
         title: "text-2xl",
         body: "grid grid-cols-2 lg:grid-cols-4 gap-4",
       },
-      md: {
-        wrapper: "h-70",
+      device_overview: {
+        wrapper: "h-70 hover:shadow-lg",
         header: "p-4",
         body: "px-4 grid grid-cols-2 gap-2 grow",
         footer: "w-full h-12 px-4",
       },
-      sm: {
-        wrapper: "w-74 h-32 p-4",
+      sensor_overview: {
+        wrapper: "w-74 h-32 p-4 hover:shadow-lg",
         title: "text-md",
         body: "flex flex-col justify-between",
       },
@@ -63,6 +63,5 @@ export const card = tv({
   },
   defaultVariants: {
     theme: "default",
-    size: "md",
   },
 });

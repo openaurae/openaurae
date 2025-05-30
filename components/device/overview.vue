@@ -9,7 +9,7 @@ const { device } = defineProps<{
 
 const { wrapper, header, body, title, subtitle, text, badge, footer } = card({
   theme: device.type,
-  size: "md",
+  size: "device_overview",
 });
 
 const isNemo = computed(() => device.type === DeviceTypes.NEMO_CLOUD);
