@@ -10,9 +10,11 @@ import { FetchError } from "ofetch";
 import { ZodError, z } from "zod/v4";
 
 import {
+  $ZigbeeSensorType,
   type Device,
   type DeviceType,
   DeviceTypes,
+  type Sensor,
   type SensorType,
   SensorTypes,
 } from "./types";
@@ -23,6 +25,12 @@ export function isNemoCloudDevice(device?: Device | null): boolean {
 
 export function isZigbeeDevice(device?: Device | null): boolean {
   return device?.type === DeviceTypes.ZIGBEE;
+}
+
+export function isZigbeeSensor(sensor: Sensor): boolean {
+  const result = $ZigbeeSensorType.safeParse(sensor.type);
+
+  return result.success;
 }
 
 export function secondsToDate(seconds: number): Date {

@@ -2,6 +2,7 @@
 import { SensorDeleteForm } from "#components";
 import { MetricsMetadata } from "#shared/metadata";
 import type { GetSensorResult, SensorReading, SensorType } from "#shared/types";
+import { isZigbeeSensor } from "#shared/utils";
 import type { SelectItem } from "@nuxt/ui";
 import { lightFormat, subHours } from "date-fns";
 
@@ -70,6 +71,7 @@ function onSensorUpdated() {
             />
           </div>
           <SensorDeleteForm
+            v-if="isZigbeeSensor(sensor)"
             :device-id="sensor.device_id"
             :sensor-id="sensor.id"
             @sensor-deleted="onSensorDeleted"
