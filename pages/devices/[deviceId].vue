@@ -4,6 +4,7 @@ import {
   type GetDeviceResult,
   type GetSensorResult,
 } from "#shared/types";
+import { isZigbeeDevice } from "#shared/utils";
 import type { BreadcrumbItem } from "@nuxt/ui";
 import { useEventSource } from "@vueuse/core";
 import { isBefore, startOfDay } from "date-fns";
@@ -70,12 +71,16 @@ async function onSensorDeleted(deviceId: string, sensorId: string) {
   }
   await refresh();
 }
+
+async function onDeviceUpdated() {
+  await refresh();
+}
 </script>
 
 <template>
   <UContainer class="py-10 min-h-screen w-full h-full flex flex-col gap-10">
     <UBreadcrumb :items="items" />
-    <DeviceDetails :device="device" />
+    <DeviceDetails :device="device" @device-updated="onDeviceUpdated" />
 
     <section>
       <div class="flex flex-col">

@@ -21,6 +21,14 @@ export async function upsertDevice(device: Device): Promise<void> {
     .execute();
 }
 
+export async function updateDeviceById(device: Device): Promise<void> {
+  await db
+    .updateTable("devices")
+    .set(device)
+    .where("id", "=", device.id)
+    .execute();
+}
+
 export async function getDeviceById(deviceId: string): Promise<Device | null> {
   const device = await db
     .selectFrom("devices")

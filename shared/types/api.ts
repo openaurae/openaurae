@@ -40,6 +40,13 @@ export const $NewDevice = $Device
 
 export type NewDevice = z.infer<typeof $NewDevice>;
 
+export const $UpdateDevice = $NewDevice.omit({
+  id: true,
+  type: true,
+});
+
+export type UpdateDevice = z.infer<typeof $UpdateDevice>;
+
 export const $NewSensor = $Sensor
   .omit({
     device_id: true,

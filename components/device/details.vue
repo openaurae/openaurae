@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { GetDeviceResult } from "#shared/types";
+import { isNemoCloudDevice } from "#shared/utils";
 import { card } from "~/utils/variants";
 
 const { device } = defineProps<{
   device: GetDeviceResult | null;
+}>();
+
+const emit = defineEmits<{
+  deviceUpdated: [];
 }>();
 
 const variants = computed(() =>
@@ -12,6 +17,8 @@ const variants = computed(() =>
     size: "device_details",
   }),
 );
+
+const isNemo = computed(() => isNemoCloudDevice(device));
 </script>
 
 <template>
@@ -20,8 +27,13 @@ const variants = computed(() =>
   </div>
   <div v-else :class="variants.wrapper()">
     <div :class="variants.header()">
-      <div class="flex gap-2 items-center">
+      <div class="flex gap-4 items-center">
         <h2 :class="variants.title()">Device Details</h2>
+        <DeviceUpdateForm
+          v-if="device !== null && !isNemo"
+          :device="device"
+          @device-updated="emit('deviceUpdated')"
+        />
       </div>
     </div>
 

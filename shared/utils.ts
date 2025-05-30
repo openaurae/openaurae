@@ -9,7 +9,21 @@ import { minTime } from "date-fns/constants";
 import { FetchError } from "ofetch";
 import { ZodError, z } from "zod/v4";
 
-import { type DeviceType, type SensorType, SensorTypes } from "./types";
+import {
+  type Device,
+  type DeviceType,
+  DeviceTypes,
+  type SensorType,
+  SensorTypes,
+} from "./types";
+
+export function isNemoCloudDevice(device?: Device | null): boolean {
+  return device?.type === DeviceTypes.NEMO_CLOUD;
+}
+
+export function isZigbeeDevice(device?: Device | null): boolean {
+  return device?.type === DeviceTypes.ZIGBEE;
+}
 
 export function secondsToDate(seconds: number): Date {
   return toDate(secondsToMilliseconds(seconds));

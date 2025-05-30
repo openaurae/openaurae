@@ -1,9 +1,4 @@
-import {
-  type Device,
-  type DeviceType,
-  DeviceTypes,
-  type SensorType,
-} from "#shared/types";
+import { type DeviceType, DeviceTypes, type SensorType } from "#shared/types";
 
 export function formatDeviceType(type: DeviceType): string {
   switch (type) {
@@ -39,12 +34,4 @@ export function formatSensorType(type: SensorType): string {
     default:
       return "Unknown";
   }
-}
-
-export function isNemoCloudDevice(device?: Device | null): boolean {
-  return device?.type === DeviceTypes.NEMO_CLOUD;
-}
-
-export function isZigbeeDevice(device?: Device | null): boolean {
-  return device?.type === DeviceTypes.ZIGBEE;
 }
