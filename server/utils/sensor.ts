@@ -1,6 +1,7 @@
 import type { DailyReadingStatus, Sensor } from "#shared/types";
 import { max as maxDate } from "date-fns";
-import { db } from "~/server/database";
+import type { Transaction } from "kysely";
+import { type Database, db } from "~/server/database";
 
 export async function upsertSensor(sensor: Sensor): Promise<Sensor> {
   return await db
@@ -15,8 +16,13 @@ export async function upsertSensor(sensor: Sensor): Promise<Sensor> {
     .executeTakeFirstOrThrow();
 }
 
-export async function deleteSensor(sensor: Sensor): Promise<void> {
-  await db
+export async function deleteSensor(
+  sensor: Sensor,
+  tx?: Transaction<Database>,
+): Promise<void> {
+  const executor = tx ?? db;
+
+  await executor
     .deleteFrom("sensors")
     .where("device_id", "=", sensor.device_id)
     .where("id", "=", sensor.id)

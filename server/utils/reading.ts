@@ -1,5 +1,6 @@
 import type { Reading, Sensor, SensorReading, SensorType } from "#shared/types";
-import { db, readingTable } from "~/server/database";
+import type { Transaction } from "kysely";
+import { type Database, db, readingTable } from "~/server/database";
 
 export async function upsertSensorReading<T extends SensorType>(
   sensorType: T,
@@ -14,10 +15,14 @@ export async function upsertSensorReading<T extends SensorType>(
     .execute();
 }
 
-export async function deleteSensorReadings(sensor: Sensor): Promise<void> {
+export async function deleteSensorReadings(
+  sensor: Sensor,
+  tx?: Transaction<Database>,
+): Promise<void> {
+  const executor = tx ?? db;
   const table = db.dynamic.table(readingTable(sensor.type));
 
-  await db
+  await executor
     .deleteFrom(table.as("t"))
     .where("t.device_id", "=", sensor.device_id)
     .where("t.sensor_id", "=", sensor.id)
