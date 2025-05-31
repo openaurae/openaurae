@@ -4,7 +4,12 @@ import {
   getLocalTimeZone,
   today,
 } from "@internationalized/date";
-import { endOfDay, formatISO, startOfDay } from "date-fns";
+import {
+  endOfDay,
+  formatISO,
+  minutesToMilliseconds,
+  startOfDay,
+} from "date-fns";
 import type { SignedKey } from "~/server/database";
 
 const { deviceId, sensorId } = defineProps<{
@@ -12,9 +17,11 @@ const { deviceId, sensorId } = defineProps<{
   sensorId: string;
 }>();
 
-const { data: key } = await useFetch<SignedKey>("/api/keys", {
+const { data: key, refresh } = await useFetch<SignedKey>("/api/keys", {
   method: "POST",
 });
+
+useIntervalFn(refresh, minutesToMilliseconds(1));
 
 const tz = getLocalTimeZone();
 
