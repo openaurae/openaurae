@@ -2,7 +2,6 @@
 import { $DeviceType, type GetDeviceResult } from "#shared/types";
 import type { SelectItem } from "@nuxt/ui";
 import { startOfDay } from "date-fns";
-import { tv } from "tailwind-variants";
 
 const { isSignedIn } = useAuth();
 
@@ -13,6 +12,7 @@ const { data, refresh } = useFetch<GetDeviceResult[]>("/api/devices", {
   query: {
     startOfToday,
   },
+  server: false,
 });
 
 const deviceTypeSelections = ref(
@@ -41,6 +41,8 @@ const devices = useArrayFilter(allDevices, (device) => {
     device.name.toLowerCase().includes(searched.value)
   );
 });
+
+const { wrapper } = card({ size: "device_overview" });
 </script>
 
 <template>
@@ -74,18 +76,17 @@ const devices = useArrayFilter(allDevices, (device) => {
       </div>
     </header>
 
-    <PlaceHolder v-if="devices?.length === 0" text="No devices" />
+    <PlaceHolder
+      v-if="isDefined(data) && devices?.length === 0"
+      text="No devices"
+    />
 
     <div
       v-else
       class="w-full h-full min-h-[60vh] grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
     >
-      <template v-if="!isDefined(devices)">
-        <USkeleton
-          v-for="i in 8"
-          :key="i"
-          class="w-[315px] h-[300px] rounded-2xl"
-        />
+      <template v-if="!isDefined(data)">
+        <USkeleton v-for="i in 8" :key="i" :class="wrapper()" />
       </template>
       <template v-else>
         <DeviceOverview

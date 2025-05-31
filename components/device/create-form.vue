@@ -60,7 +60,7 @@ const deviceTypeSelections = ref<SelectItem[]>(
     <UButton
       class="cursor-pointer"
       label="New Device"
-      color="primary"
+      color="neutral"
       variant="subtle"
     />
 
