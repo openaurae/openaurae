@@ -33,7 +33,10 @@ const $DeviceApiParam = z.object({
   deviceId: $DeviceId,
 });
 
-export async function validateDeviceId(event: H3Event): Promise<Device> {
+export async function validateDeviceId(
+  event: H3Event,
+  userId?: string,
+): Promise<Device> {
   const { deviceId } = await validateRequest(event, "params", $DeviceApiParam);
 
   const device = await getDeviceById(deviceId);
@@ -48,7 +51,7 @@ export async function validateDeviceId(event: H3Event): Promise<Device> {
   if (
     device.is_public ||
     hasPermission(event, "readAll") ||
-    isDeviceOwner(device, getUserId(event))
+    isDeviceOwner(device, getUserId(event) ?? userId)
   ) {
     return device;
   }
@@ -63,9 +66,12 @@ const $SensorApiParam = z.object({
   sensorId: $SensorId,
 });
 
-export async function validateSensorId(event: H3Event): Promise<Sensor> {
+export async function validateSensorId(
+  event: H3Event,
+  userId?: string,
+): Promise<Sensor> {
   const { sensorId } = await validateRequest(event, "params", $SensorApiParam);
-  const device = await validateDeviceId(event);
+  const device = await validateDeviceId(event, userId);
 
   const sensor = await getSensorById(device.id, sensorId);
 

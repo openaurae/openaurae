@@ -3,7 +3,7 @@ const { signOut } = useAuth();
 const { user } = useUser();
 
 const email = computed(
-  () => user.value?.emailAddresses?.at(0)?.emailAddress ?? "NA",
+  () => user.value?.primaryEmailAddress?.emailAddress ?? "NA",
 );
 const imageUrl = computed(() => user.value?.imageUrl);
 
@@ -16,9 +16,9 @@ async function signOutAndClearCache() {
 <template>
   <SignedOut>
     <SignInButton>
-      <UButton size="md" class="cursor-pointer" color="primary" variant="soft"
-        >Sign In</UButton
-      >
+      <UButton size="md" class="cursor-pointer" color="primary" variant="soft">
+        Sign In
+      </UButton>
     </SignInButton>
   </SignedOut>
   <SignedIn>
@@ -26,13 +26,14 @@ async function signOutAndClearCache() {
       <UAvatar :src="imageUrl" :alt="email" />
     </UTooltip>
     <UButton
-      size="md"
+      size="xs"
       class="cursor-pointer"
       color="error"
       variant="soft"
       @click="signOutAndClearCache"
-      >Sign Out</UButton
     >
+      Sign Out
+    </UButton>
   </SignedIn>
 </template>
 

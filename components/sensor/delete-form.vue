@@ -52,6 +52,7 @@ function closeModal() {
       label="Unpair"
       color="error"
       variant="subtle"
+      size="xs"
     />
 
     <template #body>

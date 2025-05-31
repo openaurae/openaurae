@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends SensorType">
-import { SensorDeleteForm } from "#components";
+import { SensorDeleteForm, SensorMetricExport } from "#components";
 import { MetricsMetadata } from "#shared/metadata";
 import type { GetSensorResult, SensorReading, SensorType } from "#shared/types";
 import { isZigbeeSensor } from "#shared/utils";
@@ -69,13 +69,19 @@ function onSensorUpdated() {
               :sensor="sensor"
               @sensor-updated="onSensorUpdated"
             />
+            <SensorDeleteForm
+              v-if="isZigbeeSensor(sensor)"
+              :device-id="sensor.device_id"
+              :sensor-id="sensor.id"
+              @sensor-deleted="onSensorDeleted"
+            />
           </div>
-          <SensorDeleteForm
-            v-if="isZigbeeSensor(sensor)"
-            :device-id="sensor.device_id"
-            :sensor-id="sensor.id"
-            @sensor-deleted="onSensorDeleted"
-          />
+          <div>
+            <SensorMetricExport
+              :device-id="sensor.device_id"
+              :sensor-id="sensor.id"
+            />
+          </div>
         </div>
 
         <div class="text-sm text-muted">
