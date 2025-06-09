@@ -14,7 +14,7 @@ const emit = defineEmits<{
 const variants = computed(() =>
   card({
     theme: device?.type,
-    size: "device_details",
+    size: "deviceDetails",
   }),
 );
 

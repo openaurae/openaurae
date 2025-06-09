@@ -9,7 +9,7 @@ const { device } = defineProps<{
 
 const { wrapper, header, body, title, subtitle, text, badge, footer } = card({
   theme: device.type,
-  size: "device_overview",
+  size: "deviceOverview",
 });
 
 const isNemo = computed(() => device.type === DeviceTypes.NEMO_CLOUD);
@@ -34,54 +34,56 @@ const detailsLink = computed(() => `/devices/${device.id}`);
 </script>
 
 <template>
-  <div :class="wrapper()">
-    <div :class="header()">
-      <div class="flex flex-col">
-        <h3 :class="title()">
-          {{ device.name }}
-        </h3>
-        <h5 :class="subtitle()">#{{ device.id }}</h5>
+  <ULink :to="detailsLink">
+    <div :class="wrapper()">
+      <div :class="header()">
+        <div class="flex flex-col">
+          <h3 :class="title()">
+            {{ device.name }}
+          </h3>
+          <h5 :class="subtitle()">#{{ device.id }}</h5>
+        </div>
+
+        <span :class="badge()">{{ formatDeviceType(device.type) }}</span>
       </div>
 
-      <span :class="badge()">{{ formatDeviceType(device.type) }}</span>
+      <div :class="body()">
+        <LabelValue>
+          <template #label>Readings Today</template>
+          <template #value>{{ device.daily_reading_count }}</template>
+        </LabelValue>
+        <LabelValue>
+          <template #label>Last Update</template>
+          <template #value>{{ lastUpdateTime }}</template>
+        </LabelValue>
+
+        <LabelValue v-if="isNemo">
+          <template #label>Building</template>
+          <template #value>{{ device.building ?? "NA" }}</template>
+        </LabelValue>
+        <LabelValue v-else>
+          <template #label>Latitude</template>
+          <template #value>{{ device.latitude ?? "NA" }}</template>
+        </LabelValue>
+
+        <LabelValue v-if="isNemo">
+          <template #label>Room</template>
+          <template #value>{{ device.room ?? "NA" }}</template>
+        </LabelValue>
+        <LabelValue v-else>
+          <template #label>Longitude</template>
+          <template #value>{{ device.longitude ?? "NA" }}</template>
+        </LabelValue>
+      </div>
+
+      <div :class="footer()">
+        <p class="font-semibold text-md text-muted">
+          {{ sensorCount }}
+        </p>
+        <span :class="text()">View Details →</span>
+      </div>
     </div>
-
-    <div :class="body()">
-      <LabelValue>
-        <template #label>Readings Today</template>
-        <template #value>{{ device.daily_reading_count }}</template>
-      </LabelValue>
-      <LabelValue>
-        <template #label>Last Update</template>
-        <template #value>{{ lastUpdateTime }}</template>
-      </LabelValue>
-
-      <LabelValue v-if="isNemo">
-        <template #label>Building</template>
-        <template #value>{{ device.building ?? "NA" }}</template>
-      </LabelValue>
-      <LabelValue v-else>
-        <template #label>Latitude</template>
-        <template #value>{{ device.latitude ?? "NA" }}</template>
-      </LabelValue>
-
-      <LabelValue v-if="isNemo">
-        <template #label>Room</template>
-        <template #value>{{ device.room ?? "NA" }}</template>
-      </LabelValue>
-      <LabelValue v-else>
-        <template #label>Longitude</template>
-        <template #value>{{ device.longitude ?? "NA" }}</template>
-      </LabelValue>
-    </div>
-
-    <div :class="footer()">
-      <p class="font-semibold text-md text-muted">
-        {{ sensorCount }}
-      </p>
-      <ULink :to="detailsLink" :class="text()">View Details →</ULink>
-    </div>
-  </div>
+  </ULink>
 </template>
 
 <style scoped></style>

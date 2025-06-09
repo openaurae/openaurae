@@ -43,18 +43,18 @@ export const card = tv({
       },
     },
     size: {
-      device_details: {
+      deviceDetails: {
         wrapper: "p-4 lg:p-8 gap-10",
         title: "text-2xl",
         body: "grid grid-cols-2 lg:grid-cols-4 gap-4",
       },
-      device_overview: {
+      deviceOverview: {
         wrapper: "h-70 hover:shadow-lg",
         header: "p-4",
         body: "px-4 grid grid-cols-2 gap-2 grow",
         footer: "w-full h-12 px-4",
       },
-      sensor_overview: {
+      sensorOverview: {
         wrapper: "w-74 h-32 p-4 hover:shadow-lg",
         title: "text-md",
         body: "flex flex-col justify-between",
