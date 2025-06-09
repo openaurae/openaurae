@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const { signOut } = useAuth();
+const auth = useAuth();
 const { user } = useUser();
+const route = useRoute();
 
 const email = computed(
   () => user.value?.primaryEmailAddress?.emailAddress ?? "NA",
@@ -8,8 +9,15 @@ const email = computed(
 const imageUrl = computed(() => user.value?.imageUrl);
 
 async function signOutAndClearCache() {
+  const signOut = auth.signOut.value;
+
   clearNuxtData();
-  await signOut.value({ redirectUrl: "/" });
+  if (route.path === "/devices") {
+    await signOut();
+    window.location.reload();
+  } else {
+    await signOut({ redirectUrl: "/" });
+  }
 }
 </script>
 
