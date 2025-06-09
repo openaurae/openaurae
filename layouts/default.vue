@@ -14,7 +14,22 @@
         </ULink>
 
         <div class="flex gap-4 items-center">
-          <UserAuth />
+          <SignedOut>
+            <SignInButton>
+              <UButton
+                icon="lucide:log-in"
+                size="md"
+                class="cursor-pointer"
+                color="neutral"
+                variant="soft"
+              >
+                Login
+              </UButton>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <UserProfile />
+          </SignedIn>
         </div>
       </UContainer>
     </header>
