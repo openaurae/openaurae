@@ -58,7 +58,7 @@ function onSensorUpdated() {
 
 <template>
   <div class="grid gap-8">
-    <section class="grid gap-6">
+    <section class="grid gap-4">
       <header class="grid gap-1">
         <div
           class="flex flex-col gap-1 lg:flex-row items-start justify-between"
@@ -76,12 +76,10 @@ function onSensorUpdated() {
               @sensor-deleted="onSensorDeleted"
             />
           </div>
-          <div>
-            <SensorMetricExport
-              :device-id="sensor.device_id"
-              :sensor-id="sensor.id"
-            />
-          </div>
+          <SensorMetricExport
+            :device-id="sensor.device_id"
+            :sensor-id="sensor.id"
+          />
         </div>
 
         <div class="text-sm text-muted">

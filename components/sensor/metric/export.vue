@@ -52,7 +52,7 @@ const exportUrl = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-row gap-4">
+  <div class="w-full md:w-fit flex flex-col md:flex-row gap-2 md:gap-4">
     <UPopover>
       <UButton
         color="neutral"
