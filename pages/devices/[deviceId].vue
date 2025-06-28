@@ -1,25 +1,14 @@
 <script setup lang="ts">
-import {
-  $Reading,
-  type GetDeviceResult,
-  type GetSensorResult,
-} from "#shared/types";
+import { $Reading, type GetSensorResult } from "#shared/types";
 import { isZigbeeDevice } from "#shared/utils";
 import type { BreadcrumbItem } from "@nuxt/ui";
 import { useEventSource } from "@vueuse/core";
-import { isBefore, startOfDay } from "date-fns";
+import { isBefore } from "date-fns";
 import { minTime } from "date-fns/constants";
+import { useDevice } from "~/utils";
 
 const { deviceId } = useRoute().params;
-const now = useNow();
-const { data: device, refresh } = useFetch<GetDeviceResult>(
-  `/api/devices/${deviceId}`,
-  {
-    query: {
-      startOfToday: computed(() => startOfDay(now.value).toISOString()),
-    },
-  },
-);
+const { data: device, refresh } = useDevice(deviceId as string);
 
 const isZigbee = computed(() => isZigbeeDevice(device.value));
 const sensors = computed(() => device.value?.sensors ?? []);

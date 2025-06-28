@@ -22,7 +22,7 @@ const variants = tv({
   },
 });
 
-const { orientation } = defineProps<{
+const { orientation = "vertical" } = defineProps<{
   orientation?: "vertical" | "horizontal";
 }>();
 

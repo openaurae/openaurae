@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { $DeviceType, type GetDeviceResult } from "#shared/types";
+import { $DeviceType } from "#shared/types";
 import type { SelectItem } from "@nuxt/ui";
-import { startOfDay } from "date-fns";
+import { useDevices } from "~/utils/use-devices";
 
 const { isSignedIn } = useAuth();
 
-const now = useNow();
-const startOfToday = computed(() => startOfDay(now.value).toISOString());
-
-const { data, refresh } = useFetch<GetDeviceResult[]>("/api/devices", {
-  query: {
-    startOfToday,
-  },
-  server: false,
-});
+const { data, refresh } = useDevices();
 
 const deviceTypeSelections = ref(
   $DeviceType.options.map((type) => ({
@@ -42,7 +34,7 @@ const devices = useArrayFilter(allDevices, (device) => {
   );
 });
 
-const { wrapper } = card({ size: "device_overview" });
+const { wrapper } = card({ size: "deviceOverview" });
 </script>
 
 <template>

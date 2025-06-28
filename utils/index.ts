@@ -1,5 +1,8 @@
 import { type DeviceType, DeviceTypes, type SensorType } from "#shared/types";
 
+export * from "./use-devices";
+export * from "./use-device";
+
 export function formatDeviceType(type: DeviceType): string {
   switch (type) {
     case DeviceTypes.AIR_QUALITY:
