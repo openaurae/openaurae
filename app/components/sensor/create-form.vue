@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { $NewSensor, $ZigbeeSensorType, type NewSensor } from "#shared/types";
+import { $ZigbeeSensorType } from "#shared/schema";
+import { type NewSensor } from "#shared/types";
 import { formatError } from "#shared/utils";
 import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
 

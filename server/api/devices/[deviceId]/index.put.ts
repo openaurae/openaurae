@@ -1,5 +1,5 @@
-import { $UpdateDevice } from "#shared/types";
-import { updateDeviceById, validateDeviceId } from "~/server/utils";
+import { $UpdateDevice } from "#shared/schema";
+import { updateDeviceById, validateDeviceId } from "~~/server/utils";
 
 export default defineEventHandler(async (event): Promise<void> => {
   const device = await validateDeviceId(event);

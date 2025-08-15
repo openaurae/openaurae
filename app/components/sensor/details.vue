@@ -26,8 +26,8 @@ const spanOptions = ref<SelectItem[]>([
   { label: "Last 7 days", value: 24 * 7 },
 ]);
 
-const start = computed(() => subHours(new Date(), span.value));
 const end = ref(new Date());
+const start = computed(() => subHours(end.value, span.value));
 
 const reading = computed(
   () => (sensor.latest_reading as SensorReading<T>) ?? null,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { GetSensorResult } from "#shared/types";
+import { sensorDeviceType } from "#shared/utils";
 import { formatDistance } from "date-fns";
-import { sensorDeviceType } from "~/shared/utils";
 import { card } from "~/utils/variants";
 
 const now = useNow();

@@ -1,5 +1,5 @@
-import { db } from "~/server/database";
-import { deleteSensor, deleteSensorReadings } from "~/server/utils";
+import { db } from "~~/server/database";
+import { deleteSensor, deleteSensorReadings } from "~~/server/utils";
 
 export default defineEventHandler(async (event) => {
   const sensor = await validateSensorId(event);

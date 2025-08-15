@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod";
 
 import { $DeviceId } from "./device";
 
@@ -56,7 +56,3 @@ export const $Sensor = z.object({
   name: $SensorName,
   type: $SensorType,
 });
-
-export type Sensor = z.infer<typeof $Sensor>;
-export type SensorType = z.infer<typeof $SensorType>;
-export type ZigbeeSensorType = z.infer<typeof $ZigbeeSensorType>;

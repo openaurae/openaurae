@@ -1,4 +1,5 @@
-import { $DeviceType, type Device, type GetDeviceResult } from "#shared/types";
+import { $DeviceType } from "#shared/schema";
+import { type Device, type GetDeviceResult } from "#shared/types";
 import { sortedByTimeDesc } from "#shared/utils";
 import { z } from "zod/v4";
 import {
@@ -10,7 +11,7 @@ import {
   getUserId,
   hasPermission,
   validateRequest,
-} from "~/server/utils";
+} from "~~/server/utils";
 
 const $Query = z.object({
   type: $DeviceType.optional(),

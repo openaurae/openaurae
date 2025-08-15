@@ -1,4 +1,4 @@
-import { migrateNemoCloud } from "~/server/nemo-cloud/migration";
+import { migrateNemoCloud } from "../nemo-cloud/migration";
 
 export default defineTask({
   meta: {

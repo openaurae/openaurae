@@ -1,5 +1,5 @@
-import { $UpdateSensor } from "#shared/types";
-import { updateSensorById } from "~/server/utils";
+import { $UpdateSensor } from "#shared/schema";
+import { updateSensorById } from "~~/server/utils";
 
 export default defineEventHandler(async (event) => {
   const model = await validateRequest(event, "body", $UpdateSensor);

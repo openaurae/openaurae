@@ -1,4 +1,5 @@
-import { $Readings, type Reading } from "#shared/types";
+import { $Readings } from "#shared/schema";
+import { type Reading } from "#shared/types";
 
 import type { Message } from "./types";
 

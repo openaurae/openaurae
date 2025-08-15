@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import { $UpdateDevice, type Device, type UpdateDevice } from "#shared/types";
+import { $CreatableDeviceType } from "#shared/schema";
+import type { NewDevice } from "#shared/types";
 import { formatError } from "#shared/utils";
-import type { FormSubmitEvent } from "@nuxt/ui";
-
-const props = defineProps<{
-  device: Device;
-}>();
-
-const device = toRef(() => props.device);
+import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
 
 const emit = defineEmits<{
-  deviceUpdated: [];
+  deviceCreated: [];
 }>();
 
 const toast = useToast();
 const open = ref(false);
 
-const state = computed(() => $UpdateDevice.parse(device.value));
+const state = reactive<Partial<NewDevice>>({
+  id: "",
+  name: "",
+  type: "air_quality",
+  is_public: false,
+});
 
-async function onSubmit(event: FormSubmitEvent<UpdateDevice>) {
+async function onSubmit(event: FormSubmitEvent<NewDevice>) {
   try {
-    await $fetch(`/api/devices/${device.value.id}`, {
-      method: "PUT",
+    await $fetch("/api/devices", {
+      method: "POST",
       body: event.data,
     });
     toast.add({
       title: "Success",
-      description: "Device has been updated.",
+      description: "Device has been created.",
       color: "success",
     });
     open.value = false;
-    emit("deviceUpdated");
+    emit("deviceCreated");
   } catch (error) {
     toast.add({
       title: "Error",
@@ -39,28 +39,37 @@ async function onSubmit(event: FormSubmitEvent<UpdateDevice>) {
     });
   }
 }
+
+const deviceTypeSelections = ref<SelectItem[]>(
+  $CreatableDeviceType.options.map((type) => ({
+    value: type,
+    label: formatDeviceType(type),
+  })),
+);
 </script>
 
 <template>
-  <UModal v-model:open="open" title="Edit Device Information">
+  <UModal
+    v-model:open="open"
+    title="Create Device"
+    description="Register your Air Quality box or Zigbee device to the system."
+  >
     <UButton
-      icon="material-symbols:edit-square-outline"
       class="cursor-pointer"
-      label="Edit"
+      label="New Device"
       color="neutral"
       variant="subtle"
-      size="xs"
     />
 
     <template #body>
       <UForm
-        :schema="$UpdateDevice"
+        :schema="$NewDevice"
         :state="state"
         class="w-full grid gap-6"
         @submit="onSubmit"
       >
         <UFormField label="ID" name="id" required>
-          <UInput v-model="device.id" disabled class="w-full" />
+          <UInput v-model="state.id" class="w-full" />
         </UFormField>
 
         <UFormField label="Name" name="name" required>
@@ -68,9 +77,10 @@ async function onSubmit(event: FormSubmitEvent<UpdateDevice>) {
         </UFormField>
 
         <UFormField label="Type" name="type" required>
-          <UInput
-            :model-value="formatDeviceType(device.type)"
-            disabled
+          <USelect
+            v-model="state.type"
+            :items="deviceTypeSelections"
+            placeholder="Select Device Type"
             class="w-full"
           />
         </UFormField>

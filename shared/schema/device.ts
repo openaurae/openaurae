@@ -1,5 +1,5 @@
 import { blankToNull } from "#shared/utils";
-import z from "zod/v4";
+import * as z from "zod";
 
 export const DeviceTypes = {
   AIR_QUALITY: "air_quality",
@@ -48,6 +48,3 @@ export const $Device = z.object({
   user_id: z.string().nullish(),
   is_public: z.coerce.boolean().default(false),
 });
-
-export type Device = z.infer<typeof $Device>;
-export type DeviceType = z.infer<typeof $DeviceType>;

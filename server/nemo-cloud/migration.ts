@@ -1,10 +1,9 @@
 import type { Device, Sensor } from "#shared/types";
 import { secondsToDate } from "#shared/utils";
 import { minTime } from "date-fns/constants";
-import { db } from "~/server/database";
-import { publish } from "~/server/mqtt/sse";
-import { upsertDevice } from "~/server/utils";
 
+import { db } from "../database";
+import { publish } from "../mqtt/sse";
 import { NemoSession } from "./api";
 import { type NemoVersion, nemoConfig } from "./config";
 import { type Location, parseLocation } from "./location";
@@ -97,7 +96,7 @@ export class NemoDeviceMigration {
     }
 
     // Need to update db even if measureSet.bid == db.latestMeasureSet(device).bid because the end time may be extended.
-    // Otherwise the latest update time won't be update and will always get the same measureSet from API.
+    // Otherwise, the latest update time won't be updated and will always get the same measureSet from API.
     await this.upsertMeasureSet(measureSet);
 
     // console.log(

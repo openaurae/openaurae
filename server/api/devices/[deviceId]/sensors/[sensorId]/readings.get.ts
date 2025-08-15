@@ -1,6 +1,6 @@
 import { subDays } from "date-fns";
 import { z } from "zod/v4";
-import { validateRequest, validateSensorId } from "~/server/utils";
+import { validateRequest, validateSensorId } from "~~/server/utils";
 
 const $Query = z.object({
   start: z.coerce

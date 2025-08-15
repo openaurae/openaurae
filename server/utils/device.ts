@@ -1,7 +1,7 @@
 import type { Device, DeviceType, GetSensorResult } from "#shared/types";
 import { isNotNil } from "#shared/utils";
-import { db } from "~/server/database";
 
+import { db } from "../database";
 import { countSensorReadings } from "./reading";
 import { getSensorsByDeviceId } from "./sensor";
 

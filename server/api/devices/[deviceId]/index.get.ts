@@ -1,7 +1,7 @@
 import type { GetDeviceResult } from "#shared/types";
 import { sortedByTimeDesc } from "#shared/utils";
 import { z } from "zod/v4";
-import { getDeviceSensorsWithStatus, validateDeviceId } from "~/server/utils";
+import { getDeviceSensorsWithStatus, validateDeviceId } from "~~/server/utils";
 
 const $Query = z.object({
   startOfToday: z.coerce.date(),

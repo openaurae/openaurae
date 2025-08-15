@@ -1,6 +1,7 @@
 import type { Reading, Sensor, SensorReading, SensorType } from "#shared/types";
 import type { Transaction } from "kysely";
-import { type Database, db, readingTable } from "~/server/database";
+
+import { type Database, db, readingTable } from "../database";
 
 export async function upsertSensorReading<T extends SensorType>(
   sensorType: T,

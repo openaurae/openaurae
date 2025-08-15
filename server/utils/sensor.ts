@@ -1,7 +1,8 @@
 import type { DailyReadingStatus, Sensor } from "#shared/types";
 import { max as maxDate } from "date-fns";
 import type { Transaction } from "kysely";
-import { type Database, db } from "~/server/database";
+
+import { type Database, db } from "../database";
 
 export async function upsertSensor(sensor: Sensor): Promise<Sensor> {
   return await db

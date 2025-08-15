@@ -41,11 +41,13 @@ const metricsMetadata = computed(() => MetricsMetadata[type]);
         v-else-if="metadata.type === 'number'"
         :metadata="metadata"
         :readings="readings"
+        :key="`line-${end.toISOString()}`"
       />
       <SensorMetricBarChart
         v-else-if="metadata.type === 'boolean'"
         :metadata="metadata"
         :readings="readings"
+        :key="`bar-${end.toISOString()}`"
       />
     </div>
   </div>

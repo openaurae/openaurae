@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $DeviceType } from "#shared/types";
+import { $DeviceType } from "#shared/schema";
 import type { SelectItem } from "@nuxt/ui";
 import { useDevices } from "~/utils/use-devices";
 

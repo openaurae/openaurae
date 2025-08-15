@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { DeviceTypes, type GetDeviceResult } from "#shared/types";
+import { DeviceTypes } from "#shared/schema";
+import type { GetDeviceResult } from "#shared/types";
 import { formatDistanceToNow } from "date-fns";
 import { card } from "~/utils/variants";
 

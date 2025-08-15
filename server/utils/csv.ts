@@ -1,5 +1,5 @@
 import { addHours, isBefore } from "date-fns";
-import { type NewSignedKey, type SignedKey, db } from "~/server/database";
+import { type NewSignedKey, type SignedKey, db } from "~~/server/database";
 
 export async function verifyKeyId(
   keyId: string,

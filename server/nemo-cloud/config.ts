@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 
 const $NemoAccount = z.object({
   url: z.string().url(),

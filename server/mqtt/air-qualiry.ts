@@ -1,4 +1,5 @@
-import { $Readings, type Reading, SensorTypes } from "#shared/types";
+import { $Readings, SensorTypes } from "~~/shared/schema";
+import { Reading } from "~~/shared/types";
 
 import type { Message } from "./types";
 

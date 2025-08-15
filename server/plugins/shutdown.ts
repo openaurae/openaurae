@@ -1,5 +1,5 @@
-import { db } from "~/server/database";
-import { mqttClient } from "~/server/mqtt";
+import { db } from "../database";
+import { mqttClient } from "../mqtt";
 
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook("close", async () => {

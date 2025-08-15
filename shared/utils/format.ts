@@ -1,7 +1,20 @@
-import { type DeviceType, DeviceTypes, type SensorType } from "#shared/types";
+import { DeviceTypes } from "#shared/schema";
+import type { DeviceType, SensorType } from "#shared/types";
+import { FetchError } from "ofetch";
+import * as z from "zod";
 
-export * from "./use-devices";
-export * from "./use-device";
+export function formatError(error: unknown): string {
+  if (error instanceof FetchError) {
+    return error.statusText ?? `${error.statusCode} Unknown error`;
+  }
+  if (error instanceof z.ZodError) {
+    return z.prettifyError(error);
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Unknown error";
+}
 
 export function formatDeviceType(type: DeviceType): string {
   switch (type) {

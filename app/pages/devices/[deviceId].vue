@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { $Reading, type GetSensorResult } from "#shared/types";
+import { $Reading } from "#shared/schema";
+import { type GetSensorResult } from "#shared/types";
 import { isZigbeeDevice } from "#shared/utils";
-import type { BreadcrumbItem } from "@nuxt/ui";
 import { useEventSource } from "@vueuse/core";
 import { isBefore } from "date-fns";
 import { minTime } from "date-fns/constants";
@@ -28,8 +28,12 @@ watch(readingEvent, (event) => {
   const reading = $Reading.parse(JSON.parse(event));
   const sensor = sensorById.value[reading.sensor_id];
 
+  if (!sensor) {
+    return;
+  }
+
   if (isBefore(sensor.last_update ?? minTime, reading.time)) {
-    sensor.last_update = reading.time;
+    sensor.last_update = reading.time.toISOString();
     sensor.latest_reading = reading;
     sensor.daily_reading_count++;
   }
@@ -39,7 +43,7 @@ onUnmounted(() => {
   close();
 });
 
-const items = computed<BreadcrumbItem[]>(() => [
+const items = computed(() => [
   {
     label: "Devices",
     to: "/devices",

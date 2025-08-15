@@ -1,11 +1,7 @@
-import {
-  $NewDevice,
-  type Device,
-  DeviceTypes,
-  SensorTypes,
-} from "#shared/types";
-import { db } from "~/server/database";
-import { requireLogin, validateRequest } from "~/server/utils";
+import { $NewDevice, DeviceTypes, SensorTypes } from "#shared/schema";
+import { type Device } from "#shared/types";
+import { db } from "~~/server/database";
+import { requireLogin, validateRequest } from "~~/server/utils";
 
 export default defineEventHandler(async (event) => {
   const userId = requireLogin(event);

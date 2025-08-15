@@ -1,5 +1,5 @@
-import { subscribe, unsubscribe } from "~/server/mqtt/sse";
-import { validateDeviceId } from "~/server/utils";
+import { subscribe, unsubscribe } from "~~/server/mqtt/sse";
+import { validateDeviceId } from "~~/server/utils";
 
 export default defineEventHandler(async (event) => {
   const device = await validateDeviceId(event);

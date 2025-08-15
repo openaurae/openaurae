@@ -1,5 +1,5 @@
-import { $NewSensor, DeviceTypes } from "#shared/types";
-import { validateRequest } from "~/server/utils";
+import { $NewSensor, DeviceTypes } from "#shared/schema";
+import { validateRequest } from "~~/server/utils";
 
 export default defineEventHandler(async (event) => {
   const device = await validateDeviceId(event);

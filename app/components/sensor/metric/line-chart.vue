@@ -14,6 +14,7 @@ import { isNotNil } from "#shared/utils";
 const { readings, metadata } = defineProps<{
   readings: SensorReading<T>[];
   metadata: SensorMetricMetadata<T, K>;
+  end: Date;
 }>();
 
 const { name, displayName, unit, type } = metadata;

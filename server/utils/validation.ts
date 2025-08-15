@@ -1,4 +1,5 @@
-import { $DeviceId, $SensorId, type Device, type Sensor } from "#shared/types";
+import { $DeviceId, $SensorId } from "#shared/schema";
+import type { Device, Sensor } from "#shared/types";
 import { formatError } from "#shared/utils";
 import type { H3Event } from "h3";
 import { z } from "zod/v4";

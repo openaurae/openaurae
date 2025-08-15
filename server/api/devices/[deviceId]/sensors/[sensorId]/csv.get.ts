@@ -3,7 +3,7 @@ import { format, startOfDay, subDays } from "date-fns";
 import { sendStream } from "h3";
 import { Readable } from "node:stream";
 import { z } from "zod/v4";
-import { MetricsMetadata } from "~/shared/metadata";
+import { MetricsMetadata } from "~~/shared/metadata";
 
 const $Query = z.object({
   keyId: z.string(),

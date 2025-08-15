@@ -1,7 +1,6 @@
-import type { SensorType } from "#shared/types";
-import { z } from "zod/v4";
+import * as z from "zod";
 
-const $ReadingKey = z.object({
+export const $ReadingKey = z.object({
   device_id: z.string(),
   sensor_id: z.string(),
   time: z.coerce.date(),
@@ -102,18 +101,3 @@ export const $Reading = z.union([
   $Readings.zigbee_contact,
   $Readings.zigbee_occupancy,
 ]);
-
-export type ReadingKey = z.infer<typeof $ReadingKey>;
-
-type ReadingTypes = {
-  [T in SensorType]: z.infer<(typeof $Readings)[T]>;
-};
-
-export type Reading = z.infer<typeof $Reading>;
-
-export type SensorReading<T extends SensorType> = ReadingTypes[T];
-export type SensorMetrics<T extends SensorType> = Omit<
-  SensorReading<T>,
-  keyof ReadingKey
->;
-export type SensorMetricName<T extends SensorType> = keyof SensorMetrics<T>;
