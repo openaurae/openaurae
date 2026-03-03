@@ -1,7 +1,7 @@
 import { DeviceTypes } from "#shared/schema";
 import type { DeviceType, SensorType } from "#shared/types";
 import { FetchError } from "ofetch";
-import * as z from "zod";
+import { z } from "zod/v4";
 
 export function formatError(error: unknown): string {
   if (error instanceof FetchError) {

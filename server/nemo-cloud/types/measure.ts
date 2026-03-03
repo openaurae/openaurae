@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod/v4";
 
 /**
  * Represents a set of measure of different sensors for a device during a continuous time.

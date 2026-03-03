@@ -1,5 +1,5 @@
 import { blankToNull } from "#shared/utils";
-import * as z from "zod";
+import { z } from "zod/v4";
 
 export const DeviceTypes = {
   AIR_QUALITY: "air_quality",
