@@ -2,7 +2,7 @@ import type { Device, DeviceType, GetSensorResult } from "#shared/types";
 import { isNotNil } from "#shared/utils";
 
 import { db } from "../database";
-import { countSensorReadings } from "./reading";
+import { batchGetSensorStats } from "./reading";
 import { getSensorsByDeviceId } from "./sensor";
 
 export function isDeviceOwner(device: Device, userId: unknown): boolean {
@@ -86,16 +86,21 @@ export async function getDeviceSensorsWithStatus(
 ): Promise<GetSensorResult[]> {
   const sensors = await getSensorsByDeviceId(deviceId);
 
-  return await Promise.all(
-    sensors.map(async (sensor) => {
-      const latestReading = await getSensorLatestReading(sensor);
+  if (sensors.length === 0) {
+    return [];
+  }
 
-      return {
-        ...sensor,
-        daily_reading_count: await countSensorReadings(sensor, startOfToday),
-        latest_reading: latestReading,
-        last_update: latestReading?.time || null,
-      };
-    }),
-  );
+  const statsMap = await batchGetSensorStats(sensors, startOfToday);
+
+  return sensors.map((sensor) => {
+    const stats = statsMap.get(sensor.id);
+    const latestReading = stats?.latest_reading ?? null;
+
+    return {
+      ...sensor,
+      daily_reading_count: stats?.daily_count ?? 0,
+      latest_reading: latestReading,
+      last_update: latestReading?.time ?? null,
+    };
+  });
 }
