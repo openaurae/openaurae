@@ -1,27 +1,20 @@
-<script
-  setup
-  lang="ts"
-  generic="T extends SensorType, K extends SensorMetricName<T>"
->
-import type {
-  SensorMetricMetadata,
-  SensorMetricName,
-  SensorReading,
-  SensorType,
-} from "#shared/types";
+<script setup lang="ts">
+import type { Reading, SensorMetricMetadata, SensorType } from "#shared/types";
 import { isNotNil } from "#shared/utils";
 
 const { readings, metadata } = defineProps<{
-  readings: SensorReading<T>[];
-  metadata: SensorMetricMetadata<T, K>;
-  end: Date;
+  readings: Reading[];
+  metadata: SensorMetricMetadata<SensorType>;
 }>();
 
-const { name, displayName, unit, type } = metadata;
+const { name, displayName, unit } = metadata;
 
 const data = readings
-  .filter((reading) => isNotNil(reading[name]))
-  .map((reading) => [reading.time, reading[name]]);
+  .filter((reading) => isNotNil((reading as Record<string, unknown>)[name]))
+  .map((reading) => [
+    reading.time,
+    (reading as Record<string, unknown>)[name],
+  ]) as [Date, number][];
 
 const option = ref<ECOption>({
   title: {
@@ -32,7 +25,8 @@ const option = ref<ECOption>({
   tooltip: {
     trigger: "axis",
     axisPointer: { type: "cross" },
-    valueFormatter: (value) => (unit ? `${value} ${unit}` : value?.toString()),
+    valueFormatter: (value) =>
+      unit ? `${value} ${unit}` : String(value ?? ""),
   },
   xAxis: {
     type: "time",
@@ -69,7 +63,7 @@ const option = ref<ECOption>({
 </script>
 
 <template>
-  <VChart v-if="type === 'number'" :option="option" autoresize />
+  <VChart :option="option" autoresize />
 </template>
 
 <style scoped></style>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { $UpdateSensor } from "#shared/schema";
 import type { Sensor, UpdateSensor } from "#shared/types";
 import { formatError } from "#shared/utils";
 import type { FormSubmitEvent } from "@nuxt/ui";

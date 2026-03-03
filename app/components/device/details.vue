@@ -4,7 +4,7 @@ import { isNemoCloudDevice } from "#shared/utils";
 import { card } from "~/utils/variants";
 
 const { device } = defineProps<{
-  device: GetDeviceResult | null;
+  device: GetDeviceResult | null | undefined;
 }>();
 
 const emit = defineEmits<{
