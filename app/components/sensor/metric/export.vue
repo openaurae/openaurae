@@ -10,14 +10,13 @@ import {
   minutesToMilliseconds,
   startOfDay,
 } from "date-fns";
-import type { SignedKey } from "~/server/database";
 
 const { deviceId, sensorId } = defineProps<{
   deviceId: string;
   sensorId: string;
 }>();
 
-const { data: key, refresh } = await useFetch<SignedKey>("/api/keys", {
+const { data: key, refresh } = await useFetch<{ key_id: string }>("/api/keys", {
   method: "POST",
 });
 

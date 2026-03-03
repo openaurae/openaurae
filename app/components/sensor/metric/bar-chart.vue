@@ -1,22 +1,13 @@
-<script
-  setup
-  lang="ts"
-  generic="T extends SensorType, K extends SensorMetricName<T>"
->
-import type {
-  SensorMetricMetadata,
-  SensorMetricName,
-  SensorReading,
-  SensorType,
-} from "#shared/types";
+<script setup lang="ts">
+import type { Reading, SensorMetricMetadata, SensorType } from "#shared/types";
 import { isNotNil } from "#shared/utils";
 
 const { readings, metadata } = defineProps<{
-  readings: SensorReading<T>[];
-  metadata: SensorMetricMetadata<T, K>;
+  readings: Reading[];
+  metadata: SensorMetricMetadata<SensorType>;
 }>();
 
-const { name, displayName, type } = metadata;
+const { name, displayName } = metadata;
 
 const Value = {
   YES: 1,
@@ -24,8 +15,11 @@ const Value = {
 };
 
 const data = readings
-  .filter((reading) => isNotNil(reading[name]))
-  .map((reading) => [reading.time, reading[name] ? Value.YES : Value.NO]);
+  .filter((reading) => isNotNil((reading as Record<string, unknown>)[name]))
+  .map((reading) => [
+    reading.time,
+    (reading as Record<string, unknown>)[name] ? Value.YES : Value.NO,
+  ]);
 
 const option = ref<ECOption>({
   title: {
@@ -68,7 +62,7 @@ const option = ref<ECOption>({
 </script>
 
 <template>
-  <VChart v-if="type === 'boolean'" :option="option" autoresize />
+  <VChart :option="option" autoresize />
 </template>
 
 <style scoped></style>

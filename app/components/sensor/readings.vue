@@ -1,6 +1,10 @@
 <script setup lang="ts" generic="T extends SensorType">
 import { MetricsMetadata } from "#shared/metadata";
-import type { SensorReading, SensorType } from "#shared/types";
+import type {
+  SensorMetricMetadata,
+  SensorReading,
+  SensorType,
+} from "#shared/types";
 
 const { deviceId, sensorId, type, start, end } = defineProps<{
   deviceId: string;
@@ -26,7 +30,10 @@ const { data: readings } = useFetch<SensorReading<T>[]>(
   },
 );
 
-const metricsMetadata = computed(() => MetricsMetadata[type]);
+// Cast to any to avoid Vue generic component type inference issues
+const metricsMetadata = computed(
+  () => MetricsMetadata[type] as SensorMetricMetadata<SensorType>[],
+);
 </script>
 
 <template>

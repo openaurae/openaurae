@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $CreatableDeviceType } from "#shared/schema";
+import { $CreatableDeviceType, $NewDevice } from "#shared/schema";
 import type { NewDevice } from "#shared/types";
 import { formatError } from "#shared/utils";
 import type { FormSubmitEvent, SelectItem } from "@nuxt/ui";
