@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod/v4";
 
 import {
   $Device,
@@ -56,7 +56,7 @@ type TypeToString<T> = T extends string
 
 export type DailyReadingStatus = {
   daily_reading_count: number;
-  last_update: string;
+  last_update: Date | string | null;
 };
 
 export type GetSensorResult = Sensor &

@@ -124,7 +124,7 @@ export class NemoSession {
       return [];
     }
 
-    return measureSetsList[0].measureSets ?? [];
+    return measureSetsList[0]!.measureSets ?? [];
   }
 
   /**
