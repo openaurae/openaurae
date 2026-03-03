@@ -31,6 +31,10 @@ function formatValue(value: unknown): string {
 
   return "NA";
 }
+
+const isValidValue = computed(
+  () => value !== null && value !== undefined && !Number.isNaN(value),
+);
 </script>
 
 <template>
@@ -41,7 +45,7 @@ function formatValue(value: unknown): string {
     <div class="pt-4">
       <div class="align-bottom">
         <span class="font-bold text-2xl">{{ formatValue(value) }}</span>
-        <span class="text-sm pl-1">{{ unit ?? "" }}</span>
+        <span v-if="isValidValue && unit" class="text-sm pl-1">{{ unit }}</span>
       </div>
     </div>
   </div>
