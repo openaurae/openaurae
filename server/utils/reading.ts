@@ -63,13 +63,13 @@ export async function countSensorReadings(
 
   const result = await db
     .selectFrom(table.as("t"))
-    .select(({ fn }) => [fn.countAll().as("max_time")])
+    .select(({ fn }) => [fn.countAll().as("count")])
     .where("t.device_id", "=", sensor.device_id)
     .where("t.sensor_id", "=", sensor.id)
     .where("t.time", ">=", start)
     .executeTakeFirst();
 
-  return Number(result?.max_time ?? 0);
+  return Number(result?.count ?? 0);
 }
 
 export async function getSensorLatestReading(

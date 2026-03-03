@@ -36,12 +36,12 @@ function isValidKey(key?: SignedKey | null): boolean {
 async function getUserKey(
   filter: Pick<SignedKey, "key_id"> | Pick<SignedKey, "user_id">,
 ): Promise<SignedKey | undefined> {
-  const qb = db.selectFrom("signed_keys").selectAll();
+  let qb = db.selectFrom("signed_keys").selectAll();
 
   if ("key_id" in filter) {
-    qb.where("key_id", "=", filter.key_id);
+    qb = qb.where("key_id", "=", filter.key_id);
   } else if ("user_id" in filter) {
-    qb.where("user_id", "=", filter.user_id);
+    qb = qb.where("user_id", "=", filter.user_id);
   } else {
     throw new Error("Must get user signed key by user_id or key_id");
   }

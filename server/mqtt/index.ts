@@ -1,7 +1,7 @@
 import type { Reading, Sensor } from "#shared/types";
 import mqtt from "mqtt";
 
-import { parseAirQualityMessage } from "./air-qualiry";
+import { parseAirQualityMessage } from "./air-quality";
 import { mqttConfig } from "./config";
 import { publish } from "./sse";
 import { $Message, type Message } from "./types";

@@ -22,7 +22,7 @@ export function parseZigbeeMessage(topic: string, message: Message): Reading {
     return $Readings.zigbee_contact.parse(reading);
   }
   if ("occupancy" in message) {
-    $Readings.zigbee_occupancy.parse(reading);
+    return $Readings.zigbee_occupancy.parse(reading);
   }
   if ("angle_x" in message) {
     return $Readings.zigbee_vibration.parse(reading);
@@ -59,16 +59,8 @@ export function parseZigbeeTopic(topic: string): {
   device_id?: string;
   sensor_id?: string;
 } {
-  const paths = topic.split("/").filter((path) => path !== "");
+  const matched = topic.match(/^zigbee\/([^/]+)\/([^/]+)$/);
+  const [_, device_id, sensor_id] = matched ?? [];
 
-  if (paths.length < 3 || paths[2] === "bridge") {
-    return {};
-  }
-
-  const [_, device_id, sensor_id] = paths;
-
-  return {
-    device_id,
-    sensor_id,
-  };
+  return device_id === "bridge" ? {} : { device_id, sensor_id };
 }
