@@ -31,6 +31,7 @@ alter table readings_nemo_cloud set
     );
 
 SELECT add_compression_policy('readings_nemo_cloud', INTERVAL '7 days');
+SELECT add_retention_policy('readings_nemo_cloud', INTERVAL '1 year');
 
 SELECT
     pg_size_pretty(before_compression_total_bytes) as before,
